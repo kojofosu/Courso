@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "128795136306",
+    "firebase_url": "https://courso-3f8ef.firebaseio.com",
+    "project_id": "courso-3f8ef",
+    "storage_bucket": "courso-3f8ef.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:128795136306:android:2a65630cd577d878",
+        "android_client_info": {
+          "package_name": "com.edue.courso"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "128795136306-n7ne072aqa5tfbjd1v4d04c0bi5qbq9c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.edue.courso",
+            "certificate_hash": "e81c76be23b55c292d4cd80e9cb409ffcd543da8"
+          }
+        },
+        {
+          "client_id": "128795136306-2hpett0sl0u38u1c7a56no3quev15pkr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2rSOY3T1UF5X_-eEpwwsyHDBWYjpUw2w"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "128795136306-2hpett0sl0u38u1c7a56no3quev15pkr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
