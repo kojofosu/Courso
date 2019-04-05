@@ -1,6 +1,11 @@
 package com.edue.courso;
 
+import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.provider.OpenableColumns;
+import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TextInputEditText;
@@ -11,7 +16,12 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.File;
 
 public class AddNewMaterial extends AppCompatActivity {
 
@@ -19,9 +29,12 @@ public class AddNewMaterial extends AppCompatActivity {
     TextInputEditText addCourseCode_TIE, addCourseTitle_TIE;
     CollapsingToolbarLayout addNewCollapsingToolbarLayout;
     AppBarLayout addNewAppBarLayout;
+    TextView addNewFileTV;
     Toolbar addNewtoolbar;
     String courseCodeText ;
     String courseCodeHint;
+
+    private static final int GET_FILE = 1212;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,13 +47,10 @@ public class AddNewMaterial extends AppCompatActivity {
         //collapsible toolbar
         collapsibleToolbar();
 
-        //toolbar
-        toolbar();
-
-
+        //select file onClick event
+        selectFileEvent();
 
     }
-
 
     private void init() {
         addCourseCode_TIL = findViewById(R.id.add_course_code_TIL);
@@ -50,6 +60,7 @@ public class AddNewMaterial extends AppCompatActivity {
         addNewCollapsingToolbarLayout = findViewById(R.id.addNNew_CollapsingToolbarLayout);
         addNewtoolbar = findViewById(R.id.addNew_toolbar);
         addNewAppBarLayout = findViewById(R.id.addNew_AppBar);
+        addNewFileTV = findViewById(R.id.addNew_fileTV);
 
         courseCodeText = addCourseCode_TIE.getText().toString();
         courseCodeHint = addCourseCode_TIE.getHint().toString();
@@ -103,15 +114,52 @@ public class AddNewMaterial extends AppCompatActivity {
 
     }
 
+    private void selectFileEvent() {
+        addNewFileTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                intent.setType("application/pdf");
+                startActivityForResult(intent, GET_FILE);
+            }
+        });
 
 
+    }
 
-    private void toolbar() {
-//        if(courseCodeText != null){
-//            addNewtoolbar.setTitle(courseCodeText);
-//        }else{
-//            addNewtoolbar.setTitle(courseCodeHint);
-//        }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        switch (requestCode){
+            case GET_FILE:
+                if(resultCode == RESULT_OK){
+                    //Get the URI of the selected file
+                    Uri uri = data.getData();
+                    String uriString = uri.toString();
+                    File myFile = new File(uriString);
+                    String path = myFile.getAbsolutePath();
+                    String displayName = null;
+
+                    if (uriString.startsWith("content://")){
+                        Cursor cursor = null;
+                        try {
+                            cursor = getApplicationContext().getContentResolver().query(uri, null, null, null, null);
+                            if (cursor != null && cursor.moveToFirst()){
+                                displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                                Toast.makeText(this, displayName, Toast.LENGTH_SHORT).show();
+                            }
+                        }finally {
+                                cursor.close();
+                        }
+                    } else if(uriString.startsWith("file://")){
+                        displayName = myFile.getName();
+                        //display file name on the TextView
+                        addNewFileTV.setText(displayName);
+                        Toast.makeText(this, displayName, Toast.LENGTH_SHORT).show();
+                    }
+                }break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
 }
