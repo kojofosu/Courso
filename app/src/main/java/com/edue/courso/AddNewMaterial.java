@@ -94,7 +94,7 @@ public class AddNewMaterial extends AppCompatActivity {
             progressDialog.setTitle("uploading...");
             progressDialog.show();
 
-            StorageReference riversRef = mStorageRef.child("course/material.pdf");
+            StorageReference riversRef = mStorageRef.child("course/" + displayName);
 
             riversRef.putFile(filePath)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
