@@ -19,9 +19,11 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,10 +43,15 @@ public class AddNewMaterial extends AppCompatActivity {
     CollapsingToolbarLayout addNewCollapsingToolbarLayout;
     AppBarLayout addNewAppBarLayout;
     ImageButton uploadBtn;
+    EditText addNewLecturerNameET, addNewLecturerEmailET, addNewLecturerContactET, addNewAuthorET;
+    Spinner addNewDeptSpinner, addNewProgrammeSpinner, addNewLevelSpinner, addNewSemesterSpinner;
+    String[] deptArray = {"Dept. Computer Science and Information Technology", "Department of Education"};
+    String[] programmeArray = {"Non-Degree", "Undergraduate", "Masters/Graduate", "Doctorate"};
+    String[] levelArray = {"100", "200", "300", "400", "500", "600"};
+    String[] semesterArray = {"First Semester" , "Second Semester"};
     TextView addNewFileTV;
     Toolbar addNewtoolbar;
-    String courseCodeText ;
-    String courseCodeHint;
+    String courseCodeText, courseCodeHint, deptText, programmeText, levelText;
     Uri filePath;
     File myFile;
     String path;
@@ -71,12 +78,42 @@ public class AddNewMaterial extends AppCompatActivity {
         //FireBase Storage
         firebaseStorage();
 
+        //initializing spinners
+        spinners();
+
         uploadBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                deptText = addNewDeptSpinner.getSelectedItem().toString();
+                programmeText = addNewProgrammeSpinner.getSelectedItem().toString();
+                levelText = addNewLevelSpinner.getSelectedItem().toString();
                 firebaseStorage();
             }
         });
+
+    }
+
+    private void spinners() {
+        //initializing spinner array for department
+        ArrayAdapter<String> deptArrayAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_dropdown_item_1line, deptArray);
+        addNewDeptSpinner.setAdapter(deptArrayAdapter);
+
+        //initializing spinner array for programmes
+        ArrayAdapter<String> programmeArrayAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_dropdown_item_1line, programmeArray);
+        addNewProgrammeSpinner.setAdapter(programmeArrayAdapter);
+
+        //initializing spinner array for level
+        ArrayAdapter<String> levelArrayAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_dropdown_item_1line, levelArray);
+        addNewLevelSpinner.setAdapter(levelArrayAdapter);
+
+        //initializing spinner array for semester
+        ArrayAdapter<String> semesterArrayAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_dropdown_item_1line, semesterArray);
+        addNewSemesterSpinner.setAdapter(semesterArrayAdapter);
+
 
     }
 
@@ -91,10 +128,11 @@ public class AddNewMaterial extends AppCompatActivity {
 
         if (filePath != null) {
             final ProgressDialog progressDialog = new ProgressDialog(this);
-            progressDialog.setTitle("uploading...");
+            progressDialog.setTitle("Uploading...");
+            progressDialog.setCancelable(false);
             progressDialog.show();
 
-            StorageReference riversRef = mStorageRef.child("course/" + displayName);
+            StorageReference riversRef = mStorageRef.child("CourseMaterials/" + deptText +"/"+ programmeText +"/"+ levelText +"/"+ courseCodeText +"/"+displayName);
 
             riversRef.putFile(filePath)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -138,10 +176,16 @@ public class AddNewMaterial extends AppCompatActivity {
         addNewAppBarLayout = findViewById(R.id.addNew_AppBar);
         addNewFileTV = findViewById(R.id.addNew_fileTV);
         uploadBtn = findViewById(R.id.upload_btn);
+        addNewLecturerNameET = findViewById(R.id.addNew_lecturer_name_ET);
+        addNewLecturerEmailET = findViewById(R.id.addNew_lecturer_email_ET);
+        addNewLecturerContactET = findViewById(R.id.addNew_lecturer_contact_ET);
+        addNewDeptSpinner = findViewById(R.id.addNew_dept_Spinner);
+        addNewProgrammeSpinner = findViewById(R.id.addNew_programme_Spinner);
+        addNewLevelSpinner = findViewById(R.id.addNew_level_Spinner);
+        addNewSemesterSpinner = findViewById(R.id.addNew_semester_Spinner);
 
         courseCodeText = addCourseCode_TIE.getText().toString();
         courseCodeHint = addCourseCode_TIE.getHint().toString();
-
 
         addCourseCode_TIE.addTextChangedListener(new TextWatcher() {
             @Override
@@ -219,15 +263,11 @@ public class AddNewMaterial extends AppCompatActivity {
                     displayName = null;
 
                     if (uriString.startsWith("content://")){
-                        Cursor cursor = null;
-                        try {
-                            cursor = getApplicationContext().getContentResolver().query(uri, null, null, null, null);
-                            if (cursor != null && cursor.moveToFirst()){
+                        try (Cursor cursor = getApplicationContext().getContentResolver().query(uri, null, null, null, null)) {
+                            if (cursor != null && cursor.moveToFirst()) {
                                 displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
                                 Toast.makeText(this, displayName, Toast.LENGTH_SHORT).show();
                             }
-                        }finally {
-                                cursor.close();
                         }
                     } else if(uriString.startsWith("file://")){
                         displayName = myFile.getName();

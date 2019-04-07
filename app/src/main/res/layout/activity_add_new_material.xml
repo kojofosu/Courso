@@ -122,6 +122,7 @@
                     android:layout_marginEnd="40dp"
                     android:layout_marginBottom="15dp"/>
                 <EditText
+                    android:id="@+id/addNew_lecturer_name_ET"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Name"
@@ -133,6 +134,7 @@
                     android:drawablePadding="15dp"
                     android:padding="20dp"/>
                 <EditText
+                    android:id="@+id/addNew_lecturer_email_ET"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="E-mail"
@@ -145,6 +147,7 @@
                     android:padding="20dp"
                     android:layout_marginTop="10dp"/>
                 <EditText
+                    android:id="@+id/addNew_lecturer_contact_ET"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Contact"
@@ -181,9 +184,10 @@
                         android:layout_gravity="center"
                         android:padding="20dp"/>
                     <Spinner
+                        android:id="@+id/addNew_dept_Spinner"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="30dp"/>
+                        android:layout_gravity="center"/>
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -199,9 +203,10 @@
                         android:layout_gravity="center"
                         android:padding="20dp"/>
                     <Spinner
+                        android:id="@+id/addNew_programme_Spinner"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="30dp"/>
+                        android:layout_gravity="center"/>
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -217,9 +222,29 @@
                         android:layout_gravity="center"
                         android:padding="20dp"/>
                     <Spinner
+                        android:id="@+id/addNew_level_Spinner"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="30dp"/>
+                        android:layout_gravity="center"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/formwithborder">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_local_library_black_24dp"
+                        android:layout_gravity="center"
+                        android:padding="20dp"/>
+                    <Spinner
+                        android:id="@+id/addNew_semester_Spinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"/>
                 </LinearLayout>
 
 
@@ -244,13 +269,14 @@
                     android:layout_gravity="center"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
-                    android:drawableStart="@drawable/ic_book_black_24dp"
+                    android:drawableStart="@drawable/ic_picture_as_pdf_black_24dp"
                     android:background="@drawable/formwithborder"
                     android:drawablePadding="15dp"
                     android:padding="20dp"
                     android:clickable="true"
                     android:focusable="true" />
                 <EditText
+                    android:id="@+id/addNew_author_ET"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Author"
