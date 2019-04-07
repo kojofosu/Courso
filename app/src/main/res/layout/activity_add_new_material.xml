@@ -262,6 +262,15 @@
                     android:drawablePadding="15dp"
                     android:padding="20dp"
                     android:layout_marginTop="10dp"/>
+
+                <ImageButton
+                    android:id="@+id/upload_btn"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:src="@drawable/ic_blur_circular_black_24dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_margin="15dp"
+                    android:background="@android:color/transparent"/>
             </LinearLayout>
 
         </android.support.v4.widget.NestedScrollView>
