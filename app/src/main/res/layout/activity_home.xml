@@ -20,8 +20,6 @@
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
         </android.support.v7.widget.Toolbar>
-
-
     </android.support.design.widget.AppBarLayout>
 
 
@@ -43,7 +41,5 @@
         app:srcCompat="@android:drawable/ic_menu_sort_by_size"
         android:contentDescription="New"
         app:backgroundTint="@color/colorPrimaryDark"/>
-
-
 
 </android.support.design.widget.CoordinatorLayout>
