@@ -1,17 +1,22 @@
 package com.edue.courso;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.OpenableColumns;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -29,12 +34,15 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
+import java.util.HashMap;
 
 public class AddNewMaterial extends AppCompatActivity {
 
@@ -51,13 +59,20 @@ public class AddNewMaterial extends AppCompatActivity {
     String[] semesterArray = {"First Semester" , "Second Semester"};
     TextView addNewFileTV;
     Toolbar addNewtoolbar;
-    String courseCodeText, courseCodeHint, deptText, programmeText, levelText;
+    String courseCodeText, courseCodeHint, courseTitleText, courseTitleHint, deptText, programmeText, levelText;
     Uri filePath;
     File myFile;
     String path;
     String displayName;
+
     //Declaring a StorageReference
     private StorageReference mStorageRef;
+
+    //Declaring a DatabaseReference
+    DatabaseReference mDatabaseReference;
+    DatabaseReference levelDatabaseReference;
+    DatabaseReference courseDatabaseReference;
+    DatabaseReference courseFileDatabaseReference;
 
     private static final int GET_FILE = 1212;
 
@@ -121,6 +136,12 @@ public class AddNewMaterial extends AppCompatActivity {
         //Initializing the StorageReference
         mStorageRef = FirebaseStorage.getInstance().getReference();
 
+        //Initializing the databaseReference
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference(Constants.DATABASE_PATH_UPLOADS);
+        levelDatabaseReference = FirebaseDatabase.getInstance().getReference(Constants.DATABASE_PATH_UPLOADS + "/Level");
+        courseDatabaseReference = FirebaseDatabase.getInstance().getReference(Constants.DATABASE_PATH_UPLOADS + "/Level/Course");
+        courseFileDatabaseReference = FirebaseDatabase.getInstance().getReference(Constants.DATABASE_PATH_UPLOADS + "/Level/Course" + "/Files");
+
         // The simplest way to upload to your storage bucket is by uploading a local file,
         // such as photos and videos from the camera, using the putFile() method.
         // You can also upload raw data using putBytes() or from an InputStream using putStream().
@@ -142,6 +163,43 @@ public class AddNewMaterial extends AppCompatActivity {
                             //Uri downloadUrl = taskSnapshot.getDownloadUrl();
                             progressDialog.dismiss();
                             Toast.makeText(AddNewMaterial.this, "Uploaded Successfully", Toast.LENGTH_SHORT).show();
+
+                            //adding to database to upload
+                            Upload upload = new Upload();
+                           // upload.setDeptName(deptText);
+//                            upload.setProgramme(programmeText);
+                            //upload.setLevelNum(levelText);
+                            //upload.setCourseName(courseTitleText);
+
+                            HashMap<String, String> deptMap = new HashMap<>();
+                            upload.setDeptName(deptMap.get(deptText));
+                            mDatabaseReference.child(mDatabaseReference.push().getKey()).setValue(deptMap);
+//
+                            HashMap<String,String> levelMap = new HashMap<>();
+                            upload.setLevelNum(levelMap.get(levelText));
+                            levelDatabaseReference.child(levelDatabaseReference.push().getKey()).setValue(levelMap);
+
+                            HashMap<String,String> courseMap = new HashMap<>();
+                            upload.setCourseName(levelMap.get(courseTitleText));
+                            upload.setCourseCode(levelMap.get(courseCodeText));
+                            courseDatabaseReference.child(levelDatabaseReference.push().getKey()).setValue(courseMap);
+
+//                            //Adding to database to course code
+//                            CourseCode courseCode = new CourseCode();
+//                            courseCode.setCodeName(courseCodeText);
+//
+//                            courseCodeDatabaseReference.child(courseFileDatabaseReference.push().getKey()).setValue(courseCode);
+//
+//                            //Adding to database to files
+//                            Files files = new Files();
+//                            files.setFileName(displayName);
+//
+//                            courseFileDatabaseReference.child(courseFileDatabaseReference.push().getKey()).setValue(files);
+//
+//
+//
+//
+
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -186,6 +244,8 @@ public class AddNewMaterial extends AppCompatActivity {
 
         courseCodeText = addCourseCode_TIE.getText().toString();
         courseCodeHint = addCourseCode_TIE.getHint().toString();
+        courseTitleText = addCourseTitle_TIE.getText().toString();
+        courseTitleHint = addCourseTitle_TIE.getHint().toString();
 
         addCourseCode_TIE.addTextChangedListener(new TextWatcher() {
             @Override
@@ -203,6 +263,23 @@ public class AddNewMaterial extends AppCompatActivity {
 
             }
         });
+        addCourseTitle_TIE.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                courseTitleText = charSequence.toString();
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
     }
 
     private void collapsibleToolbar() {
@@ -236,6 +313,16 @@ public class AddNewMaterial extends AppCompatActivity {
     }
 
     private void selectFileEvent() {
+        //for greater than lolipop versions we need the permissions asked on runtime
+        //so if the permission is not available user will go to the screen to allow storage permission
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    Uri.parse("package:" + getPackageName()));
+            startActivity(intent);
+            return;
+        }
         addNewFileTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

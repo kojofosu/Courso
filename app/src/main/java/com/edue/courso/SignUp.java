@@ -1,14 +1,19 @@
 package com.edue.courso;
 
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
@@ -17,6 +22,14 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,18 +37,30 @@ import java.util.regex.Pattern;
 public class SignUp extends AppCompatActivity {
 
 
-    TextInputLayout emailTextInputLayout, passwordTextInputLayout, nameTextInputLayout, phoneTextInputLayout, locationTextInputLayout, passwordConfirmTextInputLayout;
-    TextInputEditText emailTextInputEditText, passwordTextInputEditText, nameTextInputEditText, phoneTextInputEditText, locationTextInputEditText, passwordConfirmTextInputEditText;
+    TextInputLayout emailTextInputLayout, passwordTextInputLayout, nameTextInputLayout, phoneTextInputLayout, passwordConfirmTextInputLayout;
+    TextInputEditText emailTextInputEditText, passwordTextInputEditText, nameTextInputEditText, phoneTextInputEditText, passwordConfirmTextInputEditText;
     TextView goToSignInTextView;
     Button signUpBtn;
-    Spinner businessTypeSpinner;
+    private FirebaseAuth mAuth;
+    private static final String TAG = "Sign Up Activity";
 
+    SharedPreferences sharedPreferences;
+    //Declaring a DatabaseReference
+    DatabaseReference mDatabaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
+        //Initializing SharePreferences
+        sharedPreferences = SignUp.this.getSharedPreferences("login" , MODE_PRIVATE);
+
+        // initializing the FireBaseAuth instance.
+        mAuth = FirebaseAuth.getInstance();
+
+        //Getting dataBase instance reference
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference("users");
 
         //Initialize
         init();
@@ -46,27 +71,28 @@ public class SignUp extends AppCompatActivity {
         //editTextChange Events
         textChangeEvents();
 
-        //initializing spinner array
-        String[] businessTypeList = {"Shuttle", "Rental", "Haulage"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_dropdown_item_1line, businessTypeList);
-        businessTypeSpinner.setAdapter(adapter);
     }
-
+//
+//    // checking to see if the user is currently signed in.
+//    @Override
+//    public void onStart() {
+//        super.onStart();
+//        // Check if user is signed in (non-null) and update UI accordingly.
+//        FirebaseUser currentUser = mAuth.getCurrentUser();
+//        startActivity(new Intent(SignUp.this, Home.class));
+//        finish();
+//    }
 
     private void init(){
-        businessTypeSpinner = findViewById(R.id.sign_up_type_spinner);
         emailTextInputLayout = findViewById(R.id.sign_up_email_text_input_layout);
         passwordTextInputLayout = findViewById(R.id.sign_up_password_text_input_layout);
         nameTextInputLayout = findViewById(R.id.sign_up_name_text_input_layout);
         phoneTextInputLayout = findViewById(R.id.sign_up_phone_text_input_layout);
-        locationTextInputLayout = findViewById(R.id.sign_up_location_text_input_layout);
         passwordConfirmTextInputLayout = findViewById(R.id.sign_up_password_confirm_text_input_layout);
         emailTextInputEditText = findViewById(R.id.sign_up_email_text_input_edittext);
         passwordTextInputEditText = findViewById(R.id.sign_up_password_text_input_edittext);
         nameTextInputEditText = findViewById(R.id.sign_up_name_text_input_edittext);
         phoneTextInputEditText = findViewById(R.id.sign_up_phone_text_input_edittext);
-        locationTextInputEditText = findViewById(R.id.sign_up_location_text_input_edittext);
         passwordConfirmTextInputEditText = findViewById(R.id.sign_up_password_confirm_text_input_edittext);
         goToSignInTextView = findViewById(R.id.gotoSignInTV);
         signUpBtn = findViewById(R.id.buttonSignup);
@@ -85,24 +111,71 @@ public class SignUp extends AppCompatActivity {
         //Register button
         signUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                String name = String.valueOf(nameTextInputEditText.getText());
-                String email = String.valueOf(emailTextInputEditText.getText());
-                String phone = String.valueOf(phoneTextInputEditText.getText());
-                String location = String.valueOf(locationTextInputEditText.getText());
+            public void onClick(final View view) {
+                final String name = String.valueOf(nameTextInputEditText.getText());
+                final String email = String.valueOf(emailTextInputEditText.getText());
+                final String phone = String.valueOf(phoneTextInputEditText.getText());
                 String password = String.valueOf(passwordTextInputEditText.getText());
                 String passwordConfirm = String.valueOf(passwordConfirmTextInputEditText.getText());
                 hideKeyboard();
-                if (name.length() > 0 && isEmailValid(email) && phone.length() == 10 && location.length() > 0 && password.length() > 0 && passwordConfirm.length() > 0 && password.equals(passwordConfirm)) {
-                    Toast.makeText(SignUp.this, "Signing up...", Toast.LENGTH_SHORT).show();
+                if (name.length() > 0 && isEmailValid(email) && phone.length() == 10 && password.length() > 0 && passwordConfirm.length() > 0 && password.equals(passwordConfirm)) {
+                    //Display progress bar
+                    final ProgressDialog progressDialog = new ProgressDialog(SignUp.this);
+                    progressDialog.setMessage("Signing up ...");
+                    progressDialog.setCancelable(false);
+                    progressDialog.show();
+                    //Create user
+                    mAuth.createUserWithEmailAndPassword(email, password)
+                            .addOnCompleteListener(SignUp.this, new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        // Sign in success, update UI with the signed-in user's information
+                                        Log.d(TAG, "createUserWithEmail:success");
+                                        //dismiss progress bar
+                                        progressDialog.dismiss();
+
+                                        //just to get user uuid
+                                        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+                                        if (firebaseUser != null) {
+                                            String userID = firebaseUser.getUid();
+
+                                            //Put User details in sharedPref
+                                            sharedPreferences.edit().putString("userName", name).apply();
+                                            sharedPreferences.edit().putString("userEmail",email).apply();
+                                            sharedPreferences.edit().putString("userPhone", phone).apply();
+                                            sharedPreferences.edit().putString("userID", userID).apply();
+
+                                            //Add data to User object to be added the database
+                                            User user = new User();
+                                            user.setFullName(name);
+                                            user.setEmail(email);
+                                            user.setPhone(phone);
+                                            user.setUUID(userID);
+                                            mDatabaseReference.child(Objects.requireNonNull(mDatabaseReference.push().getKey())).setValue(user);
+
+                                            Intent intent = new Intent(SignUp.this, Home.class);
+                                            startActivity(intent);
+                                            finish();
+                                        }
+
+                                    } else {
+                                        // If sign in fails, display a message to the user.
+                                        Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                                        //dismiss progress bar
+                                        progressDialog.dismiss();
+
+                                        Snackbar.make(view,"Error: Failed", Snackbar.LENGTH_LONG).show();
+                                    }
+
+                                }
+                            });
                 }else if (name.isEmpty()){
                     nameTextInputLayout.setError("Business' name cannot be empty");
                 }else if (email.isEmpty()){
                     emailTextInputLayout.setError("Email cannot be empty");
                 }else if (phone.isEmpty()){
                     phoneTextInputLayout.setError("Phone number cannot be empty");
-                }else if (location.isEmpty()){
-                    locationTextInputLayout.setError("Location cannot be empty");
                 }else if (password.isEmpty()){
                     passwordTextInputLayout.setError("Password cannot be empty");
                 }else if (!password.equals(passwordConfirm)){
@@ -170,28 +243,6 @@ public class SignUp extends AppCompatActivity {
                     phoneTextInputLayout.setErrorEnabled(false);
                 }else{
                     phoneTextInputLayout.setError("Must be 10 digits");
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-
-        locationTextInputEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                String location = String.valueOf(locationTextInputEditText.getText());
-                if (location.length() <= 0){
-                    locationTextInputLayout.setError("Location cannot be empty");
-                }else {
-                    locationTextInputLayout.setErrorEnabled(false);
                 }
             }
 

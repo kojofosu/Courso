@@ -23,11 +23,18 @@
     </android.support.design.widget.AppBarLayout>
 
 
+    <TextView
+        android:id="@+id/test_TV"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="55dp"
+        android:text="hello"
+        android:textSize="20sp"/>
     <ListView
         android:id="@+id/main_listview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="55dp"
+        android:layout_marginTop="155dp"
         android:drawSelectorOnTop="true"
         android:keepScreenOn="true"
         android:longClickable="true"/>

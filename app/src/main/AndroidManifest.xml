@@ -13,9 +13,9 @@
         android:theme="@style/AppTheme.NoActionBar">
         <activity android:name=".AddNewMaterial"></activity>
         <activity android:name=".MainActivity" />
-        <activity android:name=".SignIn" />
+        <activity android:name=".Home" />
         <activity android:name=".SignUp" />
-        <activity android:name=".Home">
+        <activity android:name=".SignIn">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
