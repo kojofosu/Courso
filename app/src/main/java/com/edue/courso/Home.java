@@ -62,6 +62,13 @@ public class Home extends AppCompatActivity {
 
         //Toolbar
         topToolbar();
+
+        //floating actionbar
+        fABar();
+
+    }
+
+    private void fABar() {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -1,5 +1,6 @@
 package com.edue.courso;
 
+import android.app.Dialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -38,7 +39,7 @@ public class SignIn extends AppCompatActivity {
 
     TextInputLayout emailTextInputLayout, passwordTextInputLayout;
     TextInputEditText emailTextInputEditText, passwordTextInputEditText;
-    TextView goToSignUpTextView;
+    TextView goToSignUpTextView, studentLogin;
     Button signInBtn;
     ProgressDialog progressDialog;
 
@@ -53,8 +54,6 @@ public class SignIn extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
-
-
 
         //SharedPreferences
         sharedPreferences = getSharedPreferences("login" , MODE_PRIVATE);
@@ -80,6 +79,7 @@ public class SignIn extends AppCompatActivity {
         passwordTextInputEditText = findViewById(R.id.sign_in_password_text_input_edittext);
         goToSignUpTextView = findViewById(R.id.gotoSignUpTV);
         signInBtn = findViewById(R.id.buttonSignin);
+        studentLogin = findViewById(R.id.student_login);
     }
 
     private void onClickEvents(){
@@ -123,6 +123,16 @@ public class SignIn extends AppCompatActivity {
             }
         });
 
+        studentLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Dialog dialog = new Dialog(SignIn.this);
+                dialog.setContentView(R.layout.student_login_dialog);
+                TextInputLayout studentLoginTextInputLayout = dialog.findViewById(R.id.student_login_text_input_layout);
+                TextInputEditText studentLoginInputEditText = dialog.findViewById(R.id.student_login_text_input_edittext);
+                dialog.show();
+            }
+        });
     }
 
     private void textChangeEvents(){
