@@ -213,29 +213,28 @@ public class SignIn extends AppCompatActivity {
 
     private void updateUI(FirebaseUser user) {
         if (user != null) {
-            //Intent to page after signing user in
-            startActivity(new Intent(SignIn.this, MainActivity.class));
-            finish();
             // Name, email address, and profile photo Url
             String name = user.getDisplayName();
             String email = user.getEmail();
-            Uri photoUrl = user.getPhotoUrl();
             String phone = user.getPhoneNumber();
 
             // Check if user's email is verified
             boolean emailVerified = user.isEmailVerified();
 
-            // The user's ID, unique to the Firebase project. Do NOT use this value to
+            // The user's ID, unique to the FireBase project. Do NOT use this value to
             // authenticate with your backend server, if you have one. Use
-            // FirebaseUser.getToken() instead.
+            // FireBaseUser.getToken() instead.
             String uid = user.getUid();
 
             //saving values to shared preferences
-            sharedPreferences.edit().putString("user_email", name).apply();
-            sharedPreferences.edit().putString("user_email", email).apply();
-            sharedPreferences.edit().putString("user_photo", String.valueOf(photoUrl)).apply();
-            sharedPreferences.edit().putString("user_phone", phone).apply();
-            sharedPreferences.edit().putString("user_UID", uid).apply();
+            sharedPreferences.edit().putString("userName", name).apply();
+            sharedPreferences.edit().putString("userEmail", email).apply();
+            sharedPreferences.edit().putString("userPhone", phone).apply();
+            sharedPreferences.edit().putString("userID", uid).apply();
+
+            //Intent to page after signing user in
+            startActivity(new Intent(SignIn.this, Home.class));
+            finish();
 
         }
     }
