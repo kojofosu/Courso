@@ -42,12 +42,11 @@ public class SignIn extends AppCompatActivity {
     TextView goToSignUpTextView, studentLogin;
     Button signInBtn;
     ProgressDialog progressDialog;
-
-    private static final String TAG = "SignIn Activity";
-    //FirebaseAuth
+    //FireBaseAuth
     private FirebaseAuth mAuth;
     //SharePreferences
     SharedPreferences sharedPreferences;
+    private static final String TAG = "SignIn Activity";
 
 
     @Override
@@ -67,7 +66,7 @@ public class SignIn extends AppCompatActivity {
         //editTextChange Events
         textChangeEvents();
 
-        //initializing the FirebaseAuth instance
+        //initializing the FireBaseAuth instance
         mAuth = FirebaseAuth.getInstance();
 
     }
@@ -204,19 +203,18 @@ public class SignIn extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             //task.get
-                            Log.d(TAG, "Firebase signInWithEmail:success");
+                            Log.d(TAG, "FireBase signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             updateUI(user);
                         } else {
                             progressDialog.dismiss();
                             // If sign in fails, display a message to the user.
-                            Log.w(TAG, "Firebase signInWithEmail:failure", task.getException());
-                            Toast.makeText(SignIn.this, "Authentication failed.",
+                            Log.w(TAG, "FireBase signInWithEmail:failure", task.getException());
+                            Toast.makeText(SignIn.this, "Authentication failed. " + task.getException(),
                                     Toast.LENGTH_LONG).show();
                             updateUI(null);
                         }
 
-                        // ...
                     }
                 });
     }

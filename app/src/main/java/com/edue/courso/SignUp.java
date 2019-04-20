@@ -72,16 +72,6 @@ public class SignUp extends AppCompatActivity {
         textChangeEvents();
 
     }
-//
-//    // checking to see if the user is currently signed in.
-//    @Override
-//    public void onStart() {
-//        super.onStart();
-//        // Check if user is signed in (non-null) and update UI accordingly.
-//        FirebaseUser currentUser = mAuth.getCurrentUser();
-//        startActivity(new Intent(SignUp.this, Home.class));
-//        finish();
-//    }
 
     private void init(){
         emailTextInputLayout = findViewById(R.id.sign_up_email_text_input_layout);
@@ -171,7 +161,7 @@ public class SignUp extends AppCompatActivity {
                                 }
                             });
                 }else if (name.isEmpty()){
-                    nameTextInputLayout.setError("Business' name cannot be empty");
+                    nameTextInputLayout.setError("Name cannot be empty");
                 }else if (email.isEmpty()){
                     emailTextInputLayout.setError("Email cannot be empty");
                 }else if (phone.isEmpty()){
@@ -196,7 +186,7 @@ public class SignUp extends AppCompatActivity {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 String name = String.valueOf(nameTextInputEditText.getText());
                 if (name.length() <= 0){
-                    nameTextInputLayout.setError("Business' name cannot be empty");
+                    nameTextInputLayout.setError("Name cannot be empty");
                 }else {
                     nameTextInputLayout.setErrorEnabled(false);
                 }

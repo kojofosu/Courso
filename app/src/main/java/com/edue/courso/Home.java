@@ -98,10 +98,10 @@ public class Home extends AppCompatActivity {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
 
-                Upload upload = dataSnapshot.getValue(Upload.class);
-                String deptname = upload.getDeptName();
-                Log.d(TAG, "Value is: " + deptname);
-                testTV.setText(deptname);
+//                Upload upload = dataSnapshot.getValue(Upload.class);
+//                String deptname = upload.getDeptName();
+//                Log.d(TAG, "Value is: " + deptname);
+//                testTV.setText(deptname);
 
             }
 

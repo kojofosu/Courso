@@ -6,6 +6,9 @@ public class User {
     private String Phone;
     private String UUID;
 
+    public User() {
+    }
+
     public String getFullName() {
         return FullName;
     }

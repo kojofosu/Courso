@@ -138,9 +138,11 @@ public class AddNewMaterial extends AppCompatActivity {
 
         //Initializing the databaseReference
         mDatabaseReference = FirebaseDatabase.getInstance().getReference(Constants.DATABASE_PATH_UPLOADS);
-        levelDatabaseReference = FirebaseDatabase.getInstance().getReference(Constants.DATABASE_PATH_UPLOADS + "/Level");
-        courseDatabaseReference = FirebaseDatabase.getInstance().getReference(Constants.DATABASE_PATH_UPLOADS + "/Level/Course");
-        courseFileDatabaseReference = FirebaseDatabase.getInstance().getReference(Constants.DATABASE_PATH_UPLOADS + "/Level/Course" + "/Files");
+        //fetching key from mDatabaseReference to use as child for the rest
+        final String key = mDatabaseReference.push().getKey();
+        levelDatabaseReference = FirebaseDatabase.getInstance().getReference(Constants.DATABASE_PATH_UPLOADS +"/"+ key + "/Level");
+        courseDatabaseReference = FirebaseDatabase.getInstance().getReference(Constants.DATABASE_PATH_UPLOADS +"/"+ key +"/Level/Course");
+        courseFileDatabaseReference = FirebaseDatabase.getInstance().getReference(Constants.DATABASE_PATH_UPLOADS +"/"+ key +"/Level/Course" + "/Files");
 
         // The simplest way to upload to your storage bucket is by uploading a local file,
         // such as photos and videos from the camera, using the putFile() method.
@@ -166,23 +168,20 @@ public class AddNewMaterial extends AppCompatActivity {
 
                             //adding to database to upload
                             Upload upload = new Upload();
-                           // upload.setDeptName(deptText);
-//                            upload.setProgramme(programmeText);
-                            //upload.setLevelNum(levelText);
-                            //upload.setCourseName(courseTitleText);
+                            upload.setDeptName(deptText);
+                            mDatabaseReference.child(key).setValue(upload);
+                            //mDatabaseReference.child(mDatabaseReference.push().getKey()).setValue(upload);
 
-                            HashMap<String, String> deptMap = new HashMap<>();
-                            upload.setDeptName(deptMap.get(deptText));
-                            mDatabaseReference.child(mDatabaseReference.push().getKey()).setValue(deptMap);
-//
-                            HashMap<String,String> levelMap = new HashMap<>();
-                            upload.setLevelNum(levelMap.get(levelText));
-                            levelDatabaseReference.child(levelDatabaseReference.push().getKey()).setValue(levelMap);
+                            Level level = new Level();
+                            level.setLevelNum(levelText);
+                            levelDatabaseReference.setValue(level);
 
-                            HashMap<String,String> courseMap = new HashMap<>();
-                            upload.setCourseName(levelMap.get(courseTitleText));
-                            upload.setCourseCode(levelMap.get(courseCodeText));
-                            courseDatabaseReference.child(levelDatabaseReference.push().getKey()).setValue(courseMap);
+                            Course course = new Course();
+                            course.setCourseCodes(courseCodeText);
+                            course.setCourseName(courseTitleText);
+                            course.setFile(displayName);
+                            courseDatabaseReference.setValue(course);
+                            //courseDatabaseReference.child(levelDatabaseReference.push().getKey()).setValue(course);
 
 //                            //Adding to database to course code
 //                            CourseCode courseCode = new CourseCode();
@@ -313,23 +312,26 @@ public class AddNewMaterial extends AppCompatActivity {
     }
 
     private void selectFileEvent() {
-        //for greater than lolipop versions we need the permissions asked on runtime
-        //so if the permission is not available user will go to the screen to allow storage permission
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                    Uri.parse("package:" + getPackageName()));
-            startActivity(intent);
-            return;
-        }
+
         addNewFileTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                intent.setType("application/pdf");
-                startActivityForResult(intent, GET_FILE);
+                //for greater than lolipop versions we need the permissions asked on runtime
+                //so if the permission is not available user will go to the screen to allow storage permission
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && ContextCompat.checkSelfPermission(AddNewMaterial.this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                            Uri.parse("package:" + getPackageName()));
+                    startActivity(intent);
+//                    return;
+                } else {
+
+                    Intent intent = new Intent();
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    intent.setType("application/pdf");
+                    startActivityForResult(intent, GET_FILE);
+                }
             }
         });
 
