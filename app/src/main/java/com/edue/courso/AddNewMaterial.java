@@ -329,6 +329,7 @@ public class AddNewMaterial extends AppCompatActivity {
 
                     Intent intent = new Intent();
                     intent.setAction(Intent.ACTION_GET_CONTENT);
+                    intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                     intent.setType("application/pdf");
                     startActivityForResult(intent, GET_FILE);
                 }
