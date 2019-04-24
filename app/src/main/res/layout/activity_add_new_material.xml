@@ -275,19 +275,13 @@
                     android:padding="20dp"
                     android:clickable="true"
                     android:focusable="true" />
-                <EditText
-                    android:id="@+id/addNew_author_ET"
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/addNew_recyclerView"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Author"
-                    android:inputType="text"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp"
-                    android:drawableStart="@drawable/ic_edit_black_24dp"
-                    android:background="@drawable/formwithborder"
-                    android:drawablePadding="15dp"
-                    android:padding="20dp"
-                    android:layout_marginTop="10dp"/>
+                    android:layout_height="match_parent"
+                    android:layout_margin="20dp">
+                </android.support.v7.widget.RecyclerView>
 
                 <ImageButton
                     android:id="@+id/upload_btn"

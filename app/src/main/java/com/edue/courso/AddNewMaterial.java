@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
+import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -20,6 +21,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -42,7 +45,9 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class AddNewMaterial extends AppCompatActivity {
 
@@ -64,6 +69,13 @@ public class AddNewMaterial extends AppCompatActivity {
     File myFile;
     String path;
     String displayName;
+    Uri singleUri;
+    Uri multipleUri;
+    String uriString;
+
+    private RecyclerView recyclerView;
+    private List<String> fileNameList;
+    private UploadListAdapter uploadListAdapter;
 
     //Declaring a StorageReference
     private StorageReference mStorageRef;
@@ -80,9 +92,14 @@ public class AddNewMaterial extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_new_material);
-
         //initialize
         init();
+
+        fileNameList = new ArrayList<>();
+        uploadListAdapter = new UploadListAdapter(fileNameList);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(uploadListAdapter);
 
         //collapsible toolbar
         collapsibleToolbar();
@@ -90,21 +107,18 @@ public class AddNewMaterial extends AppCompatActivity {
         //select file onClick event
         selectFileEvent();
 
-        //FireBase Storage
-        firebaseStorage();
-
         //initializing spinners
         spinners();
 
-        uploadBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                deptText = addNewDeptSpinner.getSelectedItem().toString();
-                programmeText = addNewProgrammeSpinner.getSelectedItem().toString();
-                levelText = addNewLevelSpinner.getSelectedItem().toString();
-                firebaseStorage();
-            }
-        });
+//        uploadBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                deptText = addNewDeptSpinner.getSelectedItem().toString();
+//                programmeText = addNewProgrammeSpinner.getSelectedItem().toString();
+//                levelText = addNewLevelSpinner.getSelectedItem().toString();
+//                firebaseStorage();
+//            }
+//        });
 
     }
 
@@ -240,6 +254,7 @@ public class AddNewMaterial extends AppCompatActivity {
         addNewProgrammeSpinner = findViewById(R.id.addNew_programme_Spinner);
         addNewLevelSpinner = findViewById(R.id.addNew_level_Spinner);
         addNewSemesterSpinner = findViewById(R.id.addNew_semester_Spinner);
+        recyclerView = findViewById(R.id.addNew_recyclerView);
 
         courseCodeText = addCourseCode_TIE.getText().toString();
         courseCodeHint = addCourseCode_TIE.getHint().toString();
@@ -329,9 +344,10 @@ public class AddNewMaterial extends AppCompatActivity {
 
                     Intent intent = new Intent();
                     intent.setAction(Intent.ACTION_GET_CONTENT);
+                    intent.addCategory(Intent.CATEGORY_DEFAULT);
                     intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-                    intent.setType("application/pdf");
-                    startActivityForResult(intent, GET_FILE);
+                    intent.setType("file/*");
+                    startActivityForResult(Intent.createChooser(intent,"Select files..."), GET_FILE);
                 }
             }
         });
@@ -340,30 +356,71 @@ public class AddNewMaterial extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable final Intent data) {
         switch (requestCode){
             case GET_FILE:
-                if(resultCode == RESULT_OK){
-                    //Get the URI of the selected file
-                    Uri uri = data.getData();
-                    filePath = uri;
-                    String uriString = uri.toString();
-                    myFile = new File(uriString);
-                    path = myFile.getAbsolutePath();
-                    displayName = null;
+                if(requestCode == GET_FILE && resultCode == RESULT_OK) {
+                    //Get data for multiple selected files
+                    if (data.getClipData() != null) {
+                        final int totalItemSelected = data.getClipData().getItemCount();
+                        for (int num =0; num < totalItemSelected; num++){
+                            multipleUri = data.getClipData().getItemAt(num).getUri();
+                            filePath = multipleUri;
+                            uriString = multipleUri.toString();
+                            myFile = new File(uriString);
+                            path = myFile.getAbsolutePath();
+                            displayName = myFile.getName();
+                            fileNameList.add(displayName);
+                            uploadListAdapter.notifyDataSetChanged();
 
-                    if (uriString.startsWith("content://")){
-                        try (Cursor cursor = getApplicationContext().getContentResolver().query(uri, null, null, null, null)) {
-                            if (cursor != null && cursor.moveToFirst()) {
-                                displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                                Toast.makeText(this, displayName, Toast.LENGTH_SHORT).show();
-                            }
+                            Toast.makeText(AddNewMaterial.this, displayName, Toast.LENGTH_SHORT).show();
+                            //when upload button is clicked
+                            uploadBtn.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    deptText = addNewDeptSpinner.getSelectedItem().toString();
+                                    programmeText = addNewProgrammeSpinner.getSelectedItem().toString();
+                                    levelText = addNewLevelSpinner.getSelectedItem().toString();
+
+                                    for (int snum = 0; snum < totalItemSelected; snum++) {
+                                        multipleUri = data.getClipData().getItemAt(snum).getUri();
+                                        filePath = multipleUri;
+                                        uriString = multipleUri.toString();
+                                        myFile = new File(uriString);
+                                        path = myFile.getAbsolutePath();
+                                        displayName = myFile.getName();
+
+                                        uploadListAdapter.notifyDataSetChanged();
+                                        firebaseStorage();
+                                        Toast.makeText(getApplicationContext(), displayName, Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
                         }
-                    } else if(uriString.startsWith("file://")){
-                        displayName = myFile.getName();
-                        //display file name on the TextView
-                        addNewFileTV.setText(displayName);
-                        Toast.makeText(this, displayName, Toast.LENGTH_SHORT).show();
+                    } else if (data.getData() != null) {
+                        //Get the data of a single selected file
+                        singleUri = data.getData();
+                        //filePath = singleUri;
+                        uriString = singleUri.toString();
+                        myFile = new File(uriString);
+                        path = myFile.getAbsolutePath();
+//                        displayName = null;
+
+                        if (uriString.startsWith("content://")) {
+                            try (Cursor cursor = getApplicationContext().getContentResolver().query(singleUri, null, null, null, null)) {
+                                if (cursor != null && cursor.moveToFirst()) {
+                                    displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                                    Toast.makeText(this, displayName, Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        } else if (uriString.startsWith("file://")) {
+                            displayName = myFile.getName();
+                            //display file name on the TextView
+                            //addNewFileTV.setText(displayName);
+                            fileNameList.add(displayName);
+                            uploadListAdapter.notifyDataSetChanged();
+                            Toast.makeText(this, displayName, Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }break;
         }
