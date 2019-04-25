@@ -54,7 +54,7 @@ public class SignUp extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
 
         //Initializing SharePreferences
-        sharedPreferences = SignUp.this.getSharedPreferences("login" , MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("login" , MODE_PRIVATE);
 
         // initializing the FireBaseAuth instance.
         mAuth = FirebaseAuth.getInstance();
@@ -142,7 +142,15 @@ public class SignUp extends AppCompatActivity {
                                             user.setEmail(email);
                                             user.setPhone(phone);
                                             user.setUUID(userID);
-                                            mDatabaseReference.child(Objects.requireNonNull(mDatabaseReference.push().getKey())).setValue(user);
+
+                                            //getting database key for user
+                                            String key = mDatabaseReference.push().getKey();
+                                            sharedPreferences.edit().putString("userDatabaseKey", key).apply();
+                                            if (key != null) {
+                                                mDatabaseReference.child(key).setValue(user);
+                                            }else{
+                                                Toast.makeText(SignUp.this, "Database push key is empty", Toast.LENGTH_SHORT).show();
+                                            }
 
                                             Intent intent = new Intent(SignUp.this, Home.class);
                                             startActivity(intent);

@@ -3,6 +3,7 @@ package com.edue.courso;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
@@ -48,6 +49,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class AddNewMaterial extends AppCompatActivity {
 
@@ -73,6 +75,8 @@ public class AddNewMaterial extends AppCompatActivity {
     Uri multipleUri;
     String uriString;
 
+    SharedPreferences sharedPreferences;
+
     private RecyclerView recyclerView;
     private List<String> fileNameList;
     private UploadListAdapter uploadListAdapter;
@@ -82,9 +86,7 @@ public class AddNewMaterial extends AppCompatActivity {
 
     //Declaring a DatabaseReference
     DatabaseReference mDatabaseReference;
-    DatabaseReference levelDatabaseReference;
-    DatabaseReference courseDatabaseReference;
-    DatabaseReference courseFileDatabaseReference;
+    DatabaseReference uploadsDatabaseReference;
 
     private static final int GET_FILE = 1212;
 
@@ -92,6 +94,9 @@ public class AddNewMaterial extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_new_material);
+
+        //sharedPreferences
+        sharedPreferences = getSharedPreferences("login" , MODE_PRIVATE);
         //initialize
         init();
 
@@ -151,12 +156,11 @@ public class AddNewMaterial extends AppCompatActivity {
         mStorageRef = FirebaseStorage.getInstance().getReference();
 
         //Initializing the databaseReference
-        mDatabaseReference = FirebaseDatabase.getInstance().getReference(Constants.DATABASE_PATH_UPLOADS);
+        String getUDBKey = sharedPreferences.getString("userDatabaseKey", "");
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference("users");
         //fetching key from mDatabaseReference to use as child for the rest
         final String key = mDatabaseReference.push().getKey();
-        levelDatabaseReference = FirebaseDatabase.getInstance().getReference(Constants.DATABASE_PATH_UPLOADS +"/"+ key + "/Level");
-        courseDatabaseReference = FirebaseDatabase.getInstance().getReference(Constants.DATABASE_PATH_UPLOADS +"/"+ key +"/Level/Course");
-        courseFileDatabaseReference = FirebaseDatabase.getInstance().getReference(Constants.DATABASE_PATH_UPLOADS +"/"+ key +"/Level/Course" + "/Files");
+        uploadsDatabaseReference = FirebaseDatabase.getInstance().getReference("users"+"/"+ getUDBKey +"/"+ key + "/uploads");
 
         // The simplest way to upload to your storage bucket is by uploading a local file,
         // such as photos and videos from the camera, using the putFile() method.
@@ -180,21 +184,18 @@ public class AddNewMaterial extends AppCompatActivity {
                             progressDialog.dismiss();
                             Toast.makeText(AddNewMaterial.this, "Uploaded Successfully", Toast.LENGTH_SHORT).show();
 
+
                             //adding to database to upload
                             Upload upload = new Upload();
                             upload.setDeptName(deptText);
-                            mDatabaseReference.child(key).setValue(upload);
+                            upload.setLevelNum(levelText);
+                            upload.setCourseCodes(courseCodeText);
+                            upload.setCourseName(courseTitleText);
+                            upload.setFile(displayName);
+//                            mDatabaseReference.child(Objects.requireNonNull(uploadsDatabaseReference.getKey()));
+                            uploadsDatabaseReference.child(key).setValue(upload);
                             //mDatabaseReference.child(mDatabaseReference.push().getKey()).setValue(upload);
 
-                            Level level = new Level();
-                            level.setLevelNum(levelText);
-                            levelDatabaseReference.setValue(level);
-
-                            Course course = new Course();
-                            course.setCourseCodes(courseCodeText);
-                            course.setCourseName(courseTitleText);
-                            course.setFile(displayName);
-                            courseDatabaseReference.setValue(course);
                             //courseDatabaseReference.child(levelDatabaseReference.push().getKey()).setValue(course);
 
 //                            //Adding to database to course code
@@ -400,27 +401,35 @@ public class AddNewMaterial extends AppCompatActivity {
                     } else if (data.getData() != null) {
                         //Get the data of a single selected file
                         singleUri = data.getData();
-                        //filePath = singleUri;
+                        filePath = singleUri;
                         uriString = singleUri.toString();
                         myFile = new File(uriString);
                         path = myFile.getAbsolutePath();
-//                        displayName = null;
 
-                        if (uriString.startsWith("content://")) {
-                            try (Cursor cursor = getApplicationContext().getContentResolver().query(singleUri, null, null, null, null)) {
-                                if (cursor != null && cursor.moveToFirst()) {
-                                    displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                                    Toast.makeText(this, displayName, Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        } else if (uriString.startsWith("file://")) {
+//                        if (uriString.startsWith("content://")) {
+//                            try (Cursor cursor = getApplicationContext().getContentResolver().query(singleUri, null, null, null, null)) {
+//                                if (cursor != null && cursor.moveToFirst()) {
+//                                    displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+//                                    Toast.makeText(this, displayName, Toast.LENGTH_SHORT).show();
+//                                }
+//                            }
+//                        } else if (uriString.startsWith("file://")) {
                             displayName = myFile.getName();
-                            //display file name on the TextView
-                            //addNewFileTV.setText(displayName);
                             fileNameList.add(displayName);
                             uploadListAdapter.notifyDataSetChanged();
+
+                            uploadBtn.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    deptText = addNewDeptSpinner.getSelectedItem().toString();
+                                    programmeText = addNewProgrammeSpinner.getSelectedItem().toString();
+                                    levelText = addNewLevelSpinner.getSelectedItem().toString();
+
+                                    firebaseStorage();
+                                }
+                            });
                             Toast.makeText(this, displayName, Toast.LENGTH_SHORT).show();
-                        }
+//                        }
                     }
                 }break;
         }

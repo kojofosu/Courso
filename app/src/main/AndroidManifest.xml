@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.edue.courso">
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -11,7 +11,8 @@
         android:roundIcon="@drawable/ic_bubble_chart_black_24dp"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".AddNewMaterial"></activity>
+        <activity android:name=".AddMaterials"></activity>
+        <activity android:name=".AddNewMaterial" />
         <activity android:name=".MainActivity" />
         <activity android:name=".Home" />
         <activity android:name=".SignUp" />
