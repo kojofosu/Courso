@@ -27,6 +27,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -38,8 +39,11 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -74,6 +78,8 @@ public class AddNewMaterial extends AppCompatActivity {
     Uri singleUri;
     Uri multipleUri;
     String uriString;
+    String getUDBKey;
+    String key;
 
     SharedPreferences sharedPreferences;
 
@@ -115,15 +121,43 @@ public class AddNewMaterial extends AppCompatActivity {
         //initializing spinners
         spinners();
 
-//        uploadBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                deptText = addNewDeptSpinner.getSelectedItem().toString();
-//                programmeText = addNewProgrammeSpinner.getSelectedItem().toString();
-//                levelText = addNewLevelSpinner.getSelectedItem().toString();
-//                firebaseStorage();
-//            }
-//        });
+        //fireBase Database
+        readFromDatabase();
+
+    }
+
+    private void readFromDatabase() {
+        //Initializing the databaseReference
+        getUDBKey = sharedPreferences.getString("userDatabaseKey", "");
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference("users");
+        //fetching key from mDatabaseReference to use as child for the rest
+        key = mDatabaseReference.push().getKey();
+        uploadsDatabaseReference = FirebaseDatabase.getInstance().getReference("users"+"/"+ getUDBKey +"/"+ key + "/uploads");
+
+
+        mDatabaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                //below code takes data from DB
+                User user = dataSnapshot.child(getUDBKey).getValue(User.class);
+                String userName, userEmail, userPhone;
+                if (user != null) {
+                    //get the values
+                    userName = user.getFullName();
+                    userEmail = user.getEmail();
+                    userPhone = user.getPhone();
+                    //set values to the various editTexts
+                    addNewLecturerNameET.setText(userName);
+                    addNewLecturerEmailET.setText(userEmail);
+                    addNewLecturerContactET.setText(userPhone);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.w("AddNewActivity : ", "Failed to read value.", databaseError.toException());
+            }
+        });
 
     }
 
@@ -155,13 +189,6 @@ public class AddNewMaterial extends AppCompatActivity {
         //Initializing the StorageReference
         mStorageRef = FirebaseStorage.getInstance().getReference();
 
-        //Initializing the databaseReference
-        String getUDBKey = sharedPreferences.getString("userDatabaseKey", "");
-        mDatabaseReference = FirebaseDatabase.getInstance().getReference("users");
-        //fetching key from mDatabaseReference to use as child for the rest
-        final String key = mDatabaseReference.push().getKey();
-        uploadsDatabaseReference = FirebaseDatabase.getInstance().getReference("users"+"/"+ getUDBKey +"/"+ key + "/uploads");
-
         // The simplest way to upload to your storage bucket is by uploading a local file,
         // such as photos and videos from the camera, using the putFile() method.
         // You can also upload raw data using putBytes() or from an InputStream using putStream().
@@ -192,27 +219,7 @@ public class AddNewMaterial extends AppCompatActivity {
                             upload.setCourseCodes(courseCodeText);
                             upload.setCourseName(courseTitleText);
                             upload.setFile(displayName);
-//                            mDatabaseReference.child(Objects.requireNonNull(uploadsDatabaseReference.getKey()));
                             uploadsDatabaseReference.child(key).setValue(upload);
-                            //mDatabaseReference.child(mDatabaseReference.push().getKey()).setValue(upload);
-
-                            //courseDatabaseReference.child(levelDatabaseReference.push().getKey()).setValue(course);
-
-//                            //Adding to database to course code
-//                            CourseCode courseCode = new CourseCode();
-//                            courseCode.setCodeName(courseCodeText);
-//
-//                            courseCodeDatabaseReference.child(courseFileDatabaseReference.push().getKey()).setValue(courseCode);
-//
-//                            //Adding to database to files
-//                            Files files = new Files();
-//                            files.setFileName(displayName);
-//
-//                            courseFileDatabaseReference.child(courseFileDatabaseReference.push().getKey()).setValue(files);
-//
-//
-//
-//
 
                         }
                     })
