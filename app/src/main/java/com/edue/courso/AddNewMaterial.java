@@ -132,7 +132,7 @@ public class AddNewMaterial extends AppCompatActivity {
         mDatabaseReference = FirebaseDatabase.getInstance().getReference("users");
         //fetching key from mDatabaseReference to use as child for the rest
         key = mDatabaseReference.push().getKey();
-        uploadsDatabaseReference = FirebaseDatabase.getInstance().getReference("users"+"/"+ getUDBKey +"/"+ key + "/uploads");
+        uploadsDatabaseReference = FirebaseDatabase.getInstance().getReference("users/"+ getUDBKey + "/uploads");
 
 
         mDatabaseReference.addValueEventListener(new ValueEventListener() {
@@ -219,7 +219,7 @@ public class AddNewMaterial extends AppCompatActivity {
                             upload.setCourseCodes(courseCodeText);
                             upload.setCourseName(courseTitleText);
                             upload.setFile(displayName);
-                            uploadsDatabaseReference.child(key).setValue(upload);
+                            uploadsDatabaseReference.child(Objects.requireNonNull(uploadsDatabaseReference.push().getKey())).setValue(upload);
 
                         }
                     })

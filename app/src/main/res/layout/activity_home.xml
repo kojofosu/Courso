@@ -6,6 +6,11 @@
     android:layout_height="match_parent"
     tools:context=".Home">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -22,22 +27,24 @@
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/home_recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/test_TV"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginTop="55dp"
-        android:text="hello"
-        android:textSize="20sp"/>
-    <ListView
-        android:id="@+id/main_listview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="155dp"
-        android:drawSelectorOnTop="true"
-        android:keepScreenOn="true"
-        android:longClickable="true"/>
+    </android.support.v7.widget.RecyclerView>
+
+    <!--<ListView-->
+        <!--android:id="@+id/main_listview"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginTop="155dp"-->
+        <!--android:drawSelectorOnTop="true"-->
+        <!--android:keepScreenOn="true"-->
+        <!--android:longClickable="true"/>-->
+
+    </LinearLayout>
+
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
@@ -48,5 +55,4 @@
         app:srcCompat="@android:drawable/ic_menu_sort_by_size"
         android:contentDescription="New"
         app:backgroundTint="@color/colorPrimaryDark"/>
-
 </android.support.design.widget.CoordinatorLayout>
