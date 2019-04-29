@@ -1,11 +1,14 @@
 package com.edue.courso;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.pdf.PdfRenderer;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,6 +23,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.edue.courso.FirebaseDatabaseUI.CourseCodeHolder;
 import com.edue.courso.FirebaseDatabaseUI.CoursecodeAdapter;
@@ -160,6 +164,7 @@ public class Home extends AppCompatActivity {
 
     private void topToolbar() {
         setSupportActionBar(toolbar);
+        toolbar.setNavigationIcon(R.drawable.ic_bubble_chart_black_24dp);
 
     }
 
@@ -285,11 +290,40 @@ public class Home extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.logout){
-            //sign user out from firebase
-            signOut();
-            //Go to sign in page
-            startActivity(new Intent(Home.this, SignIn.class));
-            finish();
+            final AlertDialog.Builder builder;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                // builder = new AlertDialog.Builder(getContext(), android.R.style.Theme_Material_Dialog_Alert);
+                builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Light_Dialog_Alert);
+            } else {
+                builder = new AlertDialog.Builder(this);
+            }
+            builder.setTitle("Logout?\n")
+                    .setMessage("Are you sure you want to logout of your account?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // continue with logout
+                            try {
+
+                                //sign user out from fireBase
+                                signOut();
+                                //Go to sign in page
+                                startActivity(new Intent(Home.this, SignIn.class));
+                                finish();
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+                        }
+                    })
+                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // do nothing
+                        }
+                    })
+                    .setIcon(R.drawable.ic_bubble_chart_black_24dp)
+                    .show();
+
+        }if (id == R.id.profile){
+            startActivity(new Intent(Home.this, Profile.class));
         }
         return super.onOptionsItemSelected(item);
     }

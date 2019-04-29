@@ -3,6 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/profile"
+        android:title="Logout"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_account_box_black_24dp"/>
+
+    <item
         android:id="@+id/logout"
         android:title="Logout"
         app:showAsAction="ifRoom"
