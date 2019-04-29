@@ -14,10 +14,21 @@
         android:layout_width="match_parent"
         android:layout_height="200dp">
 
-        <!--<ImageView-->
-            <!--android:id="@+id/bookThumbnail"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"/>-->
+        <!--<div>Icons made by <a href="https://www.freepik.com/" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" 			    title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/"
+          title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>-->
+        <ImageButton
+            android:id="@+id/delete_thumbnail"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:src="@drawable/recyclebin"
+            android:clickable="true"
+            android:background="#C1FF0000"
+            android:foregroundGravity="center"
+            android:visibility="gone"
+            android:scaleType="fitCenter"
+            android:padding="55dp"
+            android:contentDescription="Delete Class"
+            android:focusable="true" />
 
         <TextView
             android:id="@+id/item_code"

@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -41,6 +42,7 @@ import java.util.Objects;
 public class Home extends AppCompatActivity {
     FloatingActionButton fab;
     ListView listView;
+    ImageButton deleteClass;
     TextView itemTitle, testTV;
     String getUDBKey;
     String uploadChildKey;
@@ -240,6 +242,7 @@ public class Home extends AppCompatActivity {
         itemTitle = findViewById(R.id.item_title);
         //listView = findViewById(R.id.main_listview);
         toolbar = findViewById(R.id.toolbar);
+        deleteClass = findViewById(R.id.delete_thumbnail);
     }
 
     private void firebaseDownloadFromStorage() {
