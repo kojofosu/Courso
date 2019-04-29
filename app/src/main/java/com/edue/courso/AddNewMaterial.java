@@ -62,7 +62,6 @@ public class AddNewMaterial extends AppCompatActivity {
     CollapsingToolbarLayout addNewCollapsingToolbarLayout;
     AppBarLayout addNewAppBarLayout;
     ImageButton uploadBtn;
-    EditText addNewLecturerNameET, addNewLecturerEmailET, addNewLecturerContactET, addNewAuthorET;
     Spinner addNewDeptSpinner, addNewProgrammeSpinner, addNewLevelSpinner, addNewSemesterSpinner;
     String[] deptArray = {"Dept. Computer Science and Information Technology", "Department of Education"};
     String[] programmeArray = {"Non-Degree", "Undergraduate", "Masters/Graduate", "Doctorate"};
@@ -122,44 +121,44 @@ public class AddNewMaterial extends AppCompatActivity {
         spinners();
 
         //fireBase Database
-        readFromDatabase();
+        //readFromDatabase();
 
     }
 
-    private void readFromDatabase() {
-        //Initializing the databaseReference
-        getUDBKey = sharedPreferences.getString("userDatabaseKey", "");
-        mDatabaseReference = FirebaseDatabase.getInstance().getReference("users");
-        //fetching key from mDatabaseReference to use as child for the rest
-        key = mDatabaseReference.push().getKey();
-        uploadsDatabaseReference = FirebaseDatabase.getInstance().getReference("users/"+ getUDBKey + "/uploads");
-
-
-        mDatabaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                //below code takes data from DB
-                User user = dataSnapshot.child(getUDBKey).getValue(User.class);
-                String userName, userEmail, userPhone;
-                if (user != null) {
-                    //get the values
-                    userName = user.getFullName();
-                    userEmail = user.getEmail();
-                    userPhone = user.getPhone();
-                    //set values to the various editTexts
-                    addNewLecturerNameET.setText(userName);
-                    addNewLecturerEmailET.setText(userEmail);
-                    addNewLecturerContactET.setText(userPhone);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.w("AddNewActivity : ", "Failed to read value.", databaseError.toException());
-            }
-        });
-
-    }
+//    private void readFromDatabase() {
+//        //Initializing the databaseReference
+//        getUDBKey = sharedPreferences.getString("userDatabaseKey", "");
+//        mDatabaseReference = FirebaseDatabase.getInstance().getReference("users");
+//        //fetching key from mDatabaseReference to use as child for the rest
+//        key = mDatabaseReference.push().getKey();
+//        uploadsDatabaseReference = FirebaseDatabase.getInstance().getReference("users/"+ getUDBKey + "/uploads");
+//
+//
+//        mDatabaseReference.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                //below code takes data from DB
+//                User user = dataSnapshot.child(getUDBKey).getValue(User.class);
+//                String userName, userEmail, userPhone;
+//                if (user != null) {
+//                    //get the values
+//                    userName = user.getFullName();
+//                    userEmail = user.getEmail();
+//                    userPhone = user.getPhone();
+//                    //set values to the various editTexts
+//                    addNewLecturerNameET.setText(userName);
+//                    addNewLecturerEmailET.setText(userEmail);
+//                    addNewLecturerContactET.setText(userPhone);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//                Log.w("AddNewActivity : ", "Failed to read value.", databaseError.toException());
+//            }
+//        });
+//
+//    }
 
     private void spinners() {
         //initializing spinner array for department
@@ -255,9 +254,7 @@ public class AddNewMaterial extends AppCompatActivity {
         addNewAppBarLayout = findViewById(R.id.addNew_AppBar);
         addNewFileTV = findViewById(R.id.addNew_fileTV);
         uploadBtn = findViewById(R.id.upload_btn);
-        addNewLecturerNameET = findViewById(R.id.addNew_lecturer_name_ET);
-        addNewLecturerEmailET = findViewById(R.id.addNew_lecturer_email_ET);
-        addNewLecturerContactET = findViewById(R.id.addNew_lecturer_contact_ET);
+
         addNewDeptSpinner = findViewById(R.id.addNew_dept_Spinner);
         addNewProgrammeSpinner = findViewById(R.id.addNew_programme_Spinner);
         addNewLevelSpinner = findViewById(R.id.addNew_level_Spinner);

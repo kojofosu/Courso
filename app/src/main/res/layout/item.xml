@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     card_view:cardCornerRadius="6dp"
-    card_view:cardElevation="3dp"
+    card_view:cardElevation="4dp"
     card_view:cardUseCompatPadding="true"
     android:layout_marginStart="5dp"
     android:layout_marginEnd="5dp"
@@ -51,7 +51,9 @@
                 android:id="@+id/item_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Title" />
+                android:text="Title"
+                android:ellipsize="marquee"
+                android:singleLine="true" />
 
         </LinearLayout>
 

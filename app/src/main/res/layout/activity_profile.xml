@@ -1,9 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Profile">
+    tools:context=".Profile"
+    android:orientation="vertical">
 
-</android.support.constraint.ConstraintLayout>
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/profile_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:animateLayoutChanges="true"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            app:navigationIcon="?attr/homeAsUpIndicator">
+
+        </android.support.v7.widget.Toolbar>
+    </android.support.design.widget.AppBarLayout>
+
+
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_gravity="center">
+    <!--LECTURER-->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="LECTURER"
+        android:textSize="35sp"
+        android:gravity="center"
+        android:fontFamily="sans-serif-light"
+        android:layout_marginTop="50dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="15dp"/>
+    <EditText
+        android:id="@+id/addNew_lecturer_name_ET"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Name"
+        android:inputType="text"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:drawableStart="@drawable/ic_person_outline_black_24dp"
+        android:background="@drawable/formwithborder"
+        android:drawablePadding="15dp"
+        android:padding="20dp"/>
+    <EditText
+        android:id="@+id/addNew_lecturer_email_ET"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="E-mail"
+        android:inputType="textEmailAddress"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:drawableStart="@drawable/ic_mail_outline_black_24dp"
+        android:background="@drawable/formwithborder"
+        android:drawablePadding="15dp"
+        android:padding="20dp"
+        android:layout_marginTop="10dp"/>
+    <EditText
+        android:id="@+id/addNew_lecturer_contact_ET"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Contact"
+        android:inputType="number"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="40dp"
+        android:drawableStart="@drawable/ic_call_black_24dp"
+        android:background="@drawable/formwithborder"
+        android:drawablePadding="15dp"
+        android:padding="20dp"
+        android:layout_marginTop="10dp"/>
+
+
+    <Button
+        android:id="@+id/button_update_profile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:background="@drawable/bg_button_rounded"
+        android:backgroundTint="@color/colorAccent"
+        android:backgroundTintMode="add"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="15dp"
+        android:text="Save"
+        android:textColor="#FFFFFF"
+        android:isScrollContainer="false"/>
+
+</LinearLayout>
+</ScrollView>
+</LinearLayout>
