@@ -69,7 +69,7 @@ public class AddNewMaterial extends AppCompatActivity {
     Uri singleUri;
     Uri multipleUri;
     String uriString;
-    String getUDBKey;
+    String getUDBKey, getUploadKey, getFilesKey;
     String key;
 
     SharedPreferences sharedPreferences;
@@ -218,7 +218,10 @@ public class AddNewMaterial extends AppCompatActivity {
                             upload.setCourseName(courseTitleText);
                             String uploadKey = uploadsDatabaseReference.push().getKey();
                             if (uploadKey != null) {
+                                upload.setUploadKey(uploadKey);
                                 uploadsDatabaseReference.child(uploadKey).setValue(upload);
+
+                                getUploadKey = uploadKey;
                                 //now after upload, we get its key and create child inside it for Files
                                 filesDatabaseReference = uploadsDatabaseReference.child(uploadKey).child("files");
                             }
@@ -238,7 +241,12 @@ public class AddNewMaterial extends AppCompatActivity {
                                         Files files = new Files();
                                         files.setFileName(displayName);
                                         files.setFileUrl(fileUrl);
-                                        filesDatabaseReference.child(Objects.requireNonNull(filesDatabaseReference.push().getKey())).setValue(files);
+                                        String filesKey = filesDatabaseReference.push().getKey();
+                                        if (filesKey != null) {
+                                            files.setFileKey(filesKey);
+                                            filesDatabaseReference.child(filesKey).setValue(files);
+                                            getFilesKey = filesKey;
+                                        }
 
                                     } else if (!task.isSuccessful()) {
                                         Toast.makeText(AddNewMaterial.this, "FAILED TO GET URL ", Toast.LENGTH_SHORT).show();
@@ -404,7 +412,6 @@ public class AddNewMaterial extends AppCompatActivity {
                             fileNameList.add(displayName);
                             uploadListAdapter.notifyDataSetChanged();
 
-                            Toast.makeText(AddNewMaterial.this, displayName, Toast.LENGTH_SHORT).show();
                             //when upload button is clicked
                             uploadBtn.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -423,7 +430,6 @@ public class AddNewMaterial extends AppCompatActivity {
 
                                         uploadListAdapter.notifyDataSetChanged();
                                         firebaseStorage();
-                                        Toast.makeText(getApplicationContext(), displayName, Toast.LENGTH_SHORT).show();
                                     }
                                 }
                             });

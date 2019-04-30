@@ -9,6 +9,7 @@ public class Upload {
     private String levelNum;
     private String CourseCodes;
     private String CourseName;
+    private String UploadKey;
 
 
     public Upload() {
@@ -55,5 +56,11 @@ public class Upload {
         Programme = programme;
     }
 
+    public String getUploadKey() {
+        return UploadKey;
+    }
 
+    public void setUploadKey(String uploadKey) {
+        UploadKey = uploadKey;
+    }
 }
