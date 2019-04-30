@@ -9,7 +9,6 @@ public class Upload {
     private String levelNum;
     private String CourseCodes;
     private String CourseName;
-    private String File;
 
 
     public Upload() {
@@ -39,13 +38,6 @@ public class Upload {
         CourseName = courseName;
     }
 
-    public String getFile() {
-        return File;
-    }
-
-    public void setFile(String file) {
-        File = file;
-    }
 
     public String getDeptName() {
         return DeptName;

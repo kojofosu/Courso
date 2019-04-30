@@ -5,12 +5,8 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
-import android.provider.MediaStore;
-import android.provider.OpenableColumns;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,7 +15,6 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,20 +25,17 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -51,7 +43,6 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -74,6 +65,7 @@ public class AddNewMaterial extends AppCompatActivity {
     File myFile;
     String path;
     String displayName;
+    String fileUrl;
     Uri singleUri;
     Uri multipleUri;
     String uriString;
@@ -88,11 +80,12 @@ public class AddNewMaterial extends AppCompatActivity {
 
     //Declaring a StorageReference
     private StorageReference mStorageRef;
+    StorageReference fileStorageRef;
 
     //Declaring a DatabaseReference
     DatabaseReference mDatabaseReference;
     DatabaseReference uploadsDatabaseReference;
-
+    DatabaseReference filesDatabaseReference;
     private static final int GET_FILE = 1212;
 
     @Override
@@ -102,6 +95,7 @@ public class AddNewMaterial extends AppCompatActivity {
 
         //sharedPreferences
         sharedPreferences = getSharedPreferences("login" , MODE_PRIVATE);
+        getUDBKey = sharedPreferences.getString("userDatabaseKey", "");
         //initialize
         init();
 
@@ -198,13 +192,18 @@ public class AddNewMaterial extends AppCompatActivity {
             progressDialog.setTitle("Uploading...");
             progressDialog.setCancelable(false);
             progressDialog.show();
+            //Initializing the databaseReference
+            mDatabaseReference = FirebaseDatabase.getInstance().getReference("users");
+            uploadsDatabaseReference = FirebaseDatabase.getInstance().getReference("users/"+ getUDBKey + "/uploads");
 
-            StorageReference riversRef = mStorageRef.child("CourseMaterials/" + deptText +"/"+ programmeText +"/"+ levelText +"/"+ courseCodeText +"/"+displayName);
+            //fetching key from mDatabaseReference to use as child for the rest
+            key = mDatabaseReference.push().getKey();
+            fileStorageRef = mStorageRef.child("CourseMaterials/" + deptText +"/"+ programmeText +"/"+ levelText +"/"+ courseCodeText +"/"+displayName);
 
-            riversRef.putFile(filePath)
+            fileStorageRef.putFile(filePath)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        public void onSuccess(final UploadTask.TaskSnapshot taskSnapshot) {
                             // Get a URL to the uploaded content
                             //Uri downloadUrl = taskSnapshot.getDownloadUrl();
                             progressDialog.dismiss();
@@ -217,9 +216,36 @@ public class AddNewMaterial extends AppCompatActivity {
                             upload.setLevelNum(levelText);
                             upload.setCourseCodes(courseCodeText);
                             upload.setCourseName(courseTitleText);
-                            upload.setFile(displayName);
-                            uploadsDatabaseReference.child(Objects.requireNonNull(uploadsDatabaseReference.push().getKey())).setValue(upload);
+                            String uploadKey = uploadsDatabaseReference.push().getKey();
+                            if (uploadKey != null) {
+                                uploadsDatabaseReference.child(uploadKey).setValue(upload);
+                                //now after upload, we get its key and create child inside it for Files
+                                filesDatabaseReference = uploadsDatabaseReference.child(uploadKey).child("files");
+                            }
 
+
+                            //getting download url of file
+                            fileStorageRef.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Uri> task) {
+                                    if (task.isSuccessful()) {
+                                        Uri URI = task.getResult();
+                                        //storing url to fileUrl
+                                        fileUrl = URI.toString();
+                                        Log.d("file Url ", "url is : " + fileUrl);
+
+                                        //adding to database to files
+                                        Files files = new Files();
+                                        files.setFileName(displayName);
+                                        files.setFileUrl(fileUrl);
+                                        filesDatabaseReference.child(Objects.requireNonNull(filesDatabaseReference.push().getKey())).setValue(files);
+
+                                    } else if (!task.isSuccessful()) {
+                                        Toast.makeText(AddNewMaterial.this, "FAILED TO GET URL ", Toast.LENGTH_SHORT).show();
+                                        Log.d("file Url ", "FAILED TO GET URL : ");
+                                    }
+                                }
+                            });
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
