@@ -41,6 +41,9 @@ public class CoursecodeAdapter extends FirebaseRecyclerAdapter<Upload, CourseCod
         final String TITLE = model.getCourseName();
         final String CODE = model.getCourseCodes();
         final String DEPT = model.getDeptName();
+        final String UPLOADKEY = model.getUploadKey();
+        final String PROGRAMME = model.getProgramme();
+        final String LEVEL = model.getLevelNum();
 
         viewHolder.title.setText(TITLE);
         viewHolder.code.setText(CODE);
@@ -56,7 +59,7 @@ public class CoursecodeAdapter extends FirebaseRecyclerAdapter<Upload, CourseCod
                     @Override
                     public void onAnimationStart(Animation animation) {
                         viewHolder.code.setVisibility(View.INVISIBLE);
-                        Toast.makeText(context, "delete btn must show", Toast.LENGTH_SHORT).show();
+                        notifyDataSetChanged();
                     }
 
                     @Override
@@ -71,13 +74,13 @@ public class CoursecodeAdapter extends FirebaseRecyclerAdapter<Upload, CourseCod
                                     @Override
                                     public void onAnimationStart(Animation animation) {
                                         viewHolder.code.setVisibility(View.VISIBLE);
-                                        Toast.makeText(context, "animation up start", Toast.LENGTH_SHORT).show();
+                                        notifyDataSetChanged();
                                     }
 
                                     @Override
                                     public void onAnimationEnd(Animation animation) {
                                         viewHolder.deleteClass.clearAnimation();
-                                        Toast.makeText(context, "animation up ended", Toast.LENGTH_SHORT).show();
+                                        notifyDataSetChanged();
                                     }
 
                                     @Override
@@ -85,7 +88,7 @@ public class CoursecodeAdapter extends FirebaseRecyclerAdapter<Upload, CourseCod
 
                                     }
                                 });
-
+                                notifyDataSetChanged();
                                 //returning true makes sure no other things are called like the onClick function
                                 return true;
                             }
@@ -102,9 +105,10 @@ public class CoursecodeAdapter extends FirebaseRecyclerAdapter<Upload, CourseCod
                                             Toast.makeText(context, "Deletion Failed", Toast.LENGTH_SHORT).show();
                                         }
                                     }
-                                });
+                                });notifyDataSetChanged();
                             }
-                        });
+                        });notifyDataSetChanged();
+                        notifyDataSetChanged();
                     }
 
                     @Override
@@ -127,9 +131,11 @@ public class CoursecodeAdapter extends FirebaseRecyclerAdapter<Upload, CourseCod
                 intent.putExtra("Title", TITLE);
                 intent.putExtra("Code", CODE);
                 intent.putExtra("Dept", DEPT);
+                intent.putExtra("UploadKey", UPLOADKEY);
+                intent.putExtra("Programme", PROGRAMME);
+                intent.putExtra("Level", LEVEL);
                 context.startActivity(intent);
                 notifyDataSetChanged();
-                Toast.makeText(context, getItem(position).getCourseCodes(), Toast.LENGTH_SHORT).show();
             }
         });
     }

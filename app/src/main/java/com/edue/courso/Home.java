@@ -65,9 +65,9 @@ public class Home extends AppCompatActivity {
     private Boolean itemSelected = false;
     private int selectedPosition = 0;
 
-    //private RecyclerView recipeRecyclerview;
+    //private RecyclerView FirebaseRecyclerView;
     private LinearLayoutManager linearLayoutManager;
-    private CoursecodeAdapter mRecipeAdapter;
+    private CoursecodeAdapter coursecodeAdapter;
 
 
     private static final String TAG = "Home Activity";
@@ -104,11 +104,11 @@ public class Home extends AppCompatActivity {
         uploadsDatabaseReference = FirebaseDatabase.getInstance().getReference("users/"+ getUDBKey + "/uploads");
         //childRef = mDatabaseRef.child("recipes");
         recyclerView.setLayoutManager(linearLayoutManager);
-        mRecipeAdapter = new CoursecodeAdapter(Upload.class, R.layout.item, CourseCodeHolder.class, uploadsDatabaseReference, this);
-        recyclerView.setAdapter(mRecipeAdapter);
+        coursecodeAdapter = new CoursecodeAdapter(Upload.class, R.layout.item, CourseCodeHolder.class, uploadsDatabaseReference, this);
+        recyclerView.setAdapter(coursecodeAdapter);
 
 
-        Log.d(TAG, "fireUi : " + mRecipeAdapter);
+        Log.d(TAG, "fireUi : " + coursecodeAdapter);
 
 
 
@@ -181,8 +181,8 @@ public class Home extends AppCompatActivity {
 //                listKeys = dataSnapshot.getKey();
 //                listItems = dataSnapshot.child("courseCodes").getValue();
 
-                mRecipeAdapter = new CoursecodeAdapter(Upload.class, R.layout.item, CourseCodeHolder.class, uploadsDatabaseReference, getApplicationContext());
-                recyclerView.setAdapter(mRecipeAdapter);
+                coursecodeAdapter = new CoursecodeAdapter(Upload.class, R.layout.item, CourseCodeHolder.class, uploadsDatabaseReference, getApplicationContext());
+                recyclerView.setAdapter(coursecodeAdapter);
 
                  Log.d(TAG, "recycler VAL : " + recyclerView);
 

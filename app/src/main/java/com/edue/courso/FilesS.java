@@ -1,6 +1,6 @@
 package com.edue.courso;
 
-public class Files {
+public class FilesS {
     private String fileName;
     private String fileUrl;
     private String fileKey;

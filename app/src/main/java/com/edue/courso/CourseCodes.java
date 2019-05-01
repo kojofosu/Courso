@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class CourseCodes {
     private String codeName;
-    private ArrayList<Files> files;
+    private ArrayList<FilesS> files;
 
     public String getCodeName() {
         return codeName;
@@ -14,11 +14,11 @@ public class CourseCodes {
         this.codeName = codeName;
     }
 
-    public ArrayList<Files> getFiles() {
+    public ArrayList<FilesS> getFiles() {
         return files;
     }
 
-    public void setFiles(ArrayList<Files> files) {
+    public void setFiles(ArrayList<FilesS> files) {
         this.files = files;
     }
 }

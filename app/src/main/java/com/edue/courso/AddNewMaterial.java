@@ -34,8 +34,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -44,10 +47,8 @@ import com.google.firebase.storage.UploadTask;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class AddNewMaterial extends AppCompatActivity {
-
     TextInputLayout addCourseCode_TIL, addCourseTitle_TIL;
     TextInputEditText addCourseCode_TIE, addCourseTitle_TIE;
     CollapsingToolbarLayout addNewCollapsingToolbarLayout;
@@ -70,7 +71,7 @@ public class AddNewMaterial extends AppCompatActivity {
     Uri multipleUri;
     String uriString;
     String getUDBKey, getUploadKey, getFilesKey;
-    String key;
+    String key, keyCourseCode;
 
     SharedPreferences sharedPreferences;
 
@@ -86,6 +87,7 @@ public class AddNewMaterial extends AppCompatActivity {
     DatabaseReference mDatabaseReference;
     DatabaseReference uploadsDatabaseReference;
     DatabaseReference filesDatabaseReference;
+    DatabaseReference getCodeValueRef;
     private static final int GET_FILE = 1212;
 
     @Override
@@ -96,6 +98,74 @@ public class AddNewMaterial extends AppCompatActivity {
         //sharedPreferences
         sharedPreferences = getSharedPreferences("login" , MODE_PRIVATE);
         getUDBKey = sharedPreferences.getString("userDatabaseKey", "");
+
+        //Initializing the databaseReference and storageReference
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference("users");
+        uploadsDatabaseReference = FirebaseDatabase.getInstance().getReference("users/"+ getUDBKey + "/uploads");
+        //The stress below is to get the course code from tne database LMAO.
+        uploadsDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
+                for (DataSnapshot uniquekeyDatasnapshot : dataSnapshot.getChildren()) {
+                    key = uniquekeyDatasnapshot.getKey();
+                    Log.d("uniquekeyDatasnapshot" , "uniquekeyDatasnapshot is : " +key);
+                    getCodeValueRef = uploadsDatabaseReference.child(key);
+
+                    //on button clicked
+                    uploadBtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            deptText = addNewDeptSpinner.getSelectedItem().toString();
+                            programmeText = addNewProgrammeSpinner.getSelectedItem().toString();
+                            levelText = addNewLevelSpinner.getSelectedItem().toString();
+
+                            //checks if there is an existing course code or course name
+                            getCodeValueRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshott) {
+
+                                    for (DataSnapshot innerSnapshot : dataSnapshot.getChildren()) {
+                                        String aa = innerSnapshot.getValue().toString();
+                                        Log.d("inner : ", "inner  : " + aa);
+                                    }
+//                                        getCodeValueRef.addValueEventListener(new ValueEventListener() {
+//                                            @Override
+//                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                                                for (DataSnapshot anotherkeyDatasnapshot : dataSnapshot.)
+//                                                keyCourseCode = dataSnapshot.getValue().toString();
+//                                                if (keyCourseCode.equalsIgnoreCase(courseCodeText)){
+//                                                    Toast.makeText(AddNewMaterial.this, "Course Already Exits" , Toast.LENGTH_LONG).show();
+//                                                }else if (!keyCourseCode.equalsIgnoreCase(courseCodeText)){
+//                                                    Toast.makeText(AddNewMaterial.this, "DOESNT EIxist eih", Toast.LENGTH_SHORT).show();
+////                                                            //start the firebase upload
+////                                                            firebaseStorage();
+//                                                }
+//                                            }
+//
+//                                            @Override
+//                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                                            }
+//                                        })
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         //initialize
         init();
 
@@ -185,20 +255,17 @@ public class AddNewMaterial extends AppCompatActivity {
         // The simplest way to upload to your storage bucket is by uploading a local file,
         // such as photos and videos from the camera, using the putFile() method.
         // You can also upload raw data using putBytes() or from an InputStream using putStream().
-        //Uri file = Uri.fromFile(new File(path));
+
+        fileStorageRef = mStorageRef.child("CourseMaterials/" + deptText +"/"+ programmeText +"/"+ levelText +"/"+ courseCodeText +"/"+displayName);
 
         if (filePath != null) {
             final ProgressDialog progressDialog = new ProgressDialog(this);
             progressDialog.setTitle("Uploading...");
             progressDialog.setCancelable(false);
             progressDialog.show();
-            //Initializing the databaseReference
-            mDatabaseReference = FirebaseDatabase.getInstance().getReference("users");
-            uploadsDatabaseReference = FirebaseDatabase.getInstance().getReference("users/"+ getUDBKey + "/uploads");
 
             //fetching key from mDatabaseReference to use as child for the rest
-            key = mDatabaseReference.push().getKey();
-            fileStorageRef = mStorageRef.child("CourseMaterials/" + deptText +"/"+ programmeText +"/"+ levelText +"/"+ courseCodeText +"/"+displayName);
+            //key = mDatabaseReference.push().getKey();
 
             fileStorageRef.putFile(filePath)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -222,7 +289,7 @@ public class AddNewMaterial extends AppCompatActivity {
                                 uploadsDatabaseReference.child(uploadKey).setValue(upload);
 
                                 getUploadKey = uploadKey;
-                                //now after upload, we get its key and create child inside it for Files
+                                //now after upload, we get its key and create child inside it for FilesS
                                 filesDatabaseReference = uploadsDatabaseReference.child(uploadKey).child("files");
                             }
 
@@ -237,14 +304,14 @@ public class AddNewMaterial extends AppCompatActivity {
                                         fileUrl = URI.toString();
                                         Log.d("file Url ", "url is : " + fileUrl);
 
-                                        //adding to database to files
-                                        Files files = new Files();
-                                        files.setFileName(displayName);
-                                        files.setFileUrl(fileUrl);
+                                        //adding to database to filesS
+                                        FilesS filesS = new FilesS();
+                                        filesS.setFileName(displayName);
+                                        filesS.setFileUrl(fileUrl);
                                         String filesKey = filesDatabaseReference.push().getKey();
                                         if (filesKey != null) {
-                                            files.setFileKey(filesKey);
-                                            filesDatabaseReference.child(filesKey).setValue(files);
+                                            filesS.setFileKey(filesKey);
+                                            filesDatabaseReference.child(filesKey).setValue(filesS);
                                             getFilesKey = filesKey;
                                         }
 
@@ -454,17 +521,7 @@ public class AddNewMaterial extends AppCompatActivity {
                             fileNameList.add(displayName);
                             uploadListAdapter.notifyDataSetChanged();
 
-                            uploadBtn.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    deptText = addNewDeptSpinner.getSelectedItem().toString();
-                                    programmeText = addNewProgrammeSpinner.getSelectedItem().toString();
-                                    levelText = addNewLevelSpinner.getSelectedItem().toString();
 
-                                    firebaseStorage();
-                                }
-                            });
-                            Toast.makeText(this, displayName, Toast.LENGTH_SHORT).show();
 //                        }
                     }
                 }break;
