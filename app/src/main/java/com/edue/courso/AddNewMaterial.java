@@ -178,6 +178,9 @@ public class AddNewMaterial extends AppCompatActivity {
         //collapsible toolbar
         collapsibleToolbar();
 
+        //Toolbar
+        topToolbar();
+
         //select file onClick event
         selectFileEvent();
 
@@ -399,6 +402,17 @@ public class AddNewMaterial extends AppCompatActivity {
 
             }
         });
+
+    }
+
+    public void topToolbar(){
+            addNewtoolbar.getNavigationIcon();
+            addNewtoolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onBackPressed();
+                }
+            });
 
     }
 

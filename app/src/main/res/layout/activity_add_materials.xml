@@ -37,8 +37,8 @@
                 android:paddingTop="0dp"
                 android:paddingBottom="3dp"
                 android:fitsSystemWindows="true"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginLeft="40dp"
+                android:layout_marginRight="0dp"
                 android:orientation="vertical">
 
                 <TextView
@@ -70,6 +70,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="dept"
+                    android:ellipsize="marquee"
                     android:padding="10dp"/>
 
             </LinearLayout>
@@ -82,26 +83,27 @@
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                 app:layout_collapseMode="pin"
                 app:titleTextColor="#ffffff"
-                android:fitsSystemWindows="false" />
+                android:fitsSystemWindows="false"
+                app:navigationIcon="?android:homeAsUpIndicator"/>
 
         </android.support.design.widget.CollapsingToolbarLayout>
 
 
     </android.support.design.widget.AppBarLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <!--<LinearLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:orientation="vertical">-->
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/add_material_recyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             </android.support.v7.widget.RecyclerView>
-        </LinearLayout>
+        <!--</LinearLayout>-->
     <android.support.design.bottomappbar.BottomAppBar
         android:id="@+id/bottom_app_bar"
         android:layout_width="match_parent"

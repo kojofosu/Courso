@@ -13,6 +13,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -100,7 +101,11 @@ public class AddMaterials extends AppCompatActivity {
 
         //collapsible toolbar
         collapsibleToolbar();
+
+        //Toolbar
+        topToolbar();
     }
+
 
     private void init() {
 //        addMaterialsRecyclerView = findViewById(R.id.add_material_recyclerView);
@@ -190,6 +195,16 @@ public class AddMaterials extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
+            }
+        });
+    }
+
+    private void topToolbar() {
+        addMaterialToolbar.getNavigationIcon();
+        addMaterialToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
             }
         });
     }

@@ -86,7 +86,8 @@
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                 app:layout_collapseMode="pin"
                 app:titleTextColor="#ffffff"
-                android:fitsSystemWindows="false" />
+                android:fitsSystemWindows="false"
+                app:navigationIcon="?android:homeAsUpIndicator"/>
 
             </android.support.design.widget.CollapsingToolbarLayout>
 
