@@ -21,4 +21,10 @@ public class FilesAdapter extends FirebaseRecyclerAdapter<FilesS, FilesHolder> {
 
         viewHolder.name.setText(fileName);
     }
+
+    //below override code shows list in reverse order. That is makes newest items appear first
+    @Override
+    public FilesS getItem(int position) {
+        return super.getItem(super.getItemCount() - position - 1);
+    }
 }

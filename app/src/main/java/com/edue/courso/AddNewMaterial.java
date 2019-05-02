@@ -111,52 +111,52 @@ public class AddNewMaterial extends AppCompatActivity {
                     Log.d("uniquekeyDatasnapshot" , "uniquekeyDatasnapshot is : " +key);
                     getCodeValueRef = uploadsDatabaseReference.child(key);
 
-                    //on button clicked
-                    uploadBtn.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            deptText = addNewDeptSpinner.getSelectedItem().toString();
-                            programmeText = addNewProgrammeSpinner.getSelectedItem().toString();
-                            levelText = addNewLevelSpinner.getSelectedItem().toString();
-
-                            //checks if there is an existing course code or course name
-                            getCodeValueRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshott) {
-
-                                    for (DataSnapshot innerSnapshot : dataSnapshot.getChildren()) {
-                                        String aa = innerSnapshot.getValue().toString();
-                                        Log.d("inner : ", "inner  : " + aa);
-                                    }
-//                                        getCodeValueRef.addValueEventListener(new ValueEventListener() {
-//                                            @Override
-//                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                                                for (DataSnapshot anotherkeyDatasnapshot : dataSnapshot.)
-//                                                keyCourseCode = dataSnapshot.getValue().toString();
-//                                                if (keyCourseCode.equalsIgnoreCase(courseCodeText)){
-//                                                    Toast.makeText(AddNewMaterial.this, "Course Already Exits" , Toast.LENGTH_LONG).show();
-//                                                }else if (!keyCourseCode.equalsIgnoreCase(courseCodeText)){
-//                                                    Toast.makeText(AddNewMaterial.this, "DOESNT EIxist eih", Toast.LENGTH_SHORT).show();
-////                                                            //start the firebase upload
-////                                                            firebaseStorage();
-//                                                }
-//                                            }
+//                    //on button clicked
+//                    uploadBtn.setOnClickListener(new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View view) {
+//                            deptText = addNewDeptSpinner.getSelectedItem().toString();
+//                            programmeText = addNewProgrammeSpinner.getSelectedItem().toString();
+//                            levelText = addNewLevelSpinner.getSelectedItem().toString();
 //
-//                                            @Override
-//                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+//                            //checks if there is an existing course code or course name
+//                            getCodeValueRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//                                @Override
+//                                public void onDataChange(@NonNull DataSnapshot dataSnapshott) {
 //
-//                                            }
-//                                        })
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                }
-                            });
-
-                        }
-                    });
+//                                    for (DataSnapshot innerSnapshot : dataSnapshot.getChildren()) {
+//                                        String aa = innerSnapshot.getValue().toString();
+//                                        Log.d("inner : ", "inner  : " + aa);
+//                                    }
+////                                        getCodeValueRef.addValueEventListener(new ValueEventListener() {
+////                                            @Override
+////                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+////                                                for (DataSnapshot anotherkeyDatasnapshot : dataSnapshot.)
+////                                                keyCourseCode = dataSnapshot.getValue().toString();
+////                                                if (keyCourseCode.equalsIgnoreCase(courseCodeText)){
+////                                                    Toast.makeText(AddNewMaterial.this, "Course Already Exits" , Toast.LENGTH_LONG).show();
+////                                                }else if (!keyCourseCode.equalsIgnoreCase(courseCodeText)){
+////                                                    Toast.makeText(AddNewMaterial.this, "DOESNT EIxist eih", Toast.LENGTH_SHORT).show();
+//////                                                            //start the firebase upload
+//////                                                            firebaseStorage();
+////                                                }
+////                                            }
+////
+////                                            @Override
+////                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+////
+////                                            }
+////                                        })
+//                                }
+//
+//                                @Override
+//                                public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                                }
+//                            });
+//
+//                        }
+//                    });
                 }
             }
 
@@ -523,6 +523,19 @@ public class AddNewMaterial extends AppCompatActivity {
 
 
 //                        }
+
+                        //on button clicked
+                        uploadBtn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                deptText = addNewDeptSpinner.getSelectedItem().toString();
+                                programmeText = addNewProgrammeSpinner.getSelectedItem().toString();
+                                levelText = addNewLevelSpinner.getSelectedItem().toString();
+
+                            firebaseStorage();
+
+                            }
+                        });
                     }
                 }break;
         }

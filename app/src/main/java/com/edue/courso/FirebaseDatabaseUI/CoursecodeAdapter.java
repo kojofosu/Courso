@@ -12,6 +12,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
 import com.edue.courso.AddMaterials;
+import com.edue.courso.FilesS;
 import com.edue.courso.Home;
 import com.edue.courso.R;
 import com.edue.courso.SignIn;
@@ -138,5 +139,11 @@ public class CoursecodeAdapter extends FirebaseRecyclerAdapter<Upload, CourseCod
                 notifyDataSetChanged();
             }
         });
+    }
+
+    //below override code shows list in reverse order. That is makes newest items appear first
+    @Override
+    public Upload getItem(int position) {
+        return super.getItem(super.getItemCount() - position - 1);
     }
 }

@@ -12,7 +12,6 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.fosu.rydelogistics.Rydelogistics_fragment"
         android:id="@+id/mainContent"
         app:expandedTitleMarginStart="70dp"
         android:fitsSystemWindows="false">

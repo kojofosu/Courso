@@ -4,11 +4,14 @@ import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.bottomappbar.BottomAppBar;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -27,8 +30,12 @@ import java.util.List;
 public class AddMaterials extends AppCompatActivity {
     
     RecyclerView addMaterialsRecyclerView;
+    CollapsingToolbarLayout addMaterialCollapsingToolbarLayout;
+    AppBarLayout addMaterialAppBarLayout;
+    Toolbar addMaterialToolbar;
     BottomAppBar bottomAppBar;
     TextView fileName;
+    TextView showCode, showName, showProgramme, showLevel, showDept;
     ImageButton deleteFile;
     FloatingActionButton floatingActionButton;
     //private RecyclerView FirebaseRecyclerView;
@@ -41,7 +48,7 @@ public class AddMaterials extends AppCompatActivity {
     String getUDBKey;
     private static final String TAG = "AddMaterial Activity";
     String dept,level,programme,uploadkey,title,code;
-
+    FirebaseDatabase firebaseDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +60,7 @@ public class AddMaterials extends AppCompatActivity {
         
         //initialize
         init();
+
 
         code = getIntent().getStringExtra("Code");
         level = getIntent().getStringExtra("Level");
@@ -67,6 +75,11 @@ public class AddMaterials extends AppCompatActivity {
         Log.d(TAG, title);
         Log.d(TAG, dept);
         Log.d(TAG, uploadkey);
+
+        showName.setText(title);
+        showLevel.setText(String.format("Level %s", level));
+        showDept.setText(dept);
+        showCode.setText(code);
 
         linearLayoutManager = new LinearLayoutManager(this);
         addMaterialsRecyclerView = (RecyclerView) findViewById(R.id.add_material_recyclerView);
@@ -84,6 +97,9 @@ public class AddMaterials extends AppCompatActivity {
 
         //firebase database
         firebaseDatabase();
+
+        //collapsible toolbar
+        collapsibleToolbar();
     }
 
     private void init() {
@@ -92,6 +108,14 @@ public class AddMaterials extends AppCompatActivity {
         floatingActionButton = findViewById(R.id.add_new_material_fab);
         fileName = findViewById(R.id.add_material_item_name);
         deleteFile = findViewById(R.id.add_material_item_delete_thumbnail);
+        showCode = findViewById(R.id.show_code);
+        showDept = findViewById(R.id.show_dept);
+        showLevel = findViewById(R.id.show_level);
+        showName = findViewById(R.id.show_name);
+        showProgramme = findViewById(R.id.show_programme);
+        addMaterialCollapsingToolbarLayout = findViewById(R.id.add_material_CollapsingToolbarLayout);
+        addMaterialAppBarLayout = findViewById(R.id.add_material_AppBar);
+        addMaterialToolbar = findViewById(R.id.add_material_toolbar);
     }
 
     private void firebaseDatabase() {
@@ -168,6 +192,36 @@ public class AddMaterials extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void collapsibleToolbar() {
+        //appBar offset to determine when collapsible toolbar is collapsed or expanded
+        addMaterialAppBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            boolean isShow =  true;
+            int scrollRange = -1;
+
+            @Override
+            //i here is the vertical offset
+            public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
+                if (scrollRange == -1){
+                    scrollRange = appBarLayout.getTotalScrollRange();
+                }
+                if (scrollRange + i == 0){
+                    if(!code.isEmpty()){
+                        addMaterialCollapsingToolbarLayout.isTitleEnabled();
+                        addMaterialCollapsingToolbarLayout.setTitle(code);
+                    }else{
+                        addMaterialCollapsingToolbarLayout.setTitle(code);
+                    }
+                    isShow = true;
+                }else if(isShow){
+                    addMaterialCollapsingToolbarLayout.setTitle(" ");
+                    isShow = false;
+                }
+            }
+        });
+
+
     }
 
 }
