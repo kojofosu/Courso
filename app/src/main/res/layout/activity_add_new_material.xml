@@ -233,14 +233,20 @@
                     android:layout_margin="20dp">
                 </android.support.v7.widget.RecyclerView>
 
-                <ImageButton
+                <Button
                     android:id="@+id/upload_btn"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:src="@drawable/ic_blur_circular_black_24dp"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_margin="15dp"
-                    android:background="@android:color/transparent"/>
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="25dp"
+                    android:background="@drawable/bg_button_rounded"
+                    android:backgroundTint="@color/colorAccent"
+                    android:backgroundTintMode="add"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginBottom="15dp"
+                    android:text="Create Class"
+                    android:textColor="#FFFFFF"
+                    android:isScrollContainer="false"/>
             </LinearLayout>
 
         </android.support.v4.widget.NestedScrollView>

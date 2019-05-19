@@ -25,6 +25,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -47,13 +48,14 @@ import com.google.firebase.storage.UploadTask;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class AddNewMaterial extends AppCompatActivity {
     TextInputLayout addCourseCode_TIL, addCourseTitle_TIL;
     TextInputEditText addCourseCode_TIE, addCourseTitle_TIE;
     CollapsingToolbarLayout addNewCollapsingToolbarLayout;
     AppBarLayout addNewAppBarLayout;
-    ImageButton uploadBtn;
+    Button uploadBtn;
     Spinner addNewDeptSpinner, addNewProgrammeSpinner, addNewLevelSpinner, addNewSemesterSpinner;
     String[] deptArray = {"Dept. Computer Science and Information Technology", "Department of Education"};
     String[] programmeArray = {"Non-Degree", "Undergraduate", "Masters/Graduate", "Doctorate"};
@@ -87,6 +89,7 @@ public class AddNewMaterial extends AppCompatActivity {
     DatabaseReference mDatabaseReference;
     DatabaseReference uploadsDatabaseReference;
     DatabaseReference filesDatabaseReference;
+    DatabaseReference forStudentsDatabaseReference, filesForStudentsDatabaseReference;
     DatabaseReference getCodeValueRef;
     private static final int GET_FILE = 1212;
 
@@ -101,6 +104,7 @@ public class AddNewMaterial extends AppCompatActivity {
 
         //Initializing the databaseReference and storageReference
         mDatabaseReference = FirebaseDatabase.getInstance().getReference("users");
+        forStudentsDatabaseReference = FirebaseDatabase.getInstance().getReference("students");
         uploadsDatabaseReference = FirebaseDatabase.getInstance().getReference("users/"+ getUDBKey + "/uploads");
         //The stress below is to get the course code from tne database LMAO.
         uploadsDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -287,13 +291,17 @@ public class AddNewMaterial extends AppCompatActivity {
                             upload.setCourseCodes(courseCodeText);
                             upload.setCourseName(courseTitleText);
                             String uploadKey = uploadsDatabaseReference.push().getKey();
+
                             if (uploadKey != null) {
                                 upload.setUploadKey(uploadKey);
                                 uploadsDatabaseReference.child(uploadKey).setValue(upload);
+                                forStudentsDatabaseReference.child(courseCodeText).setValue(upload);
+
 
                                 getUploadKey = uploadKey;
                                 //now after upload, we get its key and create child inside it for FilesS
-                                filesDatabaseReference = uploadsDatabaseReference.child(uploadKey).child("files");
+                                filesDatabaseReference = uploadsDatabaseReference.child(uploadKey).child(courseCodeText).child("files");
+                                filesForStudentsDatabaseReference = forStudentsDatabaseReference.child(courseCodeText).child("files");
                             }
 
 
@@ -315,6 +323,7 @@ public class AddNewMaterial extends AppCompatActivity {
                                         if (filesKey != null) {
                                             filesS.setFileKey(filesKey);
                                             filesDatabaseReference.child(filesKey).setValue(filesS);
+                                            filesForStudentsDatabaseReference.child(filesKey).setValue(filesS);
                                             getFilesKey = filesKey;
                                         }
 
@@ -481,8 +490,9 @@ public class AddNewMaterial extends AppCompatActivity {
             case GET_FILE:
                 if(requestCode == GET_FILE && resultCode == RESULT_OK) {
                     //Get data for multiple selected files
-                    if (data.getClipData() != null) {
-                        final int totalItemSelected = data.getClipData().getItemCount();
+                    if (Objects.requireNonNull(data).getClipData() != null) {
+                        fileNameList.clear();
+                        final int totalItemSelected = Objects.requireNonNull(data.getClipData()).getItemCount();
                         for (int num =0; num < totalItemSelected; num++){
                             multipleUri = data.getClipData().getItemAt(num).getUri();
                             filePath = multipleUri;
@@ -501,16 +511,122 @@ public class AddNewMaterial extends AppCompatActivity {
                                     programmeText = addNewProgrammeSpinner.getSelectedItem().toString();
                                     levelText = addNewLevelSpinner.getSelectedItem().toString();
 
-                                    for (int snum = 0; snum < totalItemSelected; snum++) {
+                                    //this String is here just to prevent Upload from pushing more than once
+                                    final String uploadKey = uploadsDatabaseReference.push().getKey();
+                                    final int newtotalItemSelected = Objects.requireNonNull(data.getClipData()).getItemCount();
+                                    for (int snum = 0; snum < newtotalItemSelected; snum++) {
+
                                         multipleUri = data.getClipData().getItemAt(snum).getUri();
                                         filePath = multipleUri;
                                         uriString = multipleUri.toString();
                                         myFile = new File(uriString);
                                         path = myFile.getAbsolutePath();
                                         displayName = myFile.getName();
-
                                         uploadListAdapter.notifyDataSetChanged();
-                                        firebaseStorage();
+
+
+                                        Toast.makeText(AddNewMaterial.this, filePath.toString(), Toast.LENGTH_SHORT).show();
+                                        Log.d("multi : " , "multi : " + filePath);
+
+                                        //Initializing the StorageReference
+                                        mStorageRef = FirebaseStorage.getInstance().getReference();
+
+                                        // The simplest way to upload to your storage bucket is by uploading a local file,
+                                        // such as photos and videos from the camera, using the putFile() method.
+                                        // You can also upload raw data using putBytes() or from an InputStream using putStream().
+
+                                        fileStorageRef = mStorageRef.child("CourseMaterials/" + deptText +"/"+ programmeText +"/"+ levelText +"/"+ courseCodeText +"/"+displayName);
+
+                                        if (filePath != null) {
+                                            final ProgressDialog progressDialog = new ProgressDialog(AddNewMaterial.this);
+                                            progressDialog.setTitle("Uploading...");
+                                            progressDialog.setCancelable(false);
+                                            progressDialog.show();
+
+                                            //fetching key from mDatabaseReference to use as child for the rest
+                                            //key = mDatabaseReference.push().getKey();
+
+                                            UploadTask uploadTask = fileStorageRef.putFile(filePath);
+                                           uploadTask
+                                                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                                        @Override
+                                                        public void onSuccess(final UploadTask.TaskSnapshot taskSnapshot) {
+                                                            // Get a URL to the uploaded content
+                                                            //Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                                                            progressDialog.dismiss();
+                                                            Toast.makeText(AddNewMaterial.this, "Uploaded Successfully" + filePath, Toast.LENGTH_SHORT).show();
+                                                            Log.d("Uploaded Successfully" , "Uploaded Successfully : " + filePath);
+                                                            //adding to database to upload
+                                                            final Upload upload = new Upload();
+                                                            upload.setDeptName(deptText);
+                                                            upload.setLevelNum(levelText);
+                                                            upload.setCourseCodes(courseCodeText);
+                                                            upload.setCourseName(courseTitleText);
+
+                                                            if (uploadKey != null) {
+                                                                upload.setUploadKey(uploadKey);
+                                                                uploadsDatabaseReference.child(uploadKey).setValue(upload);
+
+                                                                getUploadKey = uploadKey;
+                                                                //now after upload, we get its key and create child inside it for FilesS
+                                                                filesDatabaseReference = uploadsDatabaseReference.child(uploadKey).child("files");
+                                                                forStudentsDatabaseReference.child(uploadKey).child("files");
+
+                                                                //getting download url of file
+                                                                fileStorageRef.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                                                    @Override
+                                                                    public void onComplete(@NonNull Task<Uri> task) {
+                                                                        if (task.isSuccessful()) {
+                                                                            Uri URI = task.getResult();
+                                                                            //storing url to fileUrl
+                                                                            fileUrl = URI.toString();
+                                                                            Log.d("file Url ", "url is : " + fileUrl);
+
+                                                                            //adding to database to filesS
+                                                                            FilesS filesS = new FilesS();
+                                                                            filesS.setFileName(displayName);
+                                                                            filesS.setFileUrl(fileUrl);
+                                                                            String filesKey = filesDatabaseReference.push().getKey();
+                                                                            if (filesKey != null) {
+                                                                                filesS.setFileKey(filesKey);
+                                                                                filesDatabaseReference.child(filesKey).setValue(filesS);
+                                                                                forStudentsDatabaseReference.child(filesKey).setValue(filesS);
+                                                                                getFilesKey = filesKey;
+                                                                            }
+
+                                                                        } else if (!task.isSuccessful()) {
+                                                                            Toast.makeText(AddNewMaterial.this, "FAILED TO GET URL ", Toast.LENGTH_SHORT).show();
+                                                                            Log.d("file Url ", "FAILED TO GET URL : ");
+                                                                        }
+                                                                    }
+                                                                });
+                                                            }
+
+
+                                                        }
+                                                    })
+                                                    .addOnFailureListener(new OnFailureListener() {
+                                                        @Override
+                                                        public void onFailure(@NonNull Exception exception) {
+                                                            // Handle unsuccessful uploads
+                                                            // ...
+                                                            progressDialog.dismiss();
+                                                            Toast.makeText(AddNewMaterial.this, exception.getMessage(), Toast.LENGTH_SHORT).show();
+
+                                                        }
+                                                    }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                                                @Override
+                                                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                                                    double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
+                                                    progressDialog.setMessage(((int) progress + "% uploaded..."));
+                                                }
+                                            });
+
+                                        }else {
+                                            Toast.makeText(getApplicationContext(), "Empty file path", Toast.LENGTH_SHORT).show();
+                                        }
+
+//                                        firebaseStorage();
                                     }
                                 }
                             });
@@ -546,7 +662,8 @@ public class AddNewMaterial extends AppCompatActivity {
                                 programmeText = addNewProgrammeSpinner.getSelectedItem().toString();
                                 levelText = addNewLevelSpinner.getSelectedItem().toString();
 
-                            firebaseStorage();
+                                Toast.makeText(AddNewMaterial.this, "Single item selected", Toast.LENGTH_SHORT).show();
+                                firebaseStorage();
 
                             }
                         });

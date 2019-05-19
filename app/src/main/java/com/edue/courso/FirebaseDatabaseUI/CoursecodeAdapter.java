@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -21,6 +22,7 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class CoursecodeAdapter extends FirebaseRecyclerAdapter<Upload, CourseCodeHolder>{
     private static final String TAG = CoursecodeAdapter.class.getSimpleName();
@@ -49,18 +51,19 @@ public class CoursecodeAdapter extends FirebaseRecyclerAdapter<Upload, CourseCod
         viewHolder.title.setText(TITLE);
         viewHolder.code.setText(CODE);
 
+
         viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
 
                 Animation animation = AnimationUtils.loadAnimation(context, R.anim.bounce_down);
-                viewHolder.deleteClass.startAnimation(animation);
                 viewHolder.deleteClass.setVisibility(View.VISIBLE);
+                viewHolder.deleteClass.startAnimation(animation);
                 animation.setAnimationListener(new Animation.AnimationListener() {
                     @Override
                     public void onAnimationStart(Animation animation) {
                         viewHolder.code.setVisibility(View.INVISIBLE);
-                        notifyDataSetChanged();
+                        Log.d("pupu : ", "Pupu : " + viewHolder.itemView.getId());
                     }
 
                     @Override
@@ -75,13 +78,11 @@ public class CoursecodeAdapter extends FirebaseRecyclerAdapter<Upload, CourseCod
                                     @Override
                                     public void onAnimationStart(Animation animation) {
                                         viewHolder.code.setVisibility(View.VISIBLE);
-                                        notifyDataSetChanged();
                                     }
 
                                     @Override
                                     public void onAnimationEnd(Animation animation) {
                                         viewHolder.deleteClass.clearAnimation();
-                                        notifyDataSetChanged();
                                     }
 
                                     @Override
@@ -89,7 +90,7 @@ public class CoursecodeAdapter extends FirebaseRecyclerAdapter<Upload, CourseCod
 
                                     }
                                 });
-                                notifyDataSetChanged();
+
                                 //returning true makes sure no other things are called like the onClick function
                                 return true;
                             }
@@ -97,19 +98,33 @@ public class CoursecodeAdapter extends FirebaseRecyclerAdapter<Upload, CourseCod
                         viewHolder.deleteClass.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
+                                final String getCode = getItem(position).getCourseCodes();
+                                final DatabaseReference forStudentsDatabaseReference = FirebaseDatabase.getInstance().getReference("students");
                                 getRef(position).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()) {
                                             Toast.makeText(context, "deleted", Toast.LENGTH_SHORT).show();
+                                            Log.d("code ", "code is : " + getCode);
+
+
+                                            forStudentsDatabaseReference.child(getCode).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    if (task.isSuccessful()){
+                                                        Toast.makeText(context, "student side for "+ getCode + "is deleted successfully", Toast.LENGTH_SHORT).show();
+                                                    }else if (!task.isSuccessful()){
+                                                        Toast.makeText(context, "student side for "+ getCode + "UNSUCCESSFUL", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                }
+                                            });
                                         }else if (!task.isSuccessful()){
                                             Toast.makeText(context, "Deletion Failed", Toast.LENGTH_SHORT).show();
                                         }
                                     }
-                                });notifyDataSetChanged();
+                                });
                             }
-                        });notifyDataSetChanged();
-                        notifyDataSetChanged();
+                        });
                     }
 
                     @Override
@@ -117,7 +132,6 @@ public class CoursecodeAdapter extends FirebaseRecyclerAdapter<Upload, CourseCod
 
                     }
                 });
-
                 //returning true makes sure no other things are called like the onClick function
                 return true;
             }
@@ -136,14 +150,14 @@ public class CoursecodeAdapter extends FirebaseRecyclerAdapter<Upload, CourseCod
                 intent.putExtra("Programme", PROGRAMME);
                 intent.putExtra("Level", LEVEL);
                 context.startActivity(intent);
-                notifyDataSetChanged();
+//                notifyDataSetChanged();
             }
         });
     }
-
-    //below override code shows list in reverse order. That is makes newest items appear first
-    @Override
-    public Upload getItem(int position) {
-        return super.getItem(super.getItemCount() - position - 1);
-    }
+//
+//    //below override code shows list in reverse order. That is makes newest items appear first
+//    @Override
+//    public Upload getItem(int position) {
+//        return super.getItem(super.getItemCount() - position - 1);
+//    }
 }

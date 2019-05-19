@@ -90,11 +90,11 @@ public class Home extends AppCompatActivity {
 
         //init
         init();
-
-        if (firebaseDatabase == null) {
-            firebaseDatabase=FirebaseDatabase.getInstance();
-            firebaseDatabase.setPersistenceEnabled(true);
-        }
+//
+//        if (firebaseDatabase == null) {
+//            firebaseDatabase=FirebaseDatabase.getInstance();
+//            firebaseDatabase.setPersistenceEnabled(true);
+//        }
 
        // getActivity().setTitle(getString(R.string.recipe_categories));
         linearLayoutManager = new LinearLayoutManager(this);
