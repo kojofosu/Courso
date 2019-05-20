@@ -48,6 +48,11 @@ public class SignIn extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     private static final String TAG = "SignIn Activity";
 
+    TextInputLayout studentLoginTextInputLayout;
+    TextInputEditText studentLoginInputEditText;
+    Button buttonFindCourse;
+    String findCode;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,8 +131,40 @@ public class SignIn extends AppCompatActivity {
             public void onClick(View view) {
                 Dialog dialog = new Dialog(SignIn.this);
                 dialog.setContentView(R.layout.student_login_dialog);
-                TextInputLayout studentLoginTextInputLayout = dialog.findViewById(R.id.student_login_text_input_layout);
-                TextInputEditText studentLoginInputEditText = dialog.findViewById(R.id.student_login_text_input_edittext);
+                studentLoginTextInputLayout = dialog.findViewById(R.id.student_login_text_input_layout);
+                studentLoginInputEditText = dialog.findViewById(R.id.student_login_text_input_edittext);
+                buttonFindCourse = dialog.findViewById(R.id.button_find_course);
+                studentLoginInputEditText.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        Toast.makeText(SignIn.this, charSequence.toString(), Toast.LENGTH_SHORT).show();
+                        findCode = charSequence.toString();
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+//                findCode = studentLoginInputEditText.getText().toString();
+                buttonFindCourse.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Toast.makeText(SignIn.this, findCode, Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(SignIn.this, StudentMaterials.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.putExtra("StudentsCode", findCode);
+                        startActivity(intent);
+//                        Bundle bundle = new Bundle();
+//                        bundle.putString("StudentsCode", findCode);
+
+                    }
+                });
                 dialog.show();
             }
         });

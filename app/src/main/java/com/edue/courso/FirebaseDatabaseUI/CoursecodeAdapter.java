@@ -98,7 +98,7 @@ public class CoursecodeAdapter extends FirebaseRecyclerAdapter<Upload, CourseCod
                         viewHolder.deleteClass.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                final String getCode = getItem(position).getCourseCodes();
+                                final String getCode = getItem(position).getCourseCodes().toLowerCase();
                                 final DatabaseReference forStudentsDatabaseReference = FirebaseDatabase.getInstance().getReference("students");
                                 getRef(position).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override

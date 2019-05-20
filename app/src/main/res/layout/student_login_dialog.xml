@@ -37,4 +37,18 @@
 
     </android.support.design.widget.TextInputLayout>
 
+    <Button
+        android:id="@+id/button_find_course"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:background="@drawable/bg_button_rounded"
+        android:backgroundTint="@color/colorAccent"
+        android:backgroundTintMode="add"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="15dp"
+        android:text="Search"
+        android:textColor="#FFFFFF"
+        android:isScrollContainer="false"/>
 </LinearLayout>

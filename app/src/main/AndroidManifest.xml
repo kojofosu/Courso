@@ -11,7 +11,8 @@
         android:roundIcon="@drawable/ic_bubble_chart_black_24dp"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".Profile"></activity>
+        <activity android:name=".StudentMaterials"></activity>
+        <activity android:name=".Profile" />
         <activity android:name=".AddMaterials" />
         <activity android:name=".AddNewMaterial" />
         <activity android:name=".MainActivity" />

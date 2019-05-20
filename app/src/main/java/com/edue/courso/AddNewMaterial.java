@@ -301,7 +301,7 @@ public class AddNewMaterial extends AppCompatActivity {
                                 getUploadKey = uploadKey;
                                 //now after upload, we get its key and create child inside it for FilesS
                                 filesDatabaseReference = uploadsDatabaseReference.child(uploadKey).child("files");
-                                filesForStudentsDatabaseReference = forStudentsDatabaseReference.child(courseCodeText).child("files");
+                                filesForStudentsDatabaseReference = forStudentsDatabaseReference.child(courseCodeText.toLowerCase()).child("files");
                             }
 
 
