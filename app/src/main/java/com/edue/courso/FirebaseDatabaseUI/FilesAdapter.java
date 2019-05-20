@@ -1,6 +1,8 @@
 package com.edue.courso.FirebaseDatabaseUI;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.View;
 import android.widget.Toast;
 
@@ -26,7 +28,10 @@ public class FilesAdapter extends FirebaseRecyclerAdapter<FilesS, FilesHolder> {
         viewHolder.download.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(context, "URL : " + fileUrl, Toast.LENGTH_SHORT).show();
+                //open link in a browser
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(fileUrl));
+                browserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(browserIntent);
             }
         });
     }
