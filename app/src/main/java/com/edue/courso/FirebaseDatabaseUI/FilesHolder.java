@@ -13,13 +13,13 @@ public class FilesHolder extends RecyclerView.ViewHolder {
     private static final String TAG = FilesHolder.class.getSimpleName();
     TextView name;
     ImageView thumbnail;
-    ImageButton deleteFiles;
+    ImageView download;
 
     public FilesHolder(@NonNull View itemView) {
         super(itemView);
 
         name = itemView.findViewById(R.id.add_material_item_name);
         thumbnail = itemView.findViewById(R.id.add_material_item_IV);
-        deleteFiles = itemView.findViewById(R.id.add_material_item_delete_thumbnail);
+        download = itemView.findViewById(R.id.add_material_download);
     }
 }

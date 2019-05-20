@@ -1,6 +1,8 @@
 package com.edue.courso.FirebaseDatabaseUI;
 
 import android.content.Context;
+import android.view.View;
+import android.widget.Toast;
 
 import com.edue.courso.FilesS;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -18,8 +20,16 @@ public class StudentFilesAdapter extends FirebaseRecyclerAdapter<FilesS, Student
     @Override
     protected void populateViewHolder(StudentFilesHolder viewHolder, FilesS model, int position) {
         String fileName = model.getFileName();
+        final String fileUrl = model.getFileUrl();
 
         viewHolder.name.setText(fileName);
+
+        viewHolder.download.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(context, "URL : " + fileUrl, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     //below override code shows list in reverse order. That is makes newest items appear first

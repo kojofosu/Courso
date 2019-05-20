@@ -15,8 +15,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import com.edue.courso.FirebaseDatabaseUI.FilesAdapter;
-import com.edue.courso.FirebaseDatabaseUI.FilesHolder;
 import com.edue.courso.FirebaseDatabaseUI.StudentFilesAdapter;
 import com.edue.courso.FirebaseDatabaseUI.StudentFilesHolder;
 import com.google.firebase.database.ChildEventListener;
@@ -24,6 +22,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +42,7 @@ public class StudentMaterials extends AppCompatActivity{
     private LinearLayoutManager linearLayoutManager;
     RecyclerView studentMaterialsRecyclerView;
     String code;
-    DatabaseReference studentsFielsDatabaseReference;
+    DatabaseReference studentsFilesDatabaseReference, studentMaterialDatabaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,9 +63,10 @@ public class StudentMaterials extends AppCompatActivity{
         linearLayoutManager = new LinearLayoutManager(this);
         studentMaterialsRecyclerView = (RecyclerView) findViewById(R.id.student_material_recyclerView);
         studentMaterialsRecyclerView.setHasFixedSize(true);
-        studentsFielsDatabaseReference = FirebaseDatabase.getInstance().getReference("students/"+ code + "/files");
+        studentMaterialDatabaseReference = FirebaseDatabase.getInstance().getReference("students/" + code);
+        studentsFilesDatabaseReference = FirebaseDatabase.getInstance().getReference("students/"+ code + "/files");
         studentMaterialsRecyclerView.setLayoutManager(linearLayoutManager);
-        studentFilesAdapter = new StudentFilesAdapter(FilesS.class, R.layout.student_materials_items, StudentFilesHolder.class, studentsFielsDatabaseReference, this);
+        studentFilesAdapter = new StudentFilesAdapter(FilesS.class, R.layout.student_materials_items, StudentFilesHolder.class, studentsFilesDatabaseReference, this);
         studentMaterialsRecyclerView.setAdapter(studentFilesAdapter);
 
 
@@ -98,16 +98,29 @@ public class StudentMaterials extends AppCompatActivity{
     }
 
     private void firebaseDatabase() {
-        studentsFielsDatabaseReference = FirebaseDatabase.getInstance().getReference("students/"+ code + "/files");
+        studentMaterialDatabaseReference = FirebaseDatabase.getInstance().getReference("students/" + code);
+        studentsFilesDatabaseReference = FirebaseDatabase.getInstance().getReference("students/"+ code + "/files");
+
+        studentMaterialDatabaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         List<Upload> uploadList = new ArrayList<>();
         // Read from the database
-        studentsFielsDatabaseReference.addChildEventListener(new ChildEventListener() {
+        studentsFilesDatabaseReference.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
 
-                studentFilesAdapter = new StudentFilesAdapter(FilesS.class, R.layout.student_materials_items, StudentFilesHolder.class, studentsFielsDatabaseReference, getApplicationContext());
+                studentFilesAdapter = new StudentFilesAdapter(FilesS.class, R.layout.student_materials_items, StudentFilesHolder.class, studentsFilesDatabaseReference, getApplicationContext());
                 studentMaterialsRecyclerView.setAdapter(studentFilesAdapter);
 
                 Log.d(TAG, "recycler VAL : " + studentMaterialsRecyclerView);
