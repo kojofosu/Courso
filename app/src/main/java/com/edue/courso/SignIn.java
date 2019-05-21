@@ -144,8 +144,7 @@ public class SignIn extends AppCompatActivity {
 
                     @Override
                     public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                        Toast.makeText(SignIn.this, charSequence.toString(), Toast.LENGTH_SHORT).show();
-                        findCode = charSequence.toString();
+                        findCode = charSequence.toString().toUpperCase();
                     }
 
                     @Override
@@ -157,10 +156,9 @@ public class SignIn extends AppCompatActivity {
                 buttonFindCourse.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Toast.makeText(SignIn.this, findCode, Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(SignIn.this, StudentMaterials.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        intent.putExtra("StudentsCode", findCode);
+                        intent.putExtra("StudentsCode", findCode.toUpperCase());
                         startActivity(intent);
 //                        Bundle bundle = new Bundle();
 //                        bundle.putString("StudentsCode", findCode);
