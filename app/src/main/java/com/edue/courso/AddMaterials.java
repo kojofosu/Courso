@@ -59,6 +59,7 @@ public class AddMaterials extends AppCompatActivity {
         
         //SharedPrefs
         sharedPreferences = getSharedPreferences("login" , MODE_PRIVATE);
+        getUDBKey = sharedPreferences.getString("userID", "");
         
         //initialize
         init();
@@ -125,7 +126,7 @@ public class AddMaterials extends AppCompatActivity {
     }
 
     private void firebaseDatabase() {
-        getUDBKey = sharedPreferences.getString("userDatabaseKey", "");
+        getUDBKey = sharedPreferences.getString("userID", "");
         mDatabaseReference = FirebaseDatabase.getInstance().getReference("users");
         uploadsDatabaseReference = FirebaseDatabase.getInstance().getReference("users/"+ getUDBKey + "/uploads");
         filesDatabaseReference = FirebaseDatabase.getInstance().getReference("users/"+ getUDBKey + "/uploads/" + uploadkey + "/files");

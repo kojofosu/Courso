@@ -38,6 +38,7 @@ public class Profile extends AppCompatActivity {
         //SharedPrefs
         sharedPreferences = getSharedPreferences("login" , MODE_PRIVATE);
         mDatabaseReference = FirebaseDatabase.getInstance().getReference("users");
+        getUDBKey = sharedPreferences.getString("userID", "");
 
         //initialize
         init();

@@ -143,14 +143,14 @@ public class SignUp extends AppCompatActivity {
                                             user.setPhone(phone);
                                             user.setUUID(userID);
 
-//                                            //getting database key for user
-//                                            String key = mDatabaseReference.push().getKey();
-//                                            sharedPreferences.edit().putString("userDatabaseKey", key).apply();
-//                                            if (key != null) {
-//                                                mDatabaseReference.child(key).setValue(user);
-//                                            }else{
-//                                                Toast.makeText(SignUp.this, "Database push key is empty", Toast.LENGTH_SHORT).show();
-//                                            }
+                                            //getting database key for user
+                                            //String key = mDatabaseReference.push().getKey();
+                                            sharedPreferences.edit().putString("userDatabaseKey", userID).apply();
+                                            if (userID != null) {
+                                                mDatabaseReference.child(userID).setValue(user);
+                                            }else{
+                                                Toast.makeText(SignUp.this, "Database push key is empty", Toast.LENGTH_SHORT).show();
+                                            }
 
                                             Intent intent = new Intent(SignUp.this, Home.class);
                                             startActivity(intent);
