@@ -156,13 +156,16 @@ public class SignIn extends AppCompatActivity {
                 buttonFindCourse.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent = new Intent(SignIn.this, StudentMaterials.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        intent.putExtra("StudentsCode", findCode.toUpperCase());
-                        startActivity(intent);
+                        if(findCode.isEmpty() || findCode.length() < 6){
+                            studentLoginTextInputLayout.setError("Should be 6 characters or more");
+                        }else if (!findCode.isEmpty() && findCode.length() >= 6){
+                            Intent intent = new Intent(SignIn.this, StudentMaterials.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            intent.putExtra("StudentsCode", findCode.toUpperCase());
+                            startActivity(intent);
 //                        Bundle bundle = new Bundle();
 //                        bundle.putString("StudentsCode", findCode);
-
+                        }
                     }
                 });
                 dialog.show();
