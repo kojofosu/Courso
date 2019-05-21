@@ -169,7 +169,7 @@ public class Home extends AppCompatActivity {
     }
 
     private void firebaseDatabase() {
-        getUDBKey = sharedPreferences.getString("userDatabaseKey", "");
+        getUDBKey = sharedPreferences.getString("userID", "");
         mDatabaseReference = FirebaseDatabase.getInstance().getReference("users");
         uploadsDatabaseReference = FirebaseDatabase.getInstance().getReference("users/"+ getUDBKey + "/uploads");
 

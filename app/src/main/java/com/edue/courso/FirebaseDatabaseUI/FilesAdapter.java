@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.edue.courso.FilesS;
@@ -29,6 +30,9 @@ public class FilesAdapter extends FirebaseRecyclerAdapter<FilesS, FilesHolder> {
             @Override
             public void onClick(View view) {
                 //open link in a browser
+               // WebView webView = new WebView()
+
+                //Download to phone
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(fileUrl));
                 browserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(browserIntent);

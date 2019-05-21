@@ -81,7 +81,7 @@ public class Profile extends AppCompatActivity {
 
     private void firebaseDB() {
         //Initializing the databaseReference
-        getUDBKey = sharedPreferences.getString("userDatabaseKey", "");
+        getUDBKey = sharedPreferences.getString("userID", "");
         //fetching key from mDatabaseReference to use as child for the rest
         key = mDatabaseReference.push().getKey();
         uploadsDatabaseReference = FirebaseDatabase.getInstance().getReference("users/"+ getUDBKey + "/uploads");

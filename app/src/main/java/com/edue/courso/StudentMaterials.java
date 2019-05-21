@@ -1,5 +1,8 @@
 package com.edue.courso;
 
+import android.graphics.Bitmap;
+import android.graphics.pdf.PdfRenderer;
+import android.os.ParcelFileDescriptor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.bottomappbar.BottomAppBar;
@@ -24,6 +27,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,9 +56,23 @@ public class StudentMaterials extends AppCompatActivity{
         //init
         init();
 
+//        // create a new renderer
+//        PdfRenderer pdfRenderer = new PdfRenderer(ParcelFileDescriptor.open(documentFile, ParcelFileDescriptor.MODE_READ_ONLY));
+//
+//        //Open the first page of the document
+//        PdfRenderer.Page page = pdfRenderer.openPage(0);
+//
+//        //Define a target width for the resulting bitmap and use it to calculate the final height
+//        int width = 2048;
+//        int height = (page.getHeight() * (width / page.getHeight()));
+//
+//        //Create the bitmap to render the page to
+//        Bitmap pageBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+//
+//        //render the page to the bitmap
+//        page.render(pageBitmap , null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
 
-//        Bundle bundle = new Bundle();
-//        bundle.getString("StudentsCode");
+
         code = getIntent().getStringExtra("StudentsCode");
         Log.d(TAG, code);
 

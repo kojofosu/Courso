@@ -3,6 +3,7 @@
     package="com.edue.courso">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -11,7 +12,8 @@
         android:roundIcon="@drawable/ic_bubble_chart_black_24dp"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".StudentMaterials"></activity>
+        <activity android:name=".Webview"></activity>
+        <activity android:name=".StudentMaterials" />
         <activity android:name=".Profile" />
         <activity android:name=".AddMaterials" />
         <activity android:name=".AddNewMaterial" />

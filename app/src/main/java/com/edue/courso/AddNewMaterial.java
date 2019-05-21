@@ -100,12 +100,13 @@ public class AddNewMaterial extends AppCompatActivity {
 
         //sharedPreferences
         sharedPreferences = getSharedPreferences("login" , MODE_PRIVATE);
-        getUDBKey = sharedPreferences.getString("userDatabaseKey", "");
+        getUDBKey = sharedPreferences.getString("userID", "");
 
         //Initializing the databaseReference and storageReference
         mDatabaseReference = FirebaseDatabase.getInstance().getReference("users");
         forStudentsDatabaseReference = FirebaseDatabase.getInstance().getReference("students");
         uploadsDatabaseReference = FirebaseDatabase.getInstance().getReference("users/"+ getUDBKey + "/uploads");
+        Log.d("GetUserID " , getUDBKey);
         //The stress below is to get the course code from tne database LMAO.
         uploadsDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -137,9 +138,9 @@ public class AddNewMaterial extends AppCompatActivity {
 ////                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 ////                                                for (DataSnapshot anotherkeyDatasnapshot : dataSnapshot.)
 ////                                                keyCourseCode = dataSnapshot.getValue().toString();
-////                                                if (keyCourseCode.equalsIgnoreCase(courseCodeText)){
+////                                                if (keyCourseCode.equalsIgnoreCase(courseCodeText.toUpperCase())){
 ////                                                    Toast.makeText(AddNewMaterial.this, "Course Already Exits" , Toast.LENGTH_LONG).show();
-////                                                }else if (!keyCourseCode.equalsIgnoreCase(courseCodeText)){
+////                                                }else if (!keyCourseCode.equalsIgnoreCase(courseCodeText.toUpperCase())){
 ////                                                    Toast.makeText(AddNewMaterial.this, "DOESNT EIxist eih", Toast.LENGTH_SHORT).show();
 //////                                                            //start the firebase upload
 //////                                                            firebaseStorage();
@@ -263,7 +264,7 @@ public class AddNewMaterial extends AppCompatActivity {
         // such as photos and videos from the camera, using the putFile() method.
         // You can also upload raw data using putBytes() or from an InputStream using putStream().
 
-        fileStorageRef = mStorageRef.child("CourseMaterials/" + deptText +"/"+ programmeText +"/"+ levelText +"/"+ courseCodeText +"/"+displayName);
+        fileStorageRef = mStorageRef.child("CourseMaterials/" + deptText +"/"+ programmeText +"/"+ levelText +"/"+ courseCodeText.toUpperCase() +"/"+displayName);
 
         if (filePath != null) {
             final ProgressDialog progressDialog = new ProgressDialog(this);
@@ -288,20 +289,20 @@ public class AddNewMaterial extends AppCompatActivity {
                             Upload upload = new Upload();
                             upload.setDeptName(deptText);
                             upload.setLevelNum(levelText);
-                            upload.setCourseCodes(courseCodeText);
+                            upload.setCourseCodes(courseCodeText.toUpperCase());
                             upload.setCourseName(courseTitleText);
                             String uploadKey = uploadsDatabaseReference.push().getKey();
 
                             if (uploadKey != null) {
                                 upload.setUploadKey(uploadKey);
                                 uploadsDatabaseReference.child(uploadKey).setValue(upload);
-                                forStudentsDatabaseReference.child(courseCodeText).setValue(upload);
+                                forStudentsDatabaseReference.child(courseCodeText.toUpperCase()).setValue(upload);
 
 
                                 getUploadKey = uploadKey;
                                 //now after upload, we get its key and create child inside it for FilesS
                                 filesDatabaseReference = uploadsDatabaseReference.child(uploadKey).child("files");
-                                filesForStudentsDatabaseReference = forStudentsDatabaseReference.child(courseCodeText.toLowerCase()).child("files");
+                                filesForStudentsDatabaseReference = forStudentsDatabaseReference.child(courseCodeText.toUpperCase()).child("files");
                             }
 
 
@@ -374,7 +375,7 @@ public class AddNewMaterial extends AppCompatActivity {
         addNewSemesterSpinner = findViewById(R.id.addNew_semester_Spinner);
         recyclerView = findViewById(R.id.addNew_recyclerView);
 
-        courseCodeText = addCourseCode_TIE.getText().toString();
+        courseCodeText = addCourseCode_TIE.getText().toString().toUpperCase();
         courseCodeHint = addCourseCode_TIE.getHint().toString();
         courseTitleText = addCourseTitle_TIE.getText().toString();
         courseTitleHint = addCourseTitle_TIE.getHint().toString();
@@ -387,7 +388,7 @@ public class AddNewMaterial extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                courseCodeText = charSequence.toString();
+                courseCodeText = charSequence.toString().toUpperCase();
             }
 
             @Override
@@ -438,7 +439,7 @@ public class AddNewMaterial extends AppCompatActivity {
                     scrollRange = appBarLayout.getTotalScrollRange();
                 }
                 if (scrollRange + i == 0){
-                    if(!courseCodeText.isEmpty()){
+                    if(!courseCodeText.toUpperCase().isEmpty()){
                         addNewCollapsingToolbarLayout.isTitleEnabled();
                         addNewCollapsingToolbarLayout.setTitle(courseCodeText);
                     }else{
@@ -535,7 +536,7 @@ public class AddNewMaterial extends AppCompatActivity {
                                         // such as photos and videos from the camera, using the putFile() method.
                                         // You can also upload raw data using putBytes() or from an InputStream using putStream().
 
-                                        fileStorageRef = mStorageRef.child("CourseMaterials/" + deptText +"/"+ programmeText +"/"+ levelText +"/"+ courseCodeText +"/"+displayName);
+                                        fileStorageRef = mStorageRef.child("CourseMaterials/" + deptText +"/"+ programmeText +"/"+ levelText +"/"+ courseCodeText.toUpperCase() +"/"+displayName);
 
                                         if (filePath != null) {
                                             final ProgressDialog progressDialog = new ProgressDialog(AddNewMaterial.this);
@@ -560,17 +561,18 @@ public class AddNewMaterial extends AppCompatActivity {
                                                             final Upload upload = new Upload();
                                                             upload.setDeptName(deptText);
                                                             upload.setLevelNum(levelText);
-                                                            upload.setCourseCodes(courseCodeText);
+                                                            upload.setCourseCodes(courseCodeText.toUpperCase());
                                                             upload.setCourseName(courseTitleText);
 
                                                             if (uploadKey != null) {
                                                                 upload.setUploadKey(uploadKey);
                                                                 uploadsDatabaseReference.child(uploadKey).setValue(upload);
+                                                                forStudentsDatabaseReference.child(courseCodeText.toUpperCase()).setValue(upload);
 
                                                                 getUploadKey = uploadKey;
                                                                 //now after upload, we get its key and create child inside it for FilesS
                                                                 filesDatabaseReference = uploadsDatabaseReference.child(uploadKey).child("files");
-                                                                forStudentsDatabaseReference.child(uploadKey).child("files");
+                                                                forStudentsDatabaseReference.child(courseCodeText.toUpperCase()).child("files");
 
                                                                 //getting download url of file
                                                                 fileStorageRef.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
@@ -590,7 +592,7 @@ public class AddNewMaterial extends AppCompatActivity {
                                                                             if (filesKey != null) {
                                                                                 filesS.setFileKey(filesKey);
                                                                                 filesDatabaseReference.child(filesKey).setValue(filesS);
-                                                                                forStudentsDatabaseReference.child(filesKey).setValue(filesS);
+                                                                                filesForStudentsDatabaseReference.child(filesKey).setValue(filesS);
                                                                                 getFilesKey = filesKey;
                                                                             }
 
