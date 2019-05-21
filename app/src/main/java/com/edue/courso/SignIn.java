@@ -103,7 +103,7 @@ public class SignIn extends AppCompatActivity {
                 String email = String.valueOf(emailTextInputEditText.getText());
                 String password = String.valueOf(passwordTextInputEditText.getText());
 
-                if (isEmailValid(email) && !password.isEmpty()){
+                if (isEmailValid(email) && !password.isEmpty() && password.length() >= 6){
                     passwordTextInputLayout.setErrorEnabled(false);
                     //show progress dialog
                     progressDialog = new ProgressDialog(SignIn.this);
@@ -122,6 +122,8 @@ public class SignIn extends AppCompatActivity {
                     emailTextInputLayout.setError("Email cannot be empty");
                 }else if (password.isEmpty()){
                     passwordTextInputLayout.setError("Password cannot be empty");
+                }else if (password.length() <6 ){
+                    passwordTextInputLayout.setError("Password needs to be at least 6 characters");
                 }
             }
         });

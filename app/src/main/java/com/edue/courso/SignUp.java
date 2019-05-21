@@ -108,7 +108,7 @@ public class SignUp extends AppCompatActivity {
                 String password = String.valueOf(passwordTextInputEditText.getText());
                 String passwordConfirm = String.valueOf(passwordConfirmTextInputEditText.getText());
                 hideKeyboard();
-                if (name.length() > 0 && isEmailValid(email) && phone.length() == 10 && password.length() > 0 && passwordConfirm.length() > 0 && password.equals(passwordConfirm)) {
+                if (name.length() > 0 && isEmailValid(email) && phone.length() == 10 && password.length() > 0 && password.length() >= 6 && passwordConfirm.length() > 0 && password.equals(passwordConfirm)) {
                     //Display progress bar
                     final ProgressDialog progressDialog = new ProgressDialog(SignUp.this);
                     progressDialog.setMessage("Signing up ...");
@@ -176,6 +176,8 @@ public class SignUp extends AppCompatActivity {
                     phoneTextInputLayout.setError("Phone number cannot be empty");
                 }else if (password.isEmpty()){
                     passwordTextInputLayout.setError("Password cannot be empty");
+                }else if (password.length() <6 ){
+                    passwordTextInputLayout.setError("Password needs to be at least 6 characters");
                 }else if (!password.equals(passwordConfirm)){
                     passwordConfirmTextInputLayout.setError("Password do not match");
                 }
