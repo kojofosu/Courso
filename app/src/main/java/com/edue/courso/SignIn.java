@@ -245,6 +245,7 @@ public class SignIn extends AppCompatActivity {
                             Log.d(TAG, "FireBase signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             updateUI(user);
+                            progressDialog.dismiss();
                         } else {
                             progressDialog.dismiss();
                             // If sign in fails, display a message to the user.

@@ -11,7 +11,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,22 +33,43 @@ public class Profile extends AppCompatActivity {
     Toolbar toolbar;
     Button updateProfileBtn;
     SharedPreferences sharedPreferences;
+    FirebaseUser firebaseUser;
+    String userName, userEmail, userPhone;
+    String fullName, email, phone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
+        //initialize
+        init();
+
         //SharedPrefs
         sharedPreferences = getSharedPreferences("login" , MODE_PRIVATE);
         mDatabaseReference = FirebaseDatabase.getInstance().getReference("users");
         getUDBKey = sharedPreferences.getString("userID", "");
 
-        //initialize
-        init();
+        //setting details to string variables
+        fullName = sharedPreferences.getString("lecturerName", "");
+        email = sharedPreferences.getString("lecturerEmail", "");
+        phone = sharedPreferences.getString("lecturerPhone", "");
 
-        //fireBase database
-        firebaseDB();
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (fullName == null || email == null || phone == null){
+            //fireBase database
+            firebaseDB();
+        }else {
+            //set values to the various editTexts
+            addNewLecturerNameET.setText(fullName);
+            addNewLecturerEmailET.setText(email);
+            addNewLecturerContactET.setText(phone);
+            //toolbar title
+            toolbar.setTitle(userName);
+        }
+
+
 
         //Toolbar
         topToolbar();
@@ -57,12 +82,28 @@ public class Profile extends AppCompatActivity {
         updateProfileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mDatabaseReference.child(getUDBKey).child("email").setValue(addNewLecturerEmailET.getText().toString());
-                mDatabaseReference.child(getUDBKey).child("fullName").setValue(addNewLecturerNameET.getText().toString());
-                mDatabaseReference.child(getUDBKey).child("phone").setValue(addNewLecturerContactET.getText().toString()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                email = addNewLecturerEmailET.getText().toString();
+                fullName = addNewLecturerNameET.getText().toString();
+                phone = addNewLecturerContactET.getText().toString();
+                //update user email in firebase auth side
+                Toast.makeText(Profile.this, firebaseUser.getEmail(), Toast.LENGTH_SHORT).show();
+                firebaseUser.updateEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
-                    public void onSuccess(Void aVoid) {
-                        Toast.makeText(Profile.this, "Profile Updated", Toast.LENGTH_SHORT).show();
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()){
+                            mDatabaseReference.child(getUDBKey).child("email").setValue(email);
+                            mDatabaseReference.child(getUDBKey).child("fullName").setValue(fullName);
+                            mDatabaseReference.child(getUDBKey).child("phone").setValue(phone)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Toast.makeText(Profile.this, "Profile Updated", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+
+                            Log.d("Profile Activity", "User email address updated.");
+                            Toast.makeText(getApplicationContext(), "The email updated.", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
             }
@@ -93,12 +134,17 @@ public class Profile extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 //below code takes data from DB
                 User user = dataSnapshot.child(getUDBKey).getValue(User.class);
-                String userName, userEmail, userPhone;
+
                 if (user != null) {
-                    //get the values
-                    userName = user.getFullName();
+                    //saving in string variables
                     userEmail = user.getEmail();
+                    userName = user.getFullName();
                     userPhone = user.getPhone();
+                    //get the values and storing it in sharedPrefs
+                    sharedPreferences.edit().putString("lecturerName", userName).apply();
+                    sharedPreferences.edit().putString("lecturerEmail",userEmail).apply();
+                    sharedPreferences.edit().putString("lecturerPhone", userPhone).apply();
+
                     //set values to the various editTexts
                     addNewLecturerNameET.setText(userName);
                     addNewLecturerEmailET.setText(userEmail);
@@ -106,6 +152,7 @@ public class Profile extends AppCompatActivity {
                     //toolbar title
                     toolbar.setTitle(userName);
                 }
+
             }
 
             @Override

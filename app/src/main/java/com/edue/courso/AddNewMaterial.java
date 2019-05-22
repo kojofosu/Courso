@@ -47,6 +47,7 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -528,6 +529,8 @@ public class AddNewMaterial extends AppCompatActivity {
 
                                         Toast.makeText(AddNewMaterial.this, filePath.toString(), Toast.LENGTH_SHORT).show();
                                         Log.d("multi : " , "multi : " + filePath);
+                                        Log.d("multiDispName : " , "multiDisplay Name : " + displayName);
+
 
                                         //Initializing the StorageReference
                                         mStorageRef = FirebaseStorage.getInstance().getReference();
@@ -554,55 +557,56 @@ public class AddNewMaterial extends AppCompatActivity {
                                                         public void onSuccess(final UploadTask.TaskSnapshot taskSnapshot) {
                                                             // Get a URL to the uploaded content
                                                             //Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                                                            progressDialog.dismiss();
-                                                            Toast.makeText(AddNewMaterial.this, "Uploaded Successfully" + filePath, Toast.LENGTH_SHORT).show();
-                                                            Log.d("Uploaded Successfully" , "Uploaded Successfully : " + filePath);
-                                                            //adding to database to upload
-                                                            final Upload upload = new Upload();
-                                                            upload.setDeptName(deptText);
-                                                            upload.setLevelNum(levelText);
-                                                            upload.setCourseCodes(courseCodeText.toUpperCase());
-                                                            upload.setCourseName(courseTitleText);
 
-                                                            if (uploadKey != null) {
-                                                                upload.setUploadKey(uploadKey);
-                                                                uploadsDatabaseReference.child(uploadKey).setValue(upload);
-                                                                forStudentsDatabaseReference.child(courseCodeText.toUpperCase()).setValue(upload);
+                                                                progressDialog.dismiss();
+                                                                Toast.makeText(AddNewMaterial.this, "Uploaded Successfully" + filePath, Toast.LENGTH_SHORT).show();
+                                                                Log.d("Uploaded Successfully" , "Uploaded Successfully : " + filePath);
+                                                                //adding to database to upload
+                                                                final Upload upload = new Upload();
+                                                                upload.setDeptName(deptText);
+                                                                upload.setLevelNum(levelText);
+                                                                upload.setCourseCodes(courseCodeText.toUpperCase());
+                                                                upload.setCourseName(courseTitleText);
 
-                                                                getUploadKey = uploadKey;
-                                                                //now after upload, we get its key and create child inside it for FilesS
-                                                                filesDatabaseReference = uploadsDatabaseReference.child(uploadKey).child("files");
-                                                                forStudentsDatabaseReference.child(courseCodeText.toUpperCase()).child("files");
+                                                                if (uploadKey != null) {
+                                                                    upload.setUploadKey(uploadKey);
+                                                                    uploadsDatabaseReference.child(uploadKey).setValue(upload);
+                                                                    forStudentsDatabaseReference.child(courseCodeText.toUpperCase()).setValue(upload);
 
-                                                                //getting download url of file
-                                                                fileStorageRef.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
-                                                                    @Override
-                                                                    public void onComplete(@NonNull Task<Uri> task) {
-                                                                        if (task.isSuccessful()) {
-                                                                            Uri URI = task.getResult();
-                                                                            //storing url to fileUrl
-                                                                            fileUrl = URI.toString();
-                                                                            Log.d("file Url ", "url is : " + fileUrl);
+                                                                    getUploadKey = uploadKey;
+                                                                    //now after upload, we get its key and create child inside it for FilesS
+                                                                    filesDatabaseReference = uploadsDatabaseReference.child(uploadKey).child("files");
+                                                                    forStudentsDatabaseReference.child(courseCodeText.toUpperCase()).child("files");
 
-                                                                            //adding to database to filesS
-                                                                            FilesS filesS = new FilesS();
-                                                                            filesS.setFileName(displayName);
-                                                                            filesS.setFileUrl(fileUrl);
-                                                                            String filesKey = filesDatabaseReference.push().getKey();
-                                                                            if (filesKey != null) {
-                                                                                filesS.setFileKey(filesKey);
-                                                                                filesDatabaseReference.child(filesKey).setValue(filesS);
-                                                                                filesForStudentsDatabaseReference.child(filesKey).setValue(filesS);
-                                                                                getFilesKey = filesKey;
+                                                                    //getting download url of file
+                                                                    fileStorageRef.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                                                        @Override
+                                                                        public void onComplete(@NonNull Task<Uri> task) {
+                                                                            if (task.isSuccessful()) {
+                                                                                Uri URI = task.getResult();
+                                                                                //storing url to fileUrl
+                                                                                fileUrl = URI.toString();
+                                                                                Log.d("file Url ", "url is : " + fileUrl);
+
+                                                                                //adding to database to filesS
+                                                                                FilesS filesS = new FilesS();
+                                                                                filesS.setFileName(displayName);
+                                                                                filesS.setFileUrl(fileUrl);
+                                                                                String filesKey = filesDatabaseReference.push().getKey();
+                                                                                if (filesKey != null) {
+                                                                                    filesS.setFileKey(filesKey);
+                                                                                    filesDatabaseReference.child(filesKey).setValue(filesS);
+                                                                                    filesForStudentsDatabaseReference.child(filesKey).setValue(filesS);
+                                                                                    getFilesKey = filesKey;
+                                                                                }
+
+                                                                            } else if (!task.isSuccessful()) {
+                                                                                Toast.makeText(AddNewMaterial.this, "FAILED TO GET URL ", Toast.LENGTH_SHORT).show();
+                                                                                Log.d("file Url ", "FAILED TO GET URL : ");
                                                                             }
-
-                                                                        } else if (!task.isSuccessful()) {
-                                                                            Toast.makeText(AddNewMaterial.this, "FAILED TO GET URL ", Toast.LENGTH_SHORT).show();
-                                                                            Log.d("file Url ", "FAILED TO GET URL : ");
                                                                         }
-                                                                    }
-                                                                });
-                                                            }
+                                                                    });
+                                                                }
 
 
                                                         }
@@ -626,6 +630,7 @@ public class AddNewMaterial extends AppCompatActivity {
 
                                         }else {
                                             Toast.makeText(getApplicationContext(), "Empty file path", Toast.LENGTH_SHORT).show();
+                                            Log.d("EmptyFilePath ", "Empty file path for multiple files");
                                         }
 
 //                                        firebaseStorage();
