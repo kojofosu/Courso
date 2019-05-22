@@ -1,5 +1,6 @@
 package com.edue.courso;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -67,20 +68,21 @@ public class AddMaterials extends AppCompatActivity {
 
         code = getIntent().getStringExtra("Code");
         level = getIntent().getStringExtra("Level");
-        //programme = getIntent().getStringExtra("Programme");
+        programme = getIntent().getStringExtra("Programme");
         title = getIntent().getStringExtra("Title");
         dept = getIntent().getStringExtra("Dept");
         uploadkey = getIntent().getStringExtra("UploadKey");
 
         Log.d(TAG, code);
         Log.d(TAG, level);
-        //Log.d(TAG, programme);
+        Log.d(TAG, programme);
         Log.d(TAG, title);
         Log.d(TAG, dept);
         Log.d(TAG, uploadkey);
 
         showName.setText(title);
         showLevel.setText(String.format("Level %s", level));
+        showProgramme.setText(programme);
         showDept.setText(dept);
         showCode.setText(code);
 
@@ -106,6 +108,9 @@ public class AddMaterials extends AppCompatActivity {
 
         //Toolbar
         topToolbar();
+
+        //eventListeners
+        eventListeners();
     }
 
 
@@ -201,6 +206,23 @@ public class AddMaterials extends AppCompatActivity {
         });
     }
 
+    private void eventListeners() {
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent uploadMaterialIntent = new Intent(AddMaterials.this, UploadMaterial.class);
+                uploadMaterialIntent.putExtra("uploadDept", dept);
+                uploadMaterialIntent.putExtra("uploadLevel", level);
+                uploadMaterialIntent.putExtra("uploadProgramme", programme);
+                uploadMaterialIntent.putExtra("uploadUploadKey", uploadkey);
+                uploadMaterialIntent.putExtra("uploadTitle", title);
+                uploadMaterialIntent.putExtra("uploadCode", code);
+                uploadMaterialIntent.putExtra("uploadGetUDBKey", getUDBKey);
+                startActivity(uploadMaterialIntent);
+            }
+        });
+    }
+
     private void topToolbar() {
         addMaterialToolbar.getNavigationIcon();
         addMaterialToolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -238,7 +260,8 @@ public class AddMaterials extends AppCompatActivity {
             }
         });
 
-
     }
+
+
 
 }

@@ -79,7 +79,7 @@ public class AddNewMaterial extends AppCompatActivity {
     SharedPreferences sharedPreferences;
 
     private RecyclerView recyclerView;
-    private List<String> fileNameList;
+    List<String> fileNameList;
     private UploadListAdapter uploadListAdapter;
 
     //Declaring a StorageReference
@@ -290,9 +290,10 @@ public class AddNewMaterial extends AppCompatActivity {
                             Upload upload = new Upload();
                             upload.setDeptName(deptText);
                             upload.setLevelNum(levelText);
+                            upload.setProgramme(programmeText);
                             upload.setCourseCodes(courseCodeText.toUpperCase());
                             upload.setCourseName(courseTitleText);
-                            String uploadKey = uploadsDatabaseReference.push().getKey();
+                            final String uploadKey = uploadsDatabaseReference.push().getKey();
 
                             if (uploadKey != null) {
                                 upload.setUploadKey(uploadKey);
@@ -317,11 +318,15 @@ public class AddNewMaterial extends AppCompatActivity {
                                         fileUrl = URI.toString();
                                         Log.d("file Url ", "url is : " + fileUrl);
 
+                                        filesDatabaseReference = uploadsDatabaseReference.child(uploadKey).child("files");
+                                        filesForStudentsDatabaseReference = forStudentsDatabaseReference.child(courseCodeText.toUpperCase()).child("files");
+
                                         //adding to database to filesS
                                         FilesS filesS = new FilesS();
                                         filesS.setFileName(displayName);
                                         filesS.setFileUrl(fileUrl);
                                         String filesKey = filesDatabaseReference.push().getKey();
+                                        Log.d("fileKey", filesKey);
                                         if (filesKey != null) {
                                             filesS.setFileKey(filesKey);
                                             filesDatabaseReference.child(filesKey).setValue(filesS);
@@ -565,6 +570,7 @@ public class AddNewMaterial extends AppCompatActivity {
                                                                 final Upload upload = new Upload();
                                                                 upload.setDeptName(deptText);
                                                                 upload.setLevelNum(levelText);
+                                                                upload.setProgramme(programmeText);
                                                                 upload.setCourseCodes(courseCodeText.toUpperCase());
                                                                 upload.setCourseName(courseTitleText);
 
