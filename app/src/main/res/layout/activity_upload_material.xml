@@ -5,12 +5,37 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".UploadMaterial">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:paddingBottom="60dp">
-    <!--MATERIAL-->
+
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/upload_material_AppBar"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fitsSystemWindows="true">
+
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/upload_material_toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?actionBarSize"
+                    app:popupTheme="@style/AppTheme"
+                    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                    app:layout_collapseMode="pin"
+                    app:titleTextColor="#ffffff"
+                    android:fitsSystemWindows="false"
+                    app:navigationIcon="?android:homeAsUpIndicator"/>
+
+
+
+        </android.support.design.widget.AppBarLayout>
+
+
+        <!--MATERIAL-->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

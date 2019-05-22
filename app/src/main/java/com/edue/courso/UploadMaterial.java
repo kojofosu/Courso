@@ -10,11 +10,13 @@ import android.os.Build;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -43,6 +45,8 @@ public class UploadMaterial extends AppCompatActivity {
     Button uploadMaterialBtn;
     RecyclerView uploadMaterialRecyclerView;
     TextView uploadMaterialFileTV;
+    AppBarLayout uploadMaterialAppBarLayout;
+    Toolbar uploadMaterialToolbar;
     String uploadCode, uploadLevel, uploadTitle, uploadDept, uploadkey, uploadGetUDBKey, uploadProgramme;
     private static final int GET_FILE = 1313;
     private static String TAG = "UploadMaterial Activity";
@@ -115,12 +119,17 @@ public class UploadMaterial extends AppCompatActivity {
         //select file event
         selectFileEvent();
 
+        //toolbar
+        topToolbar();
+
     }
 
     private void init() {
         uploadMaterialBtn = findViewById(R.id.upload_material_upload_btn);
         uploadMaterialRecyclerView = findViewById(R.id.upload_material_recyclerView);
         uploadMaterialFileTV = findViewById(R.id.upload_material_fileTV);
+        uploadMaterialAppBarLayout = findViewById(R.id.upload_material_AppBar);
+        uploadMaterialToolbar = findViewById(R.id.upload_material_toolbar);
     }
 
     private void selectFileEvent() {
@@ -221,20 +230,9 @@ public class UploadMaterial extends AppCompatActivity {
                                                             progressDialog.dismiss();
                                                             Toast.makeText(UploadMaterial.this, "Uploaded Successfully" + filePath, Toast.LENGTH_SHORT).show();
                                                             Log.d("Uploaded Successfully" , "Uploaded Successfully : " + filePath);
-//                                                            //adding to database to upload
-//                                                            final Upload upload = new Upload();
-//                                                            upload.setDeptName(uploadDept);
-//                                                            upload.setLevelNum(uploadLevel);
-//                                                            upload.setProgramme(uploadProgramme);
-//                                                            upload.setCourseCodes(uploadCode.toUpperCase());
-//                                                            upload.setCourseName(uploadTitle);
+
 
                                                             if (uploadkey != null) {
-                                                                //upload.setUploadKey(uploadkey);
-                                                                //uploadsDatabaseReference.child(uploadkey).setValue(upload);
-                                                                //forStudentsDatabaseReference.child(uploadCode.toUpperCase()).setValue(upload);
-
-
                                                                 //now after upload, we get its key and create child inside it for FilesS
                                                                 filesDatabaseReference = uploadsDatabaseReference.child(uploadkey).child("files");
                                                                 forStudentsDatabaseReference.child(uploadCode.toUpperCase()).child("files");
@@ -256,14 +254,6 @@ public class UploadMaterial extends AppCompatActivity {
                                                                             //String filesKey = filesDatabaseReference.push().getKey();
                                                                             filesDatabaseReference.push().setValue(filesS);
                                                                             filesForStudentsDatabaseReference.push().setValue(filesS);
-//                                                                            if (filesKey != null) {
-//                                                                                filesS.setFileKey(filesKey);
-////                                                                                filesDatabaseReference.child(filesKey).setValue(filesS);
-////                                                                                filesForStudentsDatabaseReference.child(filesKey).setValue(filesS);
-//
-//                                                                                getFilesKey = filesKey;
-//                                                                            }
-
                                                                         } else if (!task.isSuccessful()) {
                                                                             Toast.makeText(UploadMaterial.this, "FAILED TO GET URL ", Toast.LENGTH_SHORT).show();
                                                                             Log.d("file Url ", "FAILED TO GET URL : ");
@@ -357,21 +347,7 @@ public class UploadMaterial extends AppCompatActivity {
                             progressDialog.dismiss();
                             Toast.makeText(UploadMaterial.this, "Uploaded Successfully", Toast.LENGTH_SHORT).show();
 
-
-//                            //adding to database to upload
-//                            Upload upload = new Upload();
-//                            upload.setDeptName(uploadDept);
-//                            upload.setLevelNum(uploadLevel);
-//                            upload.setProgramme(uploadProgramme);
-//                            upload.setCourseCodes(uploadCode.toUpperCase());
-//                            upload.setCourseName(uploadTitle);
-
                             if (uploadkey != null) {
-//                                upload.setUploadKey(uploadkey);
-//                                uploadsDatabaseReference.child(uploadkey).setValue(upload);
-//                                forStudentsDatabaseReference.child(uploadCode.toUpperCase()).setValue(upload);
-
-
                                 //now after upload, we get its key and create child inside it for FilesS
                                 filesDatabaseReference = uploadsDatabaseReference.child(uploadkey).child("files");
                                 filesForStudentsDatabaseReference = forStudentsDatabaseReference.child(uploadCode.toUpperCase()).child("files");
@@ -431,4 +407,13 @@ public class UploadMaterial extends AppCompatActivity {
         }
     }
 
+    private void topToolbar() {
+        uploadMaterialToolbar.getNavigationIcon();
+        uploadMaterialToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
+    }
 }
