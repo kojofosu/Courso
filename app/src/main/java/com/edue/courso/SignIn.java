@@ -250,7 +250,7 @@ public class SignIn extends AppCompatActivity {
                             progressDialog.dismiss();
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "FireBase signInWithEmail:failure", task.getException());
-                            Toast.makeText(SignIn.this, "Authentication failed. " + task.getException(),
+                            Toast.makeText(SignIn.this, "Authentication failed. " + task.getException().getMessage(),
                                     Toast.LENGTH_LONG).show();
                             updateUI(null);
                         }

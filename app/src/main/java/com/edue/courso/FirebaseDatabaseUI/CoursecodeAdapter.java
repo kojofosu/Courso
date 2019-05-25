@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
@@ -104,7 +105,7 @@ public class CoursecodeAdapter extends FirebaseRecyclerAdapter<Upload, CourseCod
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()) {
-                                            Toast.makeText(context, "deleted", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(context, "Deleted", Toast.LENGTH_SHORT).show();
                                             Log.d("code ", "code is : " + getCode);
 
 
@@ -112,9 +113,11 @@ public class CoursecodeAdapter extends FirebaseRecyclerAdapter<Upload, CourseCod
                                                 @Override
                                                 public void onComplete(@NonNull Task<Void> task) {
                                                     if (task.isSuccessful()){
-                                                        Toast.makeText(context, "student side for "+ getCode + "is deleted successfully", Toast.LENGTH_SHORT).show();
+                                                       // Toast.makeText(context, "student side for "+ getCode + "is deleted successfully", Toast.LENGTH_SHORT).show();
+                                                        Log.d("StudentSideDel" , "student side for "+ getCode + "is deleted successfully");
                                                     }else if (!task.isSuccessful()){
-                                                        Toast.makeText(context, "student side for "+ getCode + "UNSUCCESSFUL", Toast.LENGTH_SHORT).show();
+                                                        //Toast.makeText(context, "student side for "+ getCode + "UNSUCCESSFUL", Toast.LENGTH_SHORT).show();
+                                                        Log.d("StudentSideDel" , "student side for "+ getCode + "UNSUCCESSFUL");
                                                     }
                                                 }
                                             });

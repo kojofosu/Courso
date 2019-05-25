@@ -2,6 +2,7 @@ package com.edue.courso;
 
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -86,7 +87,7 @@ public class Profile extends AppCompatActivity {
                 fullName = addNewLecturerNameET.getText().toString();
                 phone = addNewLecturerContactET.getText().toString();
                 //update user email in firebase auth side
-                Toast.makeText(Profile.this, firebaseUser.getEmail(), Toast.LENGTH_SHORT).show();
+
                 firebaseUser.updateEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -97,7 +98,7 @@ public class Profile extends AppCompatActivity {
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
-                                            Toast.makeText(Profile.this, "Profile Updated", Toast.LENGTH_SHORT).show();
+                                            Snackbar.make(findViewById(R.id.Id_Profile), "Profile Update", Snackbar.LENGTH_SHORT).show();
                                         }
                                     });
 

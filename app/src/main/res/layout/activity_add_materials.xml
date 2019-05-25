@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".AddMaterials">
+    tools:context=".AddMaterials"
+    android:id="@+id/Id_AddMaterial">
 
 <android.support.design.widget.CoordinatorLayout
     android:layout_width="match_parent"
@@ -17,64 +18,7 @@
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true">
 
-        <android.support.design.widget.CollapsingToolbarLayout
-            android:id="@+id/add_material_CollapsingToolbarLayout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            app:expandedTitleGravity="bottom|center_horizontal"
-            app:expandedTitleMarginBottom="60dp"
-            app:collapsedTitleGravity="center_vertical"
-            app:titleEnabled="true"
-            android:textAlignment="center"
-            app:contentScrim="@color/colorPrimary"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            android:fitsSystemWindows="true">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="0dp"
-                android:paddingBottom="3dp"
-                android:fitsSystemWindows="true"
-                android:layout_marginLeft="40dp"
-                android:layout_marginRight="0dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/show_level"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Level"
-                    android:padding="10dp"
-                    android:layout_marginTop="10dp"/>
-                <TextView
-                    android:id="@+id/show_code"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="course code"
-                    android:padding="10dp"/>
-                <TextView
-                    android:id="@+id/show_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="course name"
-                    android:padding="10dp"/>
-                <TextView
-                    android:id="@+id/show_programme"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="programme"
-                    android:padding="10dp"/>
-                <TextView
-                    android:id="@+id/show_dept"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="dept"
-                    android:ellipsize="marquee"
-                    android:padding="10dp"/>
-
-            </LinearLayout>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/add_material_toolbar"
@@ -87,7 +31,6 @@
                 android:fitsSystemWindows="false"
                 app:navigationIcon="?android:homeAsUpIndicator"/>
 
-        </android.support.design.widget.CollapsingToolbarLayout>
 
 
     </android.support.design.widget.AppBarLayout>
@@ -114,7 +57,8 @@
         android:backgroundTint="#3498db"
         style="@style/Widget.MaterialComponents.BottomAppBar.Colored"
         android:elevation="30dp"
-        app:hideOnScroll="true">
+        app:hideOnScroll="true"
+        app:menu="@menu/bottom_appbar_menu">
     </android.support.design.bottomappbar.BottomAppBar>
 
     <android.support.design.widget.FloatingActionButton
@@ -122,7 +66,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:backgroundTint="#105a7c"
-        android:src="@android:drawable/ic_menu_add"
+        android:src="@drawable/ic_add_black_24dp"
         app:layout_anchor="@id/bottom_app_bar"/>
 </android.support.design.widget.CoordinatorLayout>
 </android.support.design.widget.CoordinatorLayout>

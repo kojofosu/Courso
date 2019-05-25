@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.view.View;
 import android.webkit.WebView;
-import android.widget.Toast;
 
 import com.edue.courso.FilesS;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;

@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
@@ -284,7 +285,7 @@ public class AddNewMaterial extends AppCompatActivity {
                             // Get a URL to the uploaded content
                             //Uri downloadUrl = taskSnapshot.getDownloadUrl();
                             progressDialog.dismiss();
-                            Toast.makeText(AddNewMaterial.this, "Uploaded Successfully", Toast.LENGTH_SHORT).show();
+                            Snackbar.make(findViewById(R.id.Id_AddNewMateial), "Uploaded Successfully", Snackbar.LENGTH_SHORT).show();
 
 
                             //adding to database to upload
@@ -349,7 +350,7 @@ public class AddNewMaterial extends AppCompatActivity {
                             // Handle unsuccessful uploads
                             // ...
                             progressDialog.dismiss();
-                            Toast.makeText(AddNewMaterial.this, exception.getMessage(), Toast.LENGTH_SHORT).show();
+                            Snackbar.make(findViewById(R.id.Id_AddNewMateial), "Uploaded Failed", Snackbar.LENGTH_SHORT).show();
 
                         }
                     }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
@@ -551,7 +552,7 @@ public class AddNewMaterial extends AppCompatActivity {
                                         uploadListAdapter.notifyDataSetChanged();
 
 
-                                        Toast.makeText(AddNewMaterial.this, filePath.toString(), Toast.LENGTH_SHORT).show();
+                                        //Toast.makeText(AddNewMaterial.this, filePath.toString(), Toast.LENGTH_SHORT).show();
                                         Log.d("multi : " , "multi : " + filePath);
                                         Log.d("multiDispName : " , "multiDisplay Name : " + displayName);
 
@@ -595,7 +596,7 @@ public class AddNewMaterial extends AppCompatActivity {
                                                                 Uri urlLists = taskSnapshot.getUploadSessionUri();
 
                                                                 progressDialog.dismiss();
-                                                                Toast.makeText(AddNewMaterial.this, "Uploaded Successfully" + filePath, Toast.LENGTH_SHORT).show();
+                                                                Snackbar.make(findViewById(R.id.Id_AddNewMateial), "Uploaded Successfully", Snackbar.LENGTH_SHORT).show();
                                                                 Log.d("Uploaded Successfully", "Uploaded Successfully : " + filePath);
                                                                 Log.d("taskSnapUp", "taskSnapShot uploaded success results : " + urlLists);
 
@@ -647,7 +648,7 @@ public class AddNewMaterial extends AppCompatActivity {
                                                             // Handle unsuccessful uploads
                                                             // ...
                                                             progressDialog.dismiss();
-                                                            Toast.makeText(AddNewMaterial.this, exception.getMessage(), Toast.LENGTH_SHORT).show();
+                                                            Snackbar.make(findViewById(R.id.Id_AddNewMateial), "Uploaded Failed", Snackbar.LENGTH_SHORT).show();
 
                                                         }
                                                     }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
@@ -699,7 +700,7 @@ public class AddNewMaterial extends AppCompatActivity {
                                 programmeText = addNewProgrammeSpinner.getSelectedItem().toString();
                                 levelText = addNewLevelSpinner.getSelectedItem().toString();
 
-                                Toast.makeText(AddNewMaterial.this, "Single item selected", Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(AddNewMaterial.this, "Single item selected", Toast.LENGTH_SHORT).show();
                                 firebaseStorage();
 
                             }

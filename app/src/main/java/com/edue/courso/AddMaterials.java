@@ -8,16 +8,20 @@ import android.support.design.bottomappbar.BottomAppBar;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.edue.courso.FirebaseDatabaseUI.FilesAdapter;
 import com.edue.courso.FirebaseDatabaseUI.FilesHolder;
@@ -80,11 +84,11 @@ public class AddMaterials extends AppCompatActivity {
         Log.d(TAG, dept);
         Log.d(TAG, uploadkey);
 
-        showName.setText(title);
-        showLevel.setText(String.format("Level %s", level));
-        showProgramme.setText(programme);
-        showDept.setText(dept);
-        showCode.setText(code);
+//        showName.setText(title);
+//        showLevel.setText(String.format("Level %s", level));
+//        showProgramme.setText(programme);
+//        showDept.setText(dept);
+//        showCode.setText(code);
 
         linearLayoutManager = new LinearLayoutManager(this);
         addMaterialsRecyclerView = (RecyclerView) findViewById(R.id.add_material_recyclerView);
@@ -104,7 +108,7 @@ public class AddMaterials extends AppCompatActivity {
         firebaseDatabase();
 
         //collapsible toolbar
-        collapsibleToolbar();
+        //collapsibleToolbar();
 
         //Toolbar
         topToolbar();
@@ -120,14 +124,36 @@ public class AddMaterials extends AppCompatActivity {
         floatingActionButton = findViewById(R.id.add_new_material_fab);
         fileName = findViewById(R.id.add_material_item_name);
         deleteFile = findViewById(R.id.add_material_item_delete_thumbnail);
-        showCode = findViewById(R.id.show_code);
-        showDept = findViewById(R.id.show_dept);
-        showLevel = findViewById(R.id.show_level);
-        showName = findViewById(R.id.show_name);
-        showProgramme = findViewById(R.id.show_programme);
-        addMaterialCollapsingToolbarLayout = findViewById(R.id.add_material_CollapsingToolbarLayout);
+//        showCode = findViewById(R.id.show_code);
+//        showDept = findViewById(R.id.show_dept);
+//        showLevel = findViewById(R.id.show_level);
+//        showName = findViewById(R.id.show_name);
+//        showProgramme = findViewById(R.id.show_programme);
+//        addMaterialCollapsingToolbarLayout = findViewById(R.id.add_material_CollapsingToolbarLayout);
         addMaterialAppBarLayout = findViewById(R.id.add_material_AppBar);
         addMaterialToolbar = findViewById(R.id.add_material_toolbar);
+
+        bottomAppBar.inflateMenu(R.menu.bottom_appbar_menu);
+        bottomAppBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                int id = menuItem.getItemId();
+                if (id == R.id.app_bar_info){
+                    Toast.makeText(AddMaterials.this, "info", Toast.LENGTH_SHORT).show();
+                    DetailsFragment detailsFragment = new DetailsFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("bottomCode", code);
+                    bundle.putString("bottomTitle", title);
+                    bundle.putString("bottomLevel", level);
+                    bundle.putString("bottomProgramme", programme);
+                    bundle.putString("bottomDept", dept);
+                    detailsFragment.setArguments(bundle);
+                    detailsFragment.show(getSupportFragmentManager(), detailsFragment.getTag());
+
+                }
+                return true;
+            }
+        });
     }
 
     private void firebaseDatabase() {
@@ -201,7 +227,7 @@ public class AddMaterials extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                Snackbar.make(findViewById(R.id.Id_AddMaterial), "Error", Snackbar.LENGTH_LONG).show();
             }
         });
     }
@@ -225,6 +251,7 @@ public class AddMaterials extends AppCompatActivity {
 
     private void topToolbar() {
         addMaterialToolbar.getNavigationIcon();
+        addMaterialToolbar.setTitle(code);
         addMaterialToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -261,7 +288,5 @@ public class AddMaterials extends AppCompatActivity {
         });
 
     }
-
-
 
 }
