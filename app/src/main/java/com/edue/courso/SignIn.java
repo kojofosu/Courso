@@ -30,6 +30,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -158,11 +163,35 @@ public class SignIn extends AppCompatActivity {
                         if(findCode.isEmpty() || findCode.length() < 6){
                             studentLoginTextInputLayout.setError("Should be 6 characters or more");
                         }else {
-                            //findCode.length();
-                            Intent intent = new Intent(SignIn.this, StudentMaterials.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            intent.putExtra("StudentsCode", findCode.toUpperCase());
-                            startActivity(intent);
+                            final ProgressDialog progressDialog = new ProgressDialog(SignIn.this);
+                            progressDialog.setMessage("Searching...");
+                            progressDialog.setCancelable(false);
+                            progressDialog.show();
+
+                            DatabaseReference studentMaterialDatabaseReference = FirebaseDatabase.getInstance().getReference("students/" + findCode);
+
+                            studentMaterialDatabaseReference.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot.exists()){
+                                        progressDialog.dismiss();
+                                        Intent intent = new Intent(SignIn.this, StudentMaterials.class);
+                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        intent.putExtra("StudentsCode", findCode.toUpperCase());
+                                        startActivity(intent);
+                                    }else{
+                                        progressDialog.dismiss();
+                                        Toast.makeText(SignIn.this, "Course doesn't exist", Toast.LENGTH_LONG).show();
+                                        studentLoginTextInputLayout.setError("Course doesn't exist!");
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+
                         }
                     }
                 });
