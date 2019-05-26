@@ -58,7 +58,7 @@ public class Profile extends AppCompatActivity {
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        if (fullName == null || email == null || phone == null){
+        if (fullName.isEmpty() || email.isEmpty() || phone.isEmpty()){
             //fireBase database
             firebaseDB();
         }else {
@@ -67,7 +67,7 @@ public class Profile extends AppCompatActivity {
             addNewLecturerEmailET.setText(email);
             addNewLecturerContactET.setText(phone);
             //toolbar title
-            toolbar.setTitle(userName);
+            toolbar.setTitle(fullName);
         }
 
 
@@ -124,7 +124,7 @@ public class Profile extends AppCompatActivity {
 
     private void firebaseDB() {
         //Initializing the databaseReference
-        getUDBKey = sharedPreferences.getString("userID", "");
+        //getUDBKey = sharedPreferences.getString("userID", "");
         //fetching key from mDatabaseReference to use as child for the rest
         key = mDatabaseReference.push().getKey();
         uploadsDatabaseReference = FirebaseDatabase.getInstance().getReference("users/"+ getUDBKey + "/uploads");

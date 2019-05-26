@@ -27,6 +27,9 @@
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
     <android.support.v7.widget.RecyclerView
         android:id="@+id/home_recyclerView"
         android:layout_width="match_parent"
@@ -34,7 +37,14 @@
 
     </android.support.v7.widget.RecyclerView>
 
-    <!--<ListView-->
+        <ProgressBar
+            android:id="@+id/home_progressbar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_centerInParent="true"/>
+
+        <!--<ListView-->
         <!--android:id="@+id/main_listview"-->
         <!--android:layout_width="match_parent"-->
         <!--android:layout_height="wrap_content"-->
@@ -42,7 +52,7 @@
         <!--android:drawSelectorOnTop="true"-->
         <!--android:keepScreenOn="true"-->
         <!--android:longClickable="true"/>-->
-
+        </RelativeLayout>
     </LinearLayout>
 
 

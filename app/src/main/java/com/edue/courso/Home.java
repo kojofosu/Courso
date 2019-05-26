@@ -22,6 +22,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.edue.courso.FirebaseDatabaseUI.CourseCodeHolder;
@@ -44,6 +45,7 @@ import java.util.Objects;
 
 public class Home extends AppCompatActivity {
     FloatingActionButton fab;
+    ProgressBar homeProgressBar;
     ListView listView;
     ImageButton deleteClass;
     TextView itemTitle, testTV;
@@ -168,6 +170,9 @@ public class Home extends AppCompatActivity {
     }
 
     private void firebaseDatabase() {
+
+        //startProgressBar
+        homeProgressBar.setVisibility(View.VISIBLE);
         getUDBKey = sharedPreferences.getString("userID", "");
         mDatabaseReference = FirebaseDatabase.getInstance().getReference("users");
         uploadsDatabaseReference = FirebaseDatabase.getInstance().getReference("users/"+ getUDBKey + "/uploads");
@@ -177,6 +182,8 @@ public class Home extends AppCompatActivity {
         uploadsDatabaseReference.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                //stopProgressBar
+                homeProgressBar.setVisibility(View.GONE);
 //                listKeys = dataSnapshot.getKey();
 //                listItems = dataSnapshot.child("courseCodes").getValue();
 
@@ -247,6 +254,7 @@ public class Home extends AppCompatActivity {
         //listView = findViewById(R.id.main_listview);
         toolbar = findViewById(R.id.toolbar);
         deleteClass = findViewById(R.id.delete_thumbnail);
+        homeProgressBar = findViewById(R.id.home_progressbar);
     }
 
     private void firebaseDownloadFromStorage() {

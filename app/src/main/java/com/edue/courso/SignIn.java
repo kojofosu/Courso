@@ -152,19 +152,17 @@ public class SignIn extends AppCompatActivity {
 
                     }
                 });
-//                findCode = studentLoginInputEditText.getText().toString();
                 buttonFindCourse.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         if(findCode.isEmpty() || findCode.length() < 6){
                             studentLoginTextInputLayout.setError("Should be 6 characters or more");
-                        }else if (!findCode.isEmpty() && findCode.length() >= 6){
+                        }else {
+                            //findCode.length();
                             Intent intent = new Intent(SignIn.this, StudentMaterials.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             intent.putExtra("StudentsCode", findCode.toUpperCase());
                             startActivity(intent);
-//                        Bundle bundle = new Bundle();
-//                        bundle.putString("StudentsCode", findCode);
                         }
                     }
                 });

@@ -46,7 +46,7 @@ public class DetailsFragment extends BottomSheetDialogFragment {
             bottomSheetCode.setText(bottom_code);
             bottomSheetTitle.setText(bottom_title);
             bottomSHeetDept.setText(bottom_dept);
-            bottomSheetLevel.setText(bottom_level);
+            bottomSheetLevel.setText(String.format("Level %s", bottom_level));
             bottomSheetProgramme.setText(bottom_programme);
         }
 

@@ -17,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.edue.courso.FirebaseDatabaseUI.StudentFilesAdapter;
 import com.edue.courso.FirebaseDatabaseUI.StudentFilesHolder;
@@ -137,12 +138,15 @@ public class StudentMaterials extends AppCompatActivity{
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
+                if (dataSnapshot.exists()) {
 
-                studentFilesAdapter = new StudentFilesAdapter(FilesS.class, R.layout.student_materials_items, StudentFilesHolder.class, studentsFilesDatabaseReference, getApplicationContext());
-                studentMaterialsRecyclerView.setAdapter(studentFilesAdapter);
+                    studentFilesAdapter = new StudentFilesAdapter(FilesS.class, R.layout.student_materials_items, StudentFilesHolder.class, studentsFilesDatabaseReference, getApplicationContext());
+                    studentMaterialsRecyclerView.setAdapter(studentFilesAdapter);
 
-                Log.d(TAG, "recycler VAL : " + studentMaterialsRecyclerView);
-
+                    Log.d(TAG, "recycler VAL : " + studentMaterialsRecyclerView);
+                }else{
+                    Toast.makeText(StudentMaterials.this, "Array list is empty hahahah", Toast.LENGTH_LONG).show();
+                }
 //                listKeys.add(dataSnapshot.getKey());
 //                adapter.add((String) dataSnapshot.child("courseCodes").getValue());
 //
@@ -184,7 +188,7 @@ public class StudentMaterials extends AppCompatActivity{
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
+                Toast.makeText(StudentMaterials.this, "child removed", Toast.LENGTH_SHORT).show();
             }
 
             @Override

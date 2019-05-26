@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +38,7 @@ import java.util.List;
 public class AddMaterials extends AppCompatActivity {
     
     RecyclerView addMaterialsRecyclerView;
+    ProgressBar addMaterialProgressBar;
     CollapsingToolbarLayout addMaterialCollapsingToolbarLayout;
     AppBarLayout addMaterialAppBarLayout;
     Toolbar addMaterialToolbar;
@@ -132,6 +134,7 @@ public class AddMaterials extends AppCompatActivity {
 //        addMaterialCollapsingToolbarLayout = findViewById(R.id.add_material_CollapsingToolbarLayout);
         addMaterialAppBarLayout = findViewById(R.id.add_material_AppBar);
         addMaterialToolbar = findViewById(R.id.add_material_toolbar);
+        addMaterialProgressBar = findViewById(R.id.add_material_progressbar);
 
         bottomAppBar.inflateMenu(R.menu.bottom_appbar_menu);
         bottomAppBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
@@ -157,6 +160,9 @@ public class AddMaterials extends AppCompatActivity {
     }
 
     private void firebaseDatabase() {
+        //startProgressBar
+        addMaterialProgressBar.setVisibility(View.VISIBLE);
+
         getUDBKey = sharedPreferences.getString("userID", "");
         mDatabaseReference = FirebaseDatabase.getInstance().getReference("users");
         uploadsDatabaseReference = FirebaseDatabase.getInstance().getReference("users/"+ getUDBKey + "/uploads");
@@ -168,6 +174,8 @@ public class AddMaterials extends AppCompatActivity {
         filesDatabaseReference.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                //stopProgressBar
+                addMaterialProgressBar.setVisibility(View.GONE);
 //                listKeys = dataSnapshot.getKey();
 //                listItems = dataSnapshot.child("courseCodes").getValue();
 
@@ -175,6 +183,10 @@ public class AddMaterials extends AppCompatActivity {
                 addMaterialsRecyclerView.setAdapter(filesAdapter);
 
                 Log.d(TAG, "recycler VAL : " + addMaterialsRecyclerView);
+
+                if (filesAdapter == null){
+                    Toast.makeText(AddMaterials.this, "Array list is empty hahahah", Toast.LENGTH_LONG).show();
+                }
 
 //                listKeys.add(dataSnapshot.getKey());
 //                adapter.add((String) dataSnapshot.child("courseCodes").getValue());
