@@ -34,14 +34,13 @@ import java.util.List;
 
 public class StudentMaterials extends AppCompatActivity{
 
-    BottomAppBar studentBottomAppBar;
-    FloatingActionButton studentFloatingActionButton;
     TextView studentFileName;
     TextView studentShowCode, studentShowDept, studentShowLevel, studentShowName, studentShowProgramme;
     CollapsingToolbarLayout studentMaterialCollapsingToolbarLayout;
     AppBarLayout studentMaterialAppbarLayout;
     Toolbar studentMaterialToolbar;
     StudentFilesAdapter studentFilesAdapter;
+    String studentSideCode, studentSideTitle, studentSideProgramme, studentSideLevel, studentSideDept;
 
     private static final String TAG = "StudentsMaterial";
     private LinearLayoutManager linearLayoutManager;
@@ -80,7 +79,7 @@ public class StudentMaterials extends AppCompatActivity{
         studentShowCode.setText(code);
 
         linearLayoutManager = new LinearLayoutManager(this);
-        studentMaterialsRecyclerView = (RecyclerView) findViewById(R.id.student_material_recyclerView);
+        studentMaterialsRecyclerView = findViewById(R.id.student_material_recyclerView);
         studentMaterialsRecyclerView.setHasFixedSize(true);
         studentMaterialDatabaseReference = FirebaseDatabase.getInstance().getReference("students/" + code);
         studentsFilesDatabaseReference = FirebaseDatabase.getInstance().getReference("students/"+ code + "/files");
@@ -103,8 +102,6 @@ public class StudentMaterials extends AppCompatActivity{
     }
 
     private void init() {
-        studentBottomAppBar = findViewById(R.id.student_bottom_app_bar);
-        studentFloatingActionButton = findViewById(R.id.student_material_fab);
         studentFileName = findViewById(R.id.student_material_item_name);
         studentShowCode = findViewById(R.id.student_show_code);
         studentShowDept = findViewById(R.id.student_show_dept);
@@ -123,7 +120,22 @@ public class StudentMaterials extends AppCompatActivity{
         studentMaterialDatabaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Upload upload = dataSnapshot.getValue(Upload.class);
+                    if (upload != null) {
+                        studentSideTitle = upload.getCourseName();
+                        studentSideCode = upload.getCourseCodes();
+                        studentSideDept = upload.getDeptName();
+                        studentSideLevel = upload.getLevelNum();
+                        studentSideProgramme = upload.getProgramme();
 
+                        studentShowCode.setText(studentSideCode);
+                        studentShowDept.setText(studentSideDept);
+                        studentShowLevel.setText(String.format("Level %s",studentSideLevel));
+                        studentShowName.setText(studentSideTitle);
+                        studentShowProgramme.setText(studentSideProgramme);
+                    }
+                }
             }
 
             @Override
@@ -139,7 +151,6 @@ public class StudentMaterials extends AppCompatActivity{
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
                 if (dataSnapshot.exists()) {
-
                     studentFilesAdapter = new StudentFilesAdapter(FilesS.class, R.layout.student_materials_items, StudentFilesHolder.class, studentsFilesDatabaseReference, getApplicationContext());
                     studentMaterialsRecyclerView.setAdapter(studentFilesAdapter);
 
@@ -226,11 +237,11 @@ public class StudentMaterials extends AppCompatActivity{
                     scrollRange = appBarLayout.getTotalScrollRange();
                 }
                 if (scrollRange + i == 0){
-                    if(!code.isEmpty()){
+                    if(!studentSideCode.isEmpty()){
                         studentMaterialCollapsingToolbarLayout.isTitleEnabled();
-                        studentMaterialCollapsingToolbarLayout.setTitle(code);
+                        studentMaterialCollapsingToolbarLayout.setTitle(studentSideCode);
                     }else{
-                        studentMaterialCollapsingToolbarLayout.setTitle(code);
+                        studentMaterialCollapsingToolbarLayout.setTitle(studentSideCode);
                     }
                     isShow = true;
                 }else if(isShow){
