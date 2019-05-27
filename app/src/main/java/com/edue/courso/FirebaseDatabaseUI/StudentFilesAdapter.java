@@ -61,8 +61,8 @@ public class StudentFilesAdapter extends FirebaseRecyclerAdapter<FilesS, Student
         reference.getBytes(ONE_MEG).addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override
             public void onSuccess(byte[] bytes) {
-                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
-                viewHolder.thumbnail.setImageBitmap(bitmap);
+//                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
+//                viewHolder.thumbnail.setImageBitmap(bitmap);
 //                // create a new renderer
 //        PdfRenderer pdfRenderer = null;
 //        try {

@@ -15,6 +15,7 @@ public class FilesHolder extends RecyclerView.ViewHolder {
     ImageView thumbnail;
     ImageView download;
     ImageButton deleteFile;
+    TextView getCodeForFile;
 
     public FilesHolder(@NonNull View itemView) {
         super(itemView);
@@ -23,5 +24,6 @@ public class FilesHolder extends RecyclerView.ViewHolder {
         thumbnail = itemView.findViewById(R.id.add_material_item_IV);
         download = itemView.findViewById(R.id.add_material_download);
         deleteFile = itemView.findViewById(R.id.add_material_item_delete_thumbnail);
+        getCodeForFile = itemView.findViewById(R.id.get_code_for_files);
     }
 }

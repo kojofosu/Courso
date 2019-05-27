@@ -2,8 +2,10 @@ package com.edue.courso.FirebaseDatabaseUI;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
@@ -16,8 +18,13 @@ import com.edue.courso.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class FilesAdapter extends FirebaseRecyclerAdapter<FilesS, FilesHolder> {
     private static final String TAG = FilesAdapter.class.getSimpleName();
@@ -32,6 +39,9 @@ public class FilesAdapter extends FirebaseRecyclerAdapter<FilesS, FilesHolder> {
     protected void populateViewHolder(final FilesHolder viewHolder, FilesS model, final int position) {
         String fileName = model.getFileName();
         final String fileUrl = model.getFileUrl();
+
+        //SharedPreferences
+        final SharedPreferences sharedPreferences = context.getSharedPreferences("login" , MODE_PRIVATE);
 
         viewHolder.name.setText(fileName);
 
@@ -81,15 +91,16 @@ public class FilesAdapter extends FirebaseRecyclerAdapter<FilesS, FilesHolder> {
                         viewHolder.deleteFile.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
+                                String someCode = sharedPreferences.getString("codeForStudentSide", "");
+
                                 final String fileKey = getItem(position).getFileKey();
-                                final DatabaseReference forStudentsDatabaseReference = FirebaseDatabase.getInstance().getReference("students/files" );
+                                final DatabaseReference forStudentsDatabaseReference = FirebaseDatabase.getInstance().getReference("students/" + someCode + "/files" );
                                 getRef(position).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()) {
                                             Toast.makeText(context, "Deleted", Toast.LENGTH_SHORT).show();
                                             Log.d("code ", "code is : " + fileKey);
-
 
                                             forStudentsDatabaseReference.child(fileKey).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
                                                 @Override

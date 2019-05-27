@@ -142,7 +142,6 @@ public class AddMaterials extends AppCompatActivity {
             public boolean onMenuItemClick(MenuItem menuItem) {
                 int id = menuItem.getItemId();
                 if (id == R.id.app_bar_info){
-                    Toast.makeText(AddMaterials.this, "info", Toast.LENGTH_SHORT).show();
                     DetailsFragment detailsFragment = new DetailsFragment();
                     Bundle bundle = new Bundle();
                     bundle.putString("bottomCode", code);
