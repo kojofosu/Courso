@@ -24,6 +24,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Profile extends AppCompatActivity {
 
@@ -88,25 +90,34 @@ public class Profile extends AppCompatActivity {
                 phone = addNewLecturerContactET.getText().toString();
                 //update user email in firebase auth side
 
-                firebaseUser.updateEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()){
-                            mDatabaseReference.child(getUDBKey).child("email").setValue(email);
-                            mDatabaseReference.child(getUDBKey).child("fullName").setValue(fullName);
-                            mDatabaseReference.child(getUDBKey).child("phone").setValue(phone)
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            Snackbar.make(findViewById(R.id.Id_Profile), "Profile Update", Snackbar.LENGTH_SHORT).show();
-                                        }
-                                    });
+                if (fullName.length() >= 1 && isEmailValid(email) && phone.length() == 10){
+                    Toast.makeText(Profile.this, "all correct sa", Toast.LENGTH_SHORT).show();
+                    firebaseUser.updateEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                mDatabaseReference.child(getUDBKey).child("email").setValue(email);
+                                mDatabaseReference.child(getUDBKey).child("fullName").setValue(fullName);
+                                mDatabaseReference.child(getUDBKey).child("phone").setValue(phone)
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                Snackbar.make(findViewById(R.id.Id_Profile), "Profile Update", Snackbar.LENGTH_SHORT).show();
+                                            }
+                                        });
 
-                            Log.d("Profile Activity", "User email address updated.");
-                            Toast.makeText(getApplicationContext(), "The email updated.", Toast.LENGTH_SHORT).show();
+                                Log.d("Profile Activity", "User email address updated.");
+                                Toast.makeText(getApplicationContext(), "The email updated.", Toast.LENGTH_SHORT).show();
+                            }
                         }
-                    }
-                });
+                    });
+                 }else if (!isEmailValid(email)){
+                    addNewLecturerEmailET.setError("Invalid Email");
+                }else if (fullName.length() < 1){
+                    addNewLecturerNameET.setError("Name cannot be empty");
+                }else if (phone.length() > 10 || phone.length() <10){
+                    addNewLecturerContactET.setError("Phone number should be 10 digits");
+                }
             }
         });
     }
@@ -170,5 +181,15 @@ public class Profile extends AppCompatActivity {
         addNewLecturerContactET = findViewById(R.id.addNew_lecturer_contact_ET);
         toolbar = findViewById(R.id.profile_toolbar);
         updateProfileBtn = findViewById(R.id.button_update_profile);
+    }
+
+    private boolean isEmailValid(String email) {
+        //return email.contains("@");
+        Pattern pattern;
+        Matcher matcher;
+        final String EMAIL_PATTERN = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+        pattern = Pattern.compile(EMAIL_PATTERN);
+        matcher = pattern.matcher(email);
+        return matcher.matches();
     }
 }

@@ -174,6 +174,7 @@ public class SignIn extends AppCompatActivity {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     if (dataSnapshot.exists()){
+                                        studentLoginTextInputLayout.setErrorEnabled(false);
                                         progressDialog.dismiss();
                                         Intent intent = new Intent(SignIn.this, StudentMaterials.class);
                                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

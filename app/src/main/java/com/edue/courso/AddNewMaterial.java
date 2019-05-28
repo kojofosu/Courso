@@ -396,7 +396,12 @@ public class AddNewMaterial extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                courseCodeText = charSequence.toString().toUpperCase();
+                if (charSequence.length() < 6 ){
+                    addCourseCode_TIL.setError("Should contain 6 or more characters");
+                }else if(charSequence.length() >= 6){
+                    addCourseCode_TIL.setErrorEnabled(false);
+                    courseCodeText = charSequence.toString().toUpperCase();
+                }
             }
 
             @Override
@@ -412,7 +417,12 @@ public class AddNewMaterial extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                courseTitleText = charSequence.toString();
+                if (charSequence.length() <1){
+                    addCourseTitle_TIL.setError("Course title cannot be empty");
+                }else if (charSequence.length() >= 1){
+                    addCourseTitle_TIL.setErrorEnabled(false);
+                    courseTitleText = charSequence.toString();
+                }
             }
 
             @Override
@@ -490,6 +500,14 @@ public class AddNewMaterial extends AppCompatActivity {
             }
         });
 
+        uploadBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (displayName == null){
+                    Toast.makeText(AddNewMaterial.this, "Select at least one file to upload", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
     }
 
@@ -700,9 +718,11 @@ public class AddNewMaterial extends AppCompatActivity {
                                 programmeText = addNewProgrammeSpinner.getSelectedItem().toString();
                                 levelText = addNewLevelSpinner.getSelectedItem().toString();
 
-                                //Toast.makeText(AddNewMaterial.this, "Single item selected", Toast.LENGTH_SHORT).show();
-                                firebaseStorage();
-
+                                if (deptArray != null && programmeText != null && levelText != null && courseCodeText.length() >= 6 && courseTitleText.length() >= 1) {
+                                    firebaseStorage();
+                                }else{
+                                    Toast.makeText(AddNewMaterial.this, "Make sure all fields are correct", Toast.LENGTH_SHORT).show();
+                                }
                             }
                         });
                     }
