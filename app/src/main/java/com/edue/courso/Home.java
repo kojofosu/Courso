@@ -3,11 +3,18 @@ package com.edue.courso;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Icon;
 import android.graphics.pdf.PdfRenderer;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,6 +31,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.edue.courso.FirebaseDatabaseUI.CourseCodeHolder;
 import com.edue.courso.FirebaseDatabaseUI.CoursecodeAdapter;
@@ -43,7 +51,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Home extends AppCompatActivity {
+public class Home extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle actionBarDrawerToggle;
+    private NavigationView navigationView;
+    View navHeader;
+    String fullName, email, phone;
+    TextView navName, navPhone, navEmail;
+
     FloatingActionButton fab;
     ProgressBar homeProgressBar;
     ListView listView;
@@ -165,9 +180,94 @@ public class Home extends AppCompatActivity {
 
     private void topToolbar() {
         setSupportActionBar(toolbar);
-        toolbar.setNavigationIcon(R.drawable.ic_bubble_chart_black_24dp);
+//        toolbar.setNavigationIcon(R.drawable.ic_dehaze_black_24dp);
+//        //Code below opens drawer
+//        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                drawerLayout.openDrawer(GravityCompat.START);
+//            }
+//        });
+
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar , R.string.drawer_open, R.string.drawer_close);
+        drawerLayout.addDrawerListener(actionBarDrawerToggle);
+        actionBarDrawerToggle.syncState();
+//        actionBarDrawerToggle = navigationView.getActionBarDrawerToggle();
+        //Code below opens drawer
+        actionBarDrawerToggle.setToolbarNavigationClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
+
+
+
+        //setting details to string variables
+        fullName = sharedPreferences.getString("lecturerName", "");
+        email = sharedPreferences.getString("lecturerEmail", "");
+        phone = sharedPreferences.getString("lecturerPhone", "");
+
+        if (fullName.isEmpty() || email.isEmpty() || phone.isEmpty()){
+            //fireBase database
+            firebaseDB();
+        }else {
+            //set values to the various editTexts
+            navName.setText(fullName);
+            navEmail.setText(email);
+            navPhone.setText(phone);
+            //toolbar title
+//            toolbar.setTitle(fullName);
+        }
+
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
     }
+
+    private void firebaseDB() {
+        //Initializing the databaseReference
+        uploadsDatabaseReference = FirebaseDatabase.getInstance().getReference("users/"+ getUDBKey + "/uploads");
+
+
+        mDatabaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                //below code takes data from DB
+                User user = dataSnapshot.child(getUDBKey).getValue(User.class);
+
+                if (user != null) {
+                    //saving in string variables
+                    email = user.getEmail();
+                    fullName = user.getFullName();
+                    phone = user.getPhone();
+                    //get the values and storing it in sharedPrefs
+                    sharedPreferences.edit().putString("lecturerName", fullName).apply();
+                    sharedPreferences.edit().putString("lecturerEmail",email).apply();
+                    sharedPreferences.edit().putString("lecturerPhone", phone).apply();
+
+                    //set values to the various editTexts
+                    navName.setText(fullName);
+                    navEmail.setText(email);
+                    navPhone.setText(phone);
+                    //toolbar title
+//                    toolbar.setTitle(userName);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.w("AddNewActivity : ", "Failed to read value.", databaseError.toException());
+            }
+        });
+
+    }
+
 
     private void firebaseDatabase() {
 
@@ -255,6 +355,12 @@ public class Home extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         deleteClass = findViewById(R.id.delete_thumbnail);
         homeProgressBar = findViewById(R.id.home_progressbar);
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.nav_view);
+        navHeader = navigationView.getHeaderView(0);
+        navEmail = navHeader.findViewById(R.id.email);
+        navName = navHeader.findViewById(R.id.name);
+        navPhone = navHeader.findViewById(R.id.phone);
     }
 
     private void firebaseDownloadFromStorage() {
@@ -284,19 +390,25 @@ public class Home extends AppCompatActivity {
         sharedPreferences.edit().clear().apply();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        //inflates menu and adds to the toolbar or actionbar
-        getMenuInflater().inflate(R.menu.menu, menu);
-        return true;
-    }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         //Handles clicks on the toolbar
-        int id = item.getItemId();
+        int id = menuItem.getItemId();
 
+        if (id == R.id.create_class){
+            drawerLayout.closeDrawer(GravityCompat.START);
+            Intent createClassIntent = new Intent(Home.this, AddNewMaterial.class);
+            startActivity(createClassIntent);
+        }else if (id == R.id.profile){
+            drawerLayout.closeDrawer(GravityCompat.START);
+            startActivity(new Intent(Home.this, Profile.class));
+        }else if (id == R.id.about){
+            drawerLayout.closeDrawer(GravityCompat.START);
+            Toast.makeText(this, "About", Toast.LENGTH_SHORT).show();
+        }
         if (id == R.id.logout){
+            drawerLayout.closeDrawer(GravityCompat.START);
             final AlertDialog.Builder builder;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 // builder = new AlertDialog.Builder(getContext(), android.R.style.Theme_Material_Dialog_Alert);
@@ -332,6 +444,6 @@ public class Home extends AppCompatActivity {
         }if (id == R.id.profile){
             startActivity(new Intent(Home.this, Profile.class));
         }
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 }

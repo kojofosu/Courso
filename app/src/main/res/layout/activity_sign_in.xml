@@ -115,7 +115,7 @@
                 android:layout_margin="10dp"
                 android:padding="10dp"
                 android:textSize="14sp"
-                android:background="#12423F3F"/>
+                android:background="@drawable/student_btn_bg"/>
 
         </LinearLayout>
     </ScrollView>

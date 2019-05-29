@@ -64,7 +64,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         app:fabAlignmentMode="center"
-        android:backgroundTint="#3498db"
+        android:backgroundTint="@color/colorPrimary"
         style="@style/Widget.MaterialComponents.BottomAppBar.Colored"
         android:elevation="30dp"
         app:hideOnScroll="true"
@@ -75,7 +75,7 @@
         android:id="@+id/add_new_material_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="#105a7c"
+        android:backgroundTint="@color/colorAccent"
         android:src="@drawable/ic_add_black_24dp"
         app:layout_anchor="@id/bottom_app_bar"/>
 </android.support.design.widget.CoordinatorLayout>

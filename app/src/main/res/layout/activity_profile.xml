@@ -94,7 +94,7 @@
         android:layout_marginTop="25dp"
         android:background="@drawable/bg_button_rounded"
         android:backgroundTint="@color/colorAccent"
-        android:backgroundTintMode="add"
+        android:backgroundTintMode="screen"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginBottom="15dp"

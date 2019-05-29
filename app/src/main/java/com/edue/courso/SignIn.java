@@ -57,6 +57,7 @@ public class SignIn extends AppCompatActivity {
     TextInputEditText studentLoginInputEditText;
     Button buttonFindCourse;
     String findCode;
+    String pass;
 
 
     @Override
@@ -119,6 +120,8 @@ public class SignIn extends AppCompatActivity {
                     progressDialog.show();
 
                     try {
+                        pass = Objects.requireNonNull(passwordTextInputEditText.getText()).toString();
+                        sharedPreferences.edit().putString("userPass", pass).apply();
                         signUserIn();
                     }catch (Exception e){
                         e.printStackTrace();

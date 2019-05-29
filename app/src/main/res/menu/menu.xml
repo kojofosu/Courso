@@ -3,15 +3,27 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/create_class"
+        android:title="Create Class"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_add_black_24dp"/>
+
+    <item
         android:id="@+id/profile"
         android:title="Profile"
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_account_box_black_24dp"/>
 
+
+    <item
+        android:id="@+id/about"
+        android:title="About Us"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_info_black_24dp"/>
+
     <item
         android:id="@+id/logout"
         android:title="Logout"
         app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_exit_to_app_black_24dp"/>
-
+        android:icon="@drawable/ic_exit_to_app_white_24dp"/>
 </menu>
