@@ -173,15 +173,15 @@ public class Profile extends AppCompatActivity {
         Log.d("tag ", "ffkName :" + ffName);
         Log.d("tag ", "ffPhone :" + ffPhone);
 
-        if (checkEmail.equals(ffEmail) && checkName.equals(ffName) && checkPhone.equals(ffPhone)){
-            updateProfileBtn.setEnabled(false);
-            Toast.makeText(Profile.this, "coke", Toast.LENGTH_SHORT).show();
-//                            updateProfileBtn.setBackgroundColor(getResources().getColor(R.color.disabledBtnColor));
-            updateProfileBtn.setTextColor(getResources().getColor(R.color.disabledBtnColor));
-        }else if (!checkEmail.equals(ffEmail) || !checkName.equals(ffName) || !checkPhone.equals(ffPhone)){
-            updateProfileBtn.setEnabled(true);
-            Toast.makeText(Profile.this, "prrr", Toast.LENGTH_SHORT).show();
-        }
+//        if (checkEmail.equals(ffEmail) && checkName.equals(ffName) && checkPhone.equals(ffPhone)){
+//            updateProfileBtn.setEnabled(false);
+//            Toast.makeText(Profile.this, "coke", Toast.LENGTH_SHORT).show();
+////                            updateProfileBtn.setBackgroundColor(getResources().getColor(R.color.disabledBtnColor));
+//            updateProfileBtn.setTextColor(getResources().getColor(R.color.disabledBtnColor));
+//        }else if (!checkEmail.equals(ffEmail) || !checkName.equals(ffName) || !checkPhone.equals(ffPhone)){
+//            updateProfileBtn.setEnabled(true);
+//            Toast.makeText(Profile.this, "prrr", Toast.LENGTH_SHORT).show();
+//        }
 
 
         //Toolbar

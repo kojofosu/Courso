@@ -1,5 +1,6 @@
 package com.edue.courso;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -405,7 +406,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             startActivity(new Intent(Home.this, Profile.class));
         }else if (id == R.id.about){
             drawerLayout.closeDrawer(GravityCompat.START);
-            Toast.makeText(this, "About", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(Home.this, About.class));
         }
         if (id == R.id.logout){
             drawerLayout.closeDrawer(GravityCompat.START);

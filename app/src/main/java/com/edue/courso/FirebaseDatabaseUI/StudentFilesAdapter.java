@@ -56,6 +56,18 @@ public class StudentFilesAdapter extends FirebaseRecyclerAdapter<FilesS, Student
             }
         });
 
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //download file
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW);
+                browserIntent.setDataAndType(Uri.parse(fileUrl), ".pdf");
+
+                Intent chooser = Intent.createChooser(browserIntent,"choose app");
+                chooser.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(chooser);
+            }
+        });
         StorageReference reference = FirebaseStorage.getInstance().getReference("course/pechu.jpg");
         final long ONE_MEG = 2048 * 2048;
         reference.getBytes(ONE_MEG).addOnSuccessListener(new OnSuccessListener<byte[]>() {

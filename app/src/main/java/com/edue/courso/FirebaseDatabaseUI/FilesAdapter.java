@@ -136,10 +136,19 @@ public class FilesAdapter extends FirebaseRecyclerAdapter<FilesS, FilesHolder> {
         viewHolder.download.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //open link in a browser
-               // WebView webView = new WebView()
-
+                Toast.makeText(context, "Download will start shortly...", Toast.LENGTH_LONG).show();
                 //Download to phone
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(fileUrl));
+                browserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(browserIntent);
+            }
+        });
+
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(context, "Download will start shortly...", Toast.LENGTH_LONG).show();
+                //Download to phone when item is clicked
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(fileUrl));
                 browserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(browserIntent);

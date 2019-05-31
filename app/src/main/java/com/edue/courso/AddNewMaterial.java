@@ -59,8 +59,8 @@ public class AddNewMaterial extends AppCompatActivity {
     AppBarLayout addNewAppBarLayout;
     Button uploadBtn;
     Spinner addNewDeptSpinner, addNewProgrammeSpinner, addNewLevelSpinner, addNewSemesterSpinner;
-    String[] deptArray = {"Dept. Computer Science and Information Technology", "Department of Education"};
-    String[] programmeArray = {"Non-Degree", "Undergraduate", "Masters/Graduate", "Doctorate"};
+    String[] deptArray = {"Dept. Computer Science and Information Technology", "Department of Chemistry", "Department of Laboratory Technology", "Department of Mathematics", "Department of Physics", "Department of Statistics", "Industrial Chemistry" , "Water and Sanitation Programme(Chemistry)", "Department of Law", "Department of Legal Extension"};
+    String[] programmeArray = {"Undergraduate", "Non-Degree", "Masters/Graduate", "Doctorate"};
     String[] levelArray = {"100", "200", "300", "400", "500", "600"};
     String[] semesterArray = {"First Semester" , "Second Semester"};
     TextView addNewFileTV;

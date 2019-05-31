@@ -260,7 +260,7 @@
                     android:backgroundTint="@color/colorAccent"
                     android:backgroundTintMode="add"
                     android:isScrollContainer="false"
-                    android:text="Create Class"
+                    android:text="Create Course"
                     android:textColor="#FFFFFF" />
             </LinearLayout>
 
