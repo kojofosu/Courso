@@ -91,7 +91,7 @@
                 android:id="@+id/gotoSignUpTV"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Create an account."
+                android:text="Create an account"
                 android:gravity="center_horizontal"
                 android:layout_margin="7dp"
                 android:padding="7dp"

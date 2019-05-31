@@ -1,15 +1,21 @@
 package com.edue.courso;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -67,8 +73,9 @@ public class Profile extends AppCompatActivity {
 
         //SharedPrefs
         sharedPreferences = getSharedPreferences("login" , MODE_PRIVATE);
-        mDatabaseReference = FirebaseDatabase.getInstance().getReference("users");
         getUDBKey = sharedPreferences.getString("userID", "");
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference("users" + getUDBKey);
+
 
         pass = sharedPreferences.getString("userPass", "");
 
@@ -327,6 +334,101 @@ public class Profile extends AppCompatActivity {
         addNewLecturerContactET = findViewById(R.id.addNew_lecturer_contact_ET);
         toolbar = findViewById(R.id.profile_toolbar);
         updateProfileBtn = findViewById(R.id.button_update_profile);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.delete_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.delete_account){
+            final AlertDialog.Builder builder;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                // builder = new AlertDialog.Builder(getContext(), android.R.style.Theme_Material_Dialog_Alert);
+                builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Light_Dialog_Alert);
+            } else {
+                builder = new AlertDialog.Builder(this);
+            }
+            builder.setTitle("Delete Account?\n")
+                    .setMessage("Are you sure you want to permanently delete your account?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // continue with logout
+                            try {
+                                final ProgressDialog progressDialog = new ProgressDialog(Profile.this);
+                                progressDialog.setCancelable(false);
+                                progressDialog.setMessage("Deleting Account...");
+                                progressDialog.show();
+
+                                //Delete user details from the database
+                                mDatabaseReference.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        // Get auth credentials from the user for re-authentication. The example below shows
+                                        // email and password credentials but there are multiple possible providers,
+                                        // such as GoogleAuthProvider or FacebookAuthProvider.
+                                        emailToUpdate = firebaseUser.getEmail();
+                                        AuthCredential credential = null;
+                                        if (emailToUpdate != null) {
+                                            credential = EmailAuthProvider
+                                                    .getCredential(emailToUpdate, pass);
+                                        }
+                                        // Prompt the user to re-provide their sign-in credentials
+                                        firebaseUser.reauthenticate(credential)
+                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                        if (task.isSuccessful()) {
+                                                            Log.d("UserReAuth", "User re-authenticated.");
+                                                            firebaseUser.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                @Override
+                                                                public void onSuccess(Void aVoid) {
+                                                                    progressDialog.dismiss();
+                                                                    //Go to sign in page
+                                                                    startActivity(new Intent(Profile.this, SignIn.class));
+                                                                    //clear sharePrefs
+                                                                    sharedPreferences.edit().clear().apply();
+                                                                    finish();
+                                                                    Log.d("Profile Activity", "User account deleted.");
+                                                                }
+
+                                                            }).addOnFailureListener(new OnFailureListener() {
+                                                                @Override
+                                                                public void onFailure(@NonNull Exception e) {
+                                                                    Snackbar.make(findViewById(R.id.Id_Profile), "Account deletion FAILED", Snackbar.LENGTH_SHORT).show();
+                                                                    Log.d("UpdatePrf", "account deletion failed : " + e.getMessage());
+                                                                }
+                                                            });
+                                                        }else{
+                                                            Toast.makeText(Profile.this, "Error occurred!", Toast.LENGTH_SHORT).show();
+                                                            Log.d("UserReAuth", "User was not re-authenticated.");
+                                                        }
+                                                    }
+                                                });
+
+                                    }
+                                });
+
+
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+                        }
+                    })
+                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // do nothing
+                        }
+                    })
+                    .setIcon(R.drawable.ic_warning_black_24dp)
+                    .show();
+
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private boolean isEmailValid(String email) {

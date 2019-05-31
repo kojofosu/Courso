@@ -46,7 +46,7 @@ public class CoursecodeAdapter extends FirebaseRecyclerAdapter<Upload, CourseCod
     @Override
     protected void populateViewHolder(final CourseCodeHolder viewHolder, Upload model, final int position) {
         final String TITLE = model.getCourseName();
-        final String CODE = model.getCourseCodes();
+        final String CODE = model.getCourseCodes().toUpperCase();
         final String DEPT = model.getDeptName();
         final String UPLOADKEY = model.getUploadKey();
         final String PROGRAMME = model.getProgramme();
@@ -62,6 +62,7 @@ public class CoursecodeAdapter extends FirebaseRecyclerAdapter<Upload, CourseCod
         viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
+                Toast.makeText(context, "onLong on " + viewHolder.itemView, Toast.LENGTH_SHORT).show();
 
                 Animation animation = AnimationUtils.loadAnimation(context, R.anim.bounce_down);
                 viewHolder.deleteClass.setVisibility(View.VISIBLE);
@@ -105,25 +106,26 @@ public class CoursecodeAdapter extends FirebaseRecyclerAdapter<Upload, CourseCod
                         viewHolder.deleteClass.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                final String getCode = getItem(position).getCourseCodes().toLowerCase();
+                                //final String getCode = getItem(position).getCourseCodes().toUpperCase();
+                                Toast.makeText(context, " delete " + CODE, Toast.LENGTH_SHORT).show();
                                 final DatabaseReference forStudentsDatabaseReference = FirebaseDatabase.getInstance().getReference("students");
                                 getRef(position).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()) {
-                                            Toast.makeText(context, "Deleted", Toast.LENGTH_SHORT).show();
-                                            Log.d("code ", "code is : " + getCode);
+                                            Toast.makeText(context, "Deleted" + CODE, Toast.LENGTH_SHORT).show();
+                                            Log.d("code ", "code is : " + CODE);
+                                            notifyDataSetChanged();
 
-
-                                            forStudentsDatabaseReference.child(getCode).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            forStudentsDatabaseReference.child(CODE).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
                                                 @Override
                                                 public void onComplete(@NonNull Task<Void> task) {
                                                     if (task.isSuccessful()){
                                                        // Toast.makeText(context, "student side for "+ getCode + "is deleted successfully", Toast.LENGTH_SHORT).show();
-                                                        Log.d("StudentSideDel" , "student side for "+ getCode + "is deleted successfully");
+                                                        Log.d("StudentSideDel" , "student side for "+ CODE + "is deleted successfully");
                                                     }else if (!task.isSuccessful()){
                                                         //Toast.makeText(context, "student side for "+ getCode + "UNSUCCESSFUL", Toast.LENGTH_SHORT).show();
-                                                        Log.d("StudentSideDel" , "student side for "+ getCode + "UNSUCCESSFUL");
+                                                        Log.d("StudentSideDel" , "student side for "+ CODE + "UNSUCCESSFUL");
                                                     }
                                                 }
                                             });

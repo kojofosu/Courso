@@ -43,6 +43,7 @@ public class SignUp extends AppCompatActivity {
     Button signUpBtn;
     private FirebaseAuth mAuth;
     private static final String TAG = "Sign Up Activity";
+    String pass;
 
     SharedPreferences sharedPreferences;
     //Declaring a DatabaseReference
@@ -135,6 +136,8 @@ public class SignUp extends AppCompatActivity {
                                             sharedPreferences.edit().putString("userEmail",email).apply();
                                             sharedPreferences.edit().putString("userPhone", phone).apply();
                                             sharedPreferences.edit().putString("userID", userID).apply();
+                                            pass = Objects.requireNonNull(passwordTextInputEditText.getText()).toString();
+                                            sharedPreferences.edit().putString("userPass", pass).apply();
 
                                             //Add data to User object to be added the database
                                             User user = new User();
