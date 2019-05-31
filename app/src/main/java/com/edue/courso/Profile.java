@@ -74,7 +74,7 @@ public class Profile extends AppCompatActivity {
         //SharedPrefs
         sharedPreferences = getSharedPreferences("login" , MODE_PRIVATE);
         getUDBKey = sharedPreferences.getString("userID", "");
-        mDatabaseReference = FirebaseDatabase.getInstance().getReference("users" + getUDBKey);
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference("users");
 
 
         pass = sharedPreferences.getString("userPass", "");
@@ -365,7 +365,7 @@ public class Profile extends AppCompatActivity {
                                 progressDialog.show();
 
                                 //Delete user details from the database
-                                mDatabaseReference.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                mDatabaseReference.child(getUDBKey).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                         // Get auth credentials from the user for re-authentication. The example below shows
