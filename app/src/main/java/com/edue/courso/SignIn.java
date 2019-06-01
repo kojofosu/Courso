@@ -44,7 +44,7 @@ public class SignIn extends AppCompatActivity {
 
     TextInputLayout emailTextInputLayout, passwordTextInputLayout;
     TextInputEditText emailTextInputEditText, passwordTextInputEditText;
-    TextView goToSignUpTextView, studentLogin;
+    TextView goToSignUpTextView, studentLogin, forgotPass;
     Button signInBtn;
     ProgressDialog progressDialog;
     //FireBaseAuth
@@ -90,6 +90,7 @@ public class SignIn extends AppCompatActivity {
         goToSignUpTextView = findViewById(R.id.gotoSignUpTV);
         signInBtn = findViewById(R.id.buttonSignin);
         studentLogin = findViewById(R.id.student_login);
+        forgotPass = findViewById(R.id.gotoForgotPass);
     }
 
     private void onClickEvents(){
@@ -98,6 +99,13 @@ public class SignIn extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(SignIn.this, SignUp.class));
+            }
+        });
+
+        forgotPass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(SignIn.this, ForgottenPassword.class));
             }
         });
 

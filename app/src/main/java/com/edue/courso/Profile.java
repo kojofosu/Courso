@@ -390,9 +390,10 @@ public class Profile extends AppCompatActivity {
                                                                     progressDialog.dismiss();
                                                                     //Go to sign in page
                                                                     startActivity(new Intent(Profile.this, SignIn.class));
+                                                                    finish();
                                                                     //clear sharePrefs
                                                                     sharedPreferences.edit().clear().apply();
-                                                                    finish();
+
                                                                     Log.d("Profile Activity", "User account deleted.");
                                                                 }
 

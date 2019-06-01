@@ -80,6 +80,25 @@
                 android:textColor="#FFFFFF"
                 android:isScrollContainer="false"/>
 
+            <!--<View-->
+                <!--android:layout_width="2dp"-->
+                <!--android:layout_height="13dp"-->
+                <!--android:layout_gravity="center_horizontal"-->
+                <!--android:background="@color/colorAccent"-->
+                <!--android:visibility="visible"/>-->
+
+            <TextView
+                android:id="@+id/gotoForgotPass"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Forgotten Password?"
+                android:textColor="#691F1A"
+                android:gravity="center_horizontal"
+                android:layout_margin="7dp"
+                android:padding="7dp"
+                android:textStyle="bold"
+                android:textSize="12sp"/>
+
             <View
                 android:layout_width="2dp"
                 android:layout_height="13dp"
@@ -97,6 +116,7 @@
                 android:padding="7dp"
                 android:textSize="12sp"
                 android:background="#12423F3F"/>
+
 
             <View
                 android:layout_width="2dp"
