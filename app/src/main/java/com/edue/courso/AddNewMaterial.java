@@ -1,6 +1,7 @@
 package com.edue.courso;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,6 +16,7 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -76,6 +78,8 @@ public class AddNewMaterial extends AppCompatActivity {
     String uriString;
     String getUDBKey, getUploadKey, getFilesKey;
     String key, keyCourseCode;
+    String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE};
+    private static final  int  REQ_PERM = 1;
 
     SharedPreferences sharedPreferences;
 
@@ -481,15 +485,21 @@ public class AddNewMaterial extends AppCompatActivity {
             public void onClick(View view) {
                 //for greater than lolipop versions we need the permissions asked on runtime
                 //so if the permission is not available user will go to the screen to allow storage permission
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && ContextCompat.checkSelfPermission(AddNewMaterial.this,
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M && ContextCompat.checkSelfPermission(AddNewMaterial.this,
                         Manifest.permission.READ_EXTERNAL_STORAGE)
                         != PackageManager.PERMISSION_GRANTED) {
                     Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
                             Uri.parse("package:" + getPackageName()));
                     startActivity(intent);
 //                    return;
-                } else {
-
+                }else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && ContextCompat.checkSelfPermission(AddNewMaterial.this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED){
+                    //if (ActivityCompat.shouldShowRequestPermissionRationale(AddNewMaterial.this, Manifest.permission.READ_EXTERNAL_STORAGE)){
+                        ActivityCompat.requestPermissions(AddNewMaterial.this, permissions, REQ_PERM);
+                    //}
+                }
+                else if (ContextCompat.checkSelfPermission(AddNewMaterial.this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
                     Intent intent = new Intent();
                     intent.setAction(Intent.ACTION_GET_CONTENT);
                     intent.addCategory(Intent.CATEGORY_DEFAULT);

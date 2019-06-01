@@ -442,8 +442,6 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                     .setIcon(R.drawable.ic_bubble_chart_black_24dp)
                     .show();
 
-        }if (id == R.id.profile){
-            startActivity(new Intent(Home.this, Profile.class));
         }
         return true;
     }
