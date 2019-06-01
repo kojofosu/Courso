@@ -63,7 +63,7 @@ public class AddNewMaterial extends AppCompatActivity {
     Spinner addNewDeptSpinner, addNewProgrammeSpinner, addNewLevelSpinner, addNewSemesterSpinner;
     String[] deptArray = {"Dept. Computer Science and Information Technology", "Department of Chemistry", "Department of Laboratory Technology", "Department of Mathematics", "Department of Physics", "Department of Statistics", "Industrial Chemistry" , "Water and Sanitation Programme(Chemistry)", "Department of Law", "Department of Legal Extension"};
     String[] programmeArray = {"Undergraduate", "Non-Degree", "Masters/Graduate", "Doctorate"};
-    String[] levelArray = {"100", "200", "300", "400", "500", "600"};
+    String[] levelArray = {"100", "200", "300", "400"};
     String[] semesterArray = {"First Semester" , "Second Semester"};
     TextView addNewFileTV;
     Toolbar addNewtoolbar;
@@ -513,9 +513,9 @@ public class AddNewMaterial extends AppCompatActivity {
         uploadBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (displayName == null){
-                    Toast.makeText(AddNewMaterial.this, "Select at least one file to upload", Toast.LENGTH_SHORT).show();
-                }
+            if (filePath == null){
+                Toast.makeText(AddNewMaterial.this, "Select at least one material to create course", Toast.LENGTH_SHORT).show();
+            }
             }
         });
 
@@ -548,116 +548,116 @@ public class AddNewMaterial extends AppCompatActivity {
                                     programmeText = addNewProgrammeSpinner.getSelectedItem().toString();
                                     levelText = addNewLevelSpinner.getSelectedItem().toString();
 
+                                    if (deptArray != null && programmeText != null && levelText != null && courseCodeText.length() >= 6 && courseTitleText.length() >= 1) {
+                                        //this String is here just to prevent Upload from pushing more than once
+                                        final String uploadKey = uploadsDatabaseReference.push().getKey();
 
-                                    //this String is here just to prevent Upload from pushing more than once
-                                    final String uploadKey = uploadsDatabaseReference.push().getKey();
+                                        //adding to database to upload
+                                        final Upload upload = new Upload();
+                                        upload.setDeptName(deptText);
+                                        upload.setLevelNum(levelText);
+                                        upload.setProgramme(programmeText);
+                                        upload.setCourseCodes(courseCodeText.toUpperCase());
+                                        upload.setCourseName(courseTitleText);
 
-                                    //adding to database to upload
-                                    final Upload upload = new Upload();
-                                    upload.setDeptName(deptText);
-                                    upload.setLevelNum(levelText);
-                                    upload.setProgramme(programmeText);
-                                    upload.setCourseCodes(courseCodeText.toUpperCase());
-                                    upload.setCourseName(courseTitleText);
+                                        if (uploadKey != null) {
+                                            upload.setUploadKey(uploadKey);
+                                            uploadsDatabaseReference.child(uploadKey).setValue(upload);
+                                            forStudentsDatabaseReference.child(courseCodeText.toUpperCase()).setValue(upload);
 
-                                    if (uploadKey != null) {
-                                        upload.setUploadKey(uploadKey);
-                                        uploadsDatabaseReference.child(uploadKey).setValue(upload);
-                                        forStudentsDatabaseReference.child(courseCodeText.toUpperCase()).setValue(upload);
+                                            getUploadKey = uploadKey;
+                                        }
 
-                                        getUploadKey = uploadKey;
-                                    }
+                                        final int newtotalItemSelected = Objects.requireNonNull(data.getClipData()).getItemCount();
+                                        for (int snum = 0; snum < newtotalItemSelected; snum++) {
 
-                                    final int newtotalItemSelected = Objects.requireNonNull(data.getClipData()).getItemCount();
-                                    for (int snum = 0; snum < newtotalItemSelected; snum++) {
-
-                                        multipleUri = data.getClipData().getItemAt(snum).getUri();
-                                        filePath = multipleUri;
-                                        uriString = multipleUri.toString();
-                                        myFile = new File(uriString);
-                                        path = myFile.getAbsolutePath();
-                                        displayName = myFile.getName();
-                                        uploadListAdapter.notifyDataSetChanged();
-
-
-                                        //Toast.makeText(AddNewMaterial.this, filePath.toString(), Toast.LENGTH_SHORT).show();
-                                        Log.d("multi : " , "multi : " + filePath);
-                                        Log.d("multiDispName : " , "multiDisplay Name : " + displayName);
+                                            multipleUri = data.getClipData().getItemAt(snum).getUri();
+                                            filePath = multipleUri;
+                                            uriString = multipleUri.toString();
+                                            myFile = new File(uriString);
+                                            path = myFile.getAbsolutePath();
+                                            displayName = myFile.getName();
+                                            uploadListAdapter.notifyDataSetChanged();
 
 
-                                        //Initializing the StorageReference
-                                        mStorageRef = FirebaseStorage.getInstance().getReference();
-
-                                        // The simplest way to upload to your storage bucket is by uploading a local file,
-                                        // such as photos and videos from the camera, using the putFile() method.
-                                        // You can also upload raw data using putBytes() or from an InputStream using putStream().
-
-                                        fileStorageRef = mStorageRef.child("CourseMaterials/" + deptText +"/"+ programmeText +"/"+ levelText +"/"+ courseCodeText.toUpperCase() +"/"+ filePath);
-
-                                        if (filePath != null) {
-                                            final ProgressDialog progressDialog = new ProgressDialog(AddNewMaterial.this);
-                                            progressDialog.setTitle("Uploading..." + displayName);
-                                            progressDialog.setCancelable(false);
-                                            progressDialog.show();
-
-                                            //fetching key from mDatabaseReference to use as child for the rest
-                                            //key = mDatabaseReference.push().getKey();
+                                            //Toast.makeText(AddNewMaterial.this, filePath.toString(), Toast.LENGTH_SHORT).show();
+                                            Log.d("multi : " , "multi : " + filePath);
+                                            Log.d("multiDispName : " , "multiDisplay Name : " + displayName);
 
 
-                                            fileStorageRef.putFile(filePath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                                                        @Override
-                                                        public void onSuccess(final UploadTask.TaskSnapshot taskSnapshot) {
-                                                            // Get a URL to the uploaded content
-                                                            //Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                                            //Initializing the StorageReference
+                                            mStorageRef = FirebaseStorage.getInstance().getReference();
 
-                                                            final int newnewtotalItemSelected = Objects.requireNonNull(data.getClipData()).getItemCount();
-                                                            for (int ssnum = 0; ssnum < newnewtotalItemSelected; ssnum++) {
+                                            // The simplest way to upload to your storage bucket is by uploading a local file,
+                                            // such as photos and videos from the camera, using the putFile() method.
+                                            // You can also upload raw data using putBytes() or from an InputStream using putStream().
 
-                                                                multipleUri = data.getClipData().getItemAt(ssnum).getUri();
-                                                                filePath = multipleUri;
-                                                                uriString = multipleUri.toString();
-                                                                myFile = new File(uriString);
-                                                                path = myFile.getAbsolutePath();
-                                                                displayName = myFile.getName();
-                                                                uploadListAdapter.notifyDataSetChanged();
-                                                                uploadListAdapter.notifyDataSetChanged();
-                                                                Uri urlLists = taskSnapshot.getUploadSessionUri();
+                                            fileStorageRef = mStorageRef.child("CourseMaterials/" + deptText +"/"+ programmeText +"/"+ levelText +"/"+ courseCodeText.toUpperCase() +"/"+ filePath);
 
-                                                                progressDialog.dismiss();
-                                                                Snackbar.make(findViewById(R.id.Id_AddNewMateial), "Uploaded Successfully", Snackbar.LENGTH_SHORT).show();
-                                                                Log.d("Uploaded Successfully", "Uploaded Successfully : " + filePath);
-                                                                Log.d("taskSnapUp", "taskSnapShot uploaded success results : " + urlLists);
+                                            if (filePath != null) {
+                                                final ProgressDialog progressDialog = new ProgressDialog(AddNewMaterial.this);
+                                                progressDialog.setTitle("Uploading..." + displayName);
+                                                progressDialog.setCancelable(false);
+                                                progressDialog.show();
+
+                                                //fetching key from mDatabaseReference to use as child for the rest
+                                                //key = mDatabaseReference.push().getKey();
 
 
-                                                                //now after upload, we get its key and create child inside it for FilesS
-                                                                filesDatabaseReference = uploadsDatabaseReference.child(uploadKey).child("files");
-                                                                forStudentsDatabaseReference.child(courseCodeText.toUpperCase()).child("files");
-                                                                filesForStudentsDatabaseReference = forStudentsDatabaseReference.child(courseCodeText.toUpperCase()).child("files");
+                                                fileStorageRef.putFile(filePath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                                    @Override
+                                                    public void onSuccess(final UploadTask.TaskSnapshot taskSnapshot) {
+                                                        // Get a URL to the uploaded content
+                                                        //Uri downloadUrl = taskSnapshot.getDownloadUrl();
+
+                                                        final int newnewtotalItemSelected = Objects.requireNonNull(data.getClipData()).getItemCount();
+                                                        for (int ssnum = 0; ssnum < newnewtotalItemSelected; ssnum++) {
+
+                                                            multipleUri = data.getClipData().getItemAt(ssnum).getUri();
+                                                            filePath = multipleUri;
+                                                            uriString = multipleUri.toString();
+                                                            myFile = new File(uriString);
+                                                            path = myFile.getAbsolutePath();
+                                                            displayName = myFile.getName();
+                                                            uploadListAdapter.notifyDataSetChanged();
+                                                            uploadListAdapter.notifyDataSetChanged();
+                                                            Uri urlLists = taskSnapshot.getUploadSessionUri();
+
+                                                            progressDialog.dismiss();
+                                                            Snackbar.make(findViewById(R.id.Id_AddNewMateial), "Uploaded Successfully", Snackbar.LENGTH_SHORT).show();
+                                                            Log.d("Uploaded Successfully", "Uploaded Successfully : " + filePath);
+                                                            Log.d("taskSnapUp", "taskSnapShot uploaded success results : " + urlLists);
 
 
-                                                                //getting download url of file
-                                                                fileStorageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                                                    @Override
-                                                                    public void onSuccess(Uri uri) {
-                                                                        Uri URI = uri;
-                                                                        //storing url to fileUrl
-                                                                        fileUrl = URI.toString();
-                                                                        Log.d("file Url ", "url is : " + fileUrl);
+                                                            //now after upload, we get its key and create child inside it for FilesS
+                                                            filesDatabaseReference = uploadsDatabaseReference.child(uploadKey).child("files");
+                                                            forStudentsDatabaseReference.child(courseCodeText.toUpperCase()).child("files");
+                                                            filesForStudentsDatabaseReference = forStudentsDatabaseReference.child(courseCodeText.toUpperCase()).child("files");
 
-                                                                        //adding to database to filesS
-                                                                        FilesS filesS = new FilesS();
-                                                                        filesS.setFileName(displayName);
-                                                                        filesS.setFileUrl(fileUrl);
-                                                                        String filesKey = filesDatabaseReference.push().getKey();
-                                                                        if (filesKey != null) {
-                                                                            filesS.setFileKey(filesKey);
-                                                                            filesDatabaseReference.child(filesKey).setValue(filesS);
-                                                                            filesForStudentsDatabaseReference.child(filesKey).setValue(filesS);
-                                                                            getFilesKey = filesKey;
-                                                                        }
 
+                                                            //getting download url of file
+                                                            fileStorageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                                                @Override
+                                                                public void onSuccess(Uri uri) {
+                                                                    Uri URI = uri;
+                                                                    //storing url to fileUrl
+                                                                    fileUrl = URI.toString();
+                                                                    Log.d("file Url ", "url is : " + fileUrl);
+
+                                                                    //adding to database to filesS
+                                                                    FilesS filesS = new FilesS();
+                                                                    filesS.setFileName(displayName);
+                                                                    filesS.setFileUrl(fileUrl);
+                                                                    String filesKey = filesDatabaseReference.push().getKey();
+                                                                    if (filesKey != null) {
+                                                                        filesS.setFileKey(filesKey);
+                                                                        filesDatabaseReference.child(filesKey).setValue(filesS);
+                                                                        filesForStudentsDatabaseReference.child(filesKey).setValue(filesS);
+                                                                        getFilesKey = filesKey;
                                                                     }
-                                                                });
+
+                                                                }
+                                                            });
 
 //                                                                    fileStorageRef.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
 //                                                                        @Override
@@ -667,33 +667,45 @@ public class AddNewMaterial extends AppCompatActivity {
 //                                                                    });
 
 
+                                                        }
+                                                    }
+                                                })
+                                                        .addOnFailureListener(new OnFailureListener() {
+                                                            @Override
+                                                            public void onFailure(@NonNull Exception exception) {
+                                                                // Handle unsuccessful uploads
+                                                                // ...
+                                                                progressDialog.dismiss();
+                                                                Snackbar.make(findViewById(R.id.Id_AddNewMateial), "Uploaded Failed", Snackbar.LENGTH_SHORT).show();
+
                                                             }
-                                                        }
-                                                    })
-                                                    .addOnFailureListener(new OnFailureListener() {
-                                                        @Override
-                                                        public void onFailure(@NonNull Exception exception) {
-                                                            // Handle unsuccessful uploads
-                                                            // ...
-                                                            progressDialog.dismiss();
-                                                            Snackbar.make(findViewById(R.id.Id_AddNewMateial), "Uploaded Failed", Snackbar.LENGTH_SHORT).show();
+                                                        }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                                                    @Override
+                                                    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                                                        double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
+                                                        progressDialog.setMessage(((int) progress + "% uploaded..."));
+                                                    }
+                                                });
 
-                                                        }
-                                                    }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                                                @Override
-                                                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                                                    double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
-                                                    progressDialog.setMessage(((int) progress + "% uploaded..."));
-                                                }
-                                            });
-
-                                        }else {
-                                            Toast.makeText(getApplicationContext(), "Empty file path", Toast.LENGTH_SHORT).show();
-                                            Log.d("EmptyFilePath ", "Empty file path for multiple files");
-                                        }
+                                            }else {
+                                                Toast.makeText(getApplicationContext(), "Empty file path", Toast.LENGTH_SHORT).show();
+                                                Log.d("EmptyFilePath ", "Empty file path for multiple files");
+                                            }
 
 //                                        firebaseStorage();
+                                        }
+                                    }else if (courseCodeText.isEmpty()){
+                                        addCourseCode_TIL.setError("Course code cannot be empty");
+                                        Toast.makeText(AddNewMaterial.this, "Course code cannot be empty", Toast.LENGTH_LONG).show();
+                                    }else if (courseCodeHint.length() < 6){
+                                        addCourseCode_TIL.setError("Should be 6 or more characters");
+                                        Toast.makeText(AddNewMaterial.this, "Course code should be 6 or more characters", Toast.LENGTH_LONG).show();
+                                    }else if (courseTitleText.length() < 1){
+                                        addCourseTitle_TIL.setError("Course title cannot be empty");
+                                        Toast.makeText(AddNewMaterial.this, "Course title cannot be empty", Toast.LENGTH_LONG).show();
                                     }
+
+
                                 }
                             });
 
@@ -730,8 +742,15 @@ public class AddNewMaterial extends AppCompatActivity {
 
                                 if (deptArray != null && programmeText != null && levelText != null && courseCodeText.length() >= 6 && courseTitleText.length() >= 1) {
                                     firebaseStorage();
-                                }else{
-                                    Toast.makeText(AddNewMaterial.this, "Make sure all fields are correct", Toast.LENGTH_SHORT).show();
+                                }else if (courseCodeText.isEmpty()){
+                                    addCourseCode_TIL.setError("Course code cannot be empty");
+                                    Toast.makeText(AddNewMaterial.this, "Course code cannot be empty", Toast.LENGTH_LONG).show();
+                                }else if (courseCodeHint.length() < 6){
+                                    addCourseCode_TIL.setError("Should be 6 or more characters");
+                                    Toast.makeText(AddNewMaterial.this, "Course code should be 6 or more characters", Toast.LENGTH_LONG).show();
+                                }else if (courseTitleText.length() < 1){
+                                    addCourseTitle_TIL.setError("Course title cannot be empty");
+                                    Toast.makeText(AddNewMaterial.this, "Course title cannot be empty", Toast.LENGTH_LONG).show();
                                 }
                             }
                         });
