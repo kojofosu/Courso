@@ -237,7 +237,7 @@ public class StudentMaterials extends AppCompatActivity{
                     scrollRange = appBarLayout.getTotalScrollRange();
                 }
                 if (scrollRange + i == 0){
-                    if(!studentSideCode.isEmpty()){
+                    if(!studentSideCode.toUpperCase().isEmpty()){
                         studentMaterialCollapsingToolbarLayout.isTitleEnabled();
                         studentMaterialCollapsingToolbarLayout.setTitle(studentSideCode);
                     }else{

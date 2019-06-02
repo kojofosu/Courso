@@ -53,6 +53,23 @@
             android:visibility="gone"
             android:layout_centerInParent="true"/>
 
+            <ImageView
+                android:id="@+id/home_no_itemIV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:src="@drawable/nodata"
+                android:layout_centerInParent="true" />
+
+            <TextView
+                android:id="@+id/home_no_itemTV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="No course has been added yet!"
+                android:visibility="gone"
+                android:layout_below="@+id/home_no_itemIV"
+                android:gravity="center_horizontal"/>
+
         <!--<ListView-->
         <!--android:id="@+id/main_listview"-->
         <!--android:layout_width="match_parent"-->

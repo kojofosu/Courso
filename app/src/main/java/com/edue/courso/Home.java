@@ -29,6 +29,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -60,6 +61,9 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
     String fullName, email, phone;
     TextView navName, navPhone, navEmail;
 
+    ImageView homeNoItemIV;
+    TextView homeNoItemTV;
+
     FloatingActionButton fab;
     ProgressBar homeProgressBar;
     ListView listView;
@@ -78,7 +82,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
     List<Upload> listItems;
     List<Upload> listKeys;
     RecyclerView recyclerView;
-    CourseCodeAdapter adapter;
+    //CourseCodeAdapter adapter;
     private Boolean itemSelected = false;
     private int selectedPosition = 0;
 
@@ -107,6 +111,11 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
         //init
         init();
+
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference("users");
+        uploadsDatabaseReference = FirebaseDatabase.getInstance().getReference("users/"+ getUDBKey + "/uploads");
+        //startProgressBar
+        homeProgressBar.setVisibility(View.VISIBLE);
 //
 //        if (firebaseDatabase == null) {
 //            firebaseDatabase=FirebaseDatabase.getInstance();
@@ -115,14 +124,10 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
        // getActivity().setTitle(getString(R.string.recipe_categories));
         linearLayoutManager = new LinearLayoutManager(this);
-        recyclerView = (RecyclerView) findViewById(R.id.home_recyclerView);
-        recyclerView.setHasFixedSize(true);
-        mDatabaseReference = FirebaseDatabase.getInstance().getReference("users");
-        uploadsDatabaseReference = FirebaseDatabase.getInstance().getReference("users/"+ getUDBKey + "/uploads");
+        recyclerView = findViewById(R.id.home_recyclerView);
+
         //childRef = mDatabaseRef.child("recipes");
-        recyclerView.setLayoutManager(linearLayoutManager);
-        coursecodeAdapter = new CoursecodeAdapter(Upload.class, R.layout.item, CourseCodeHolder.class, uploadsDatabaseReference, this);
-        recyclerView.setAdapter(coursecodeAdapter);
+
 
 
         Log.d(TAG, "fireUi : " + coursecodeAdapter);
@@ -272,27 +277,36 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
     private void firebaseDatabase() {
 
-        //startProgressBar
-        homeProgressBar.setVisibility(View.VISIBLE);
         getUDBKey = sharedPreferences.getString("userID", "");
         mDatabaseReference = FirebaseDatabase.getInstance().getReference("users");
         uploadsDatabaseReference = FirebaseDatabase.getInstance().getReference("users/"+ getUDBKey + "/uploads");
 
         List<Upload> uploadList = new ArrayList<>();
-        // Read from the database
-        uploadsDatabaseReference.addChildEventListener(new ChildEventListener() {
+
+        //we first check if "uploads even exists"
+        mDatabaseReference.child(getUDBKey).addValueEventListener(new ValueEventListener() {
             @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                //stopProgressBar
-                homeProgressBar.setVisibility(View.GONE);
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.hasChild("uploads")){
+                    // Read from the database
+                    uploadsDatabaseReference.addChildEventListener(new ChildEventListener() {
+                        @Override
+                        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                            if(dataSnapshot.exists()) {
+                                //stopProgressBar
+                                homeProgressBar.setVisibility(View.GONE);
+                                homeNoItemIV.setVisibility(View.GONE);
+                                homeNoItemTV.setVisibility(View.GONE);
 //                listKeys = dataSnapshot.getKey();
 //                listItems = dataSnapshot.child("courseCodes").getValue();
+                                linearLayoutManager = new LinearLayoutManager(Home.this);
+                                recyclerView.setHasFixedSize(true);
+                                recyclerView.setLayoutManager(linearLayoutManager);
+                                coursecodeAdapter = new CoursecodeAdapter(Upload.class, R.layout.item, CourseCodeHolder.class, uploadsDatabaseReference, Home.this);
+                                recyclerView.setAdapter(coursecodeAdapter);
 
-                coursecodeAdapter = new CoursecodeAdapter(Upload.class, R.layout.item, CourseCodeHolder.class, uploadsDatabaseReference, getApplicationContext());
-                recyclerView.setAdapter(coursecodeAdapter);
-
-                 Log.d(TAG, "recycler VAL : " + recyclerView);
-
+                                Log.d(TAG, "recycler VAL : " + recyclerView);
+                            }
 //                listKeys.add(dataSnapshot.getKey());
 //                adapter.add((String) dataSnapshot.child("courseCodes").getValue());
 //
@@ -325,21 +339,35 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 //                    }
 //                });
 
-            }
+                        }
 
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        @Override
+                        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                            homeProgressBar.setVisibility(View.GONE);
+                        }
 
-            }
+                        @Override
+                        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                            homeProgressBar.setVisibility(View.GONE);
+                        }
 
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                        @Override
+                        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                            homeProgressBar.setVisibility(View.GONE);
+                        }
 
-            }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            homeProgressBar.setVisibility(View.GONE);
+                        }
+                    });
 
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
+                }else if (!dataSnapshot.hasChild("uploads")){
+                    homeProgressBar.setVisibility(View.GONE);
+                    homeNoItemIV.setVisibility(View.VISIBLE);
+                    homeNoItemTV.setVisibility(View.VISIBLE);
+                    Toast.makeText(Home.this, "No course has been added yet!", Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
@@ -347,6 +375,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
             }
         });
+
     }
 
     private void init() {
@@ -362,6 +391,8 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         navEmail = navHeader.findViewById(R.id.email);
         navName = navHeader.findViewById(R.id.name);
         navPhone = navHeader.findViewById(R.id.phone);
+        homeNoItemIV = findViewById(R.id.home_no_itemIV);
+        homeNoItemTV = findViewById(R.id.home_no_itemTV);
     }
 
     private void firebaseDownloadFromStorage() {
@@ -445,4 +476,5 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         }
         return true;
     }
+
 }

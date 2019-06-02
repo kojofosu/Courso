@@ -466,6 +466,8 @@ public class AddNewMaterial extends AppCompatActivity {
                         addNewCollapsingToolbarLayout.setTitle(courseCodeText);
                     }else{
                         addNewCollapsingToolbarLayout.setTitle(courseCodeHint);
+//                        addNewCollapsingToolbarLayout.setExpandedTitleColor(0xFFFFFF);
+//                        addNewCollapsingToolbarLayout.setCollapsedTitleTextColor(0xFFFFFF);
                     }
                     isShow = true;
                 }else if(isShow){
