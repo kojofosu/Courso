@@ -31,12 +31,15 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class AddMaterials extends AppCompatActivity {
-    
+    ImageView addMaterialNoItemIV;
+    TextView addMaterialNoItemTV;
+
     RecyclerView addMaterialsRecyclerView;
     ProgressBar addMaterialProgressBar;
     CollapsingToolbarLayout addMaterialCollapsingToolbarLayout;
@@ -126,6 +129,8 @@ public class AddMaterials extends AppCompatActivity {
         floatingActionButton = findViewById(R.id.add_new_material_fab);
         fileName = findViewById(R.id.add_material_item_name);
         deleteFile = findViewById(R.id.add_material_item_delete_thumbnail);
+        addMaterialNoItemTV = findViewById(R.id.add_material_no_itemTV);
+        addMaterialNoItemIV = findViewById(R.id.add_material_no_itemIV);
 //        showCode = findViewById(R.id.show_code);
 //        showDept = findViewById(R.id.show_dept);
 //        showLevel = findViewById(R.id.show_level);
@@ -169,23 +174,26 @@ public class AddMaterials extends AppCompatActivity {
 
 
         List<Upload> uploadList = new ArrayList<>();
-        // Read from the database
-        filesDatabaseReference.addChildEventListener(new ChildEventListener() {
+
+        uploadsDatabaseReference.child(uploadkey).addValueEventListener(new ValueEventListener() {
             @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                //stopProgressBar
-                addMaterialProgressBar.setVisibility(View.GONE);
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.hasChild("files")){
+                    // Read from the database
+                    filesDatabaseReference.addChildEventListener(new ChildEventListener() {
+                        @Override
+                        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                            //stopProgressBar
+                            addMaterialProgressBar.setVisibility(View.GONE);
+                            addMaterialNoItemTV.setVisibility(View.GONE);
+                            addMaterialNoItemIV.setVisibility(View.GONE);
 //                listKeys = dataSnapshot.getKey();
 //                listItems = dataSnapshot.child("courseCodes").getValue();
 
-                filesAdapter = new FilesAdapter(FilesS.class, R.layout.add_materials_items, FilesHolder.class, filesDatabaseReference, getApplicationContext());
-                addMaterialsRecyclerView.setAdapter(filesAdapter);
+                            filesAdapter = new FilesAdapter(FilesS.class, R.layout.add_materials_items, FilesHolder.class, filesDatabaseReference, getApplicationContext());
+                            addMaterialsRecyclerView.setAdapter(filesAdapter);
 
-                Log.d(TAG, "recycler VAL : " + addMaterialsRecyclerView);
-
-                if (filesAdapter == null){
-                    Toast.makeText(AddMaterials.this, "Array list is empty hahahah", Toast.LENGTH_LONG).show();
-                }
+                            Log.d(TAG, "recycler VAL : " + addMaterialsRecyclerView);
 
 //                listKeys.add(dataSnapshot.getKey());
 //                adapter.add((String) dataSnapshot.child("courseCodes").getValue());
@@ -219,28 +227,43 @@ public class AddMaterials extends AppCompatActivity {
 //                    }
 //                });
 
-            }
+                        }
 
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        @Override
+                        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                            addMaterialProgressBar.setVisibility(View.GONE);
+                        }
 
-            }
+                        @Override
+                        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                            addMaterialProgressBar.setVisibility(View.GONE);
+                        }
 
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                        @Override
+                        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                            addMaterialProgressBar.setVisibility(View.GONE);
+                        }
 
-            }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            addMaterialProgressBar.setVisibility(View.GONE);
+                            Snackbar.make(findViewById(R.id.Id_AddMaterial), "Error", Snackbar.LENGTH_LONG).show();
+                        }
+                    });
+                }else if (!dataSnapshot.hasChild("files")){
+                    addMaterialProgressBar.setVisibility(View.GONE);
+                    addMaterialNoItemTV.setVisibility(View.VISIBLE);
+                    addMaterialNoItemIV.setVisibility(View.VISIBLE);
 
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Snackbar.make(findViewById(R.id.Id_AddMaterial), "Error", Snackbar.LENGTH_LONG).show();
+
             }
         });
+
     }
 
     private void eventListeners() {

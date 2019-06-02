@@ -56,6 +56,24 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:visibility="gone"/>
+
+            <ImageView
+                android:id="@+id/add_material_no_itemIV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:src="@drawable/nodata_one"
+                android:layout_centerInParent="true" />
+
+            <TextView
+                android:id="@+id/add_material_no_itemTV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="No Materials!"
+                android:textSize="20sp"
+                android:visibility="gone"
+                android:layout_below="@+id/add_material_no_itemIV"
+                android:gravity="center_horizontal"/>
         </RelativeLayout>
     </LinearLayout>
     <android.support.design.bottomappbar.BottomAppBar
