@@ -16,6 +16,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +35,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StudentMaterials extends AppCompatActivity{
+
+    TextView studentMaterialNoItemTV;
+    ImageView studentMaterialNoItemIV;
+    ProgressBar studentMaterialProgressBar;
 
     TextView studentFileName;
     TextView studentShowCode, studentShowDept, studentShowLevel, studentShowName, studentShowProgramme;
@@ -77,15 +83,12 @@ public class StudentMaterials extends AppCompatActivity{
         Log.d(TAG, code);
 
         studentShowCode.setText(code);
-
         linearLayoutManager = new LinearLayoutManager(this);
         studentMaterialsRecyclerView = findViewById(R.id.student_material_recyclerView);
-        studentMaterialsRecyclerView.setHasFixedSize(true);
+
         studentMaterialDatabaseReference = FirebaseDatabase.getInstance().getReference("students/" + code);
         studentsFilesDatabaseReference = FirebaseDatabase.getInstance().getReference("students/"+ code + "/files");
-        studentMaterialsRecyclerView.setLayoutManager(linearLayoutManager);
-        studentFilesAdapter = new StudentFilesAdapter(FilesS.class, R.layout.student_materials_items, StudentFilesHolder.class, studentsFilesDatabaseReference, this);
-        studentMaterialsRecyclerView.setAdapter(studentFilesAdapter);
+
 
 
         Log.d(TAG, "fireUi : " + studentFilesAdapter);
@@ -111,11 +114,16 @@ public class StudentMaterials extends AppCompatActivity{
         studentMaterialCollapsingToolbarLayout = findViewById(R.id.student_material_CollapsingToolbarLayout);
         studentMaterialAppbarLayout = findViewById(R.id.student_material_AppBar);
         studentMaterialToolbar = findViewById(R.id.student_material_toolbar);
+        studentMaterialNoItemIV = findViewById(R.id.student_material_no_itemIV);
+        studentMaterialNoItemTV = findViewById(R.id.student_material_no_itemTV);
+        studentMaterialProgressBar = findViewById(R.id.student_material_progressbar);
     }
 
     private void firebaseDatabase() {
         studentMaterialDatabaseReference = FirebaseDatabase.getInstance().getReference("students/" + code);
         studentsFilesDatabaseReference = FirebaseDatabase.getInstance().getReference("students/"+ code + "/files");
+
+        studentMaterialProgressBar.setVisibility(View.VISIBLE);
 
         studentMaterialDatabaseReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -136,28 +144,23 @@ public class StudentMaterials extends AppCompatActivity{
                         studentShowProgramme.setText(studentSideProgramme);
                     }
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                if (dataSnapshot.hasChild("files")){
+                    // Read from the database
+                    studentsFilesDatabaseReference.addChildEventListener(new ChildEventListener() {
+                        @Override
+                        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                            studentMaterialProgressBar.setVisibility(View.GONE);
+                            studentMaterialNoItemIV.setVisibility(View.GONE);
+                            studentMaterialNoItemTV.setVisibility(View.GONE);
 
-            }
-        });
+                            studentMaterialsRecyclerView.setLayoutManager(linearLayoutManager);
+                            studentMaterialsRecyclerView.setHasFixedSize(true);
+                            studentFilesAdapter = new StudentFilesAdapter(FilesS.class, R.layout.student_materials_items, StudentFilesHolder.class, studentsFilesDatabaseReference, StudentMaterials.this);
+                            studentMaterialsRecyclerView.setAdapter(studentFilesAdapter);
 
-        List<Upload> uploadList = new ArrayList<>();
-        // Read from the database
-        studentsFilesDatabaseReference.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                            Log.d(TAG, "recycler VAL : " + studentMaterialsRecyclerView);
 
-                if (dataSnapshot.exists()) {
-                    studentFilesAdapter = new StudentFilesAdapter(FilesS.class, R.layout.student_materials_items, StudentFilesHolder.class, studentsFilesDatabaseReference, getApplicationContext());
-                    studentMaterialsRecyclerView.setAdapter(studentFilesAdapter);
-
-                    Log.d(TAG, "recycler VAL : " + studentMaterialsRecyclerView);
-                }else{
-                    Toast.makeText(StudentMaterials.this, "Array list is empty hahahah", Toast.LENGTH_LONG).show();
-                }
 //                listKeys.add(dataSnapshot.getKey());
 //                adapter.add((String) dataSnapshot.child("courseCodes").getValue());
 //
@@ -190,28 +193,45 @@ public class StudentMaterials extends AppCompatActivity{
 //                    }
 //                });
 
-            }
+                        }
 
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        @Override
+                        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                            studentMaterialProgressBar.setVisibility(View.GONE);
+                        }
 
-            }
+                        @Override
+                        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                            studentMaterialProgressBar.setVisibility(View.GONE);
+                        }
 
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                Toast.makeText(StudentMaterials.this, "child removed", Toast.LENGTH_SHORT).show();
-            }
+                        @Override
+                        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                            studentMaterialProgressBar.setVisibility(View.GONE);
+                        }
 
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            studentMaterialProgressBar.setVisibility(View.GONE);
+                        }
+                    });
 
+                }else if (!dataSnapshot.hasChild("files")){
+                    studentMaterialProgressBar.setVisibility(View.GONE);
+                    studentMaterialNoItemIV.setVisibility(View.VISIBLE);
+                    studentMaterialNoItemTV.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                studentMaterialProgressBar.setVisibility(View.GONE);
             }
         });
+
+
+        List<Upload> uploadList = new ArrayList<>();
+
     }
 
     private void topToolbar() {
