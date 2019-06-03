@@ -58,7 +58,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Course Code"
-                        android:textColor="#000000"
+                        android:textColor="#FFFFFF"
                         android:inputType="text"/>
                 </android.support.design.widget.TextInputLayout>
                 <android.support.design.widget.TextInputLayout
@@ -73,7 +73,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Course Title"
-                        android:textColor="#000000"
+                        android:textColor="#FFFFFF"
                         android:inputType="text"/>
                 </android.support.design.widget.TextInputLayout>
 

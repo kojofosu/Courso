@@ -154,6 +154,7 @@ public class Profile extends AppCompatActivity {
         mDatabaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
                     User user = dataSnapshot1.getValue(User.class);
                     if (user != null) {

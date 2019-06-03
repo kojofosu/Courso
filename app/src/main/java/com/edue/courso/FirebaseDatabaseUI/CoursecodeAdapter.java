@@ -62,16 +62,17 @@ public class CoursecodeAdapter extends FirebaseRecyclerAdapter<Upload, CourseCod
         viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                Toast.makeText(context, "onLong on " + viewHolder.itemView, Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "onLong on " + viewHolder.code.getText().toString(), Toast.LENGTH_SHORT).show();
 
-                Animation animation = AnimationUtils.loadAnimation(context, R.anim.bounce_down);
+
                 viewHolder.deleteClass.setVisibility(View.VISIBLE);
-                viewHolder.deleteClass.startAnimation(animation);
-                animation.setAnimationListener(new Animation.AnimationListener() {
+                viewHolder.animation = AnimationUtils.loadAnimation(view.getContext(), R.anim.bounce_down);
+                viewHolder.deleteClass.startAnimation(viewHolder.animation);
+                viewHolder.animation.setAnimationListener(new Animation.AnimationListener() {
                     @Override
                     public void onAnimationStart(Animation animation) {
                         viewHolder.code.setVisibility(View.INVISIBLE);
-                        Log.d("pupu : ", "Pupu : " + viewHolder.itemView.getId());
+                        Log.d("pupu : ", "Pupu : " + viewHolder.code.getText().toString());
                     }
 
                     @Override
@@ -173,4 +174,5 @@ public class CoursecodeAdapter extends FirebaseRecyclerAdapter<Upload, CourseCod
     public Upload getItem(int position) {
         return super.getItem(super.getItemCount() - position - 1);
     }
+
 }

@@ -30,6 +30,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +48,9 @@ public class StudentMaterials extends AppCompatActivity{
     Toolbar studentMaterialToolbar;
     StudentFilesAdapter studentFilesAdapter;
     String studentSideCode, studentSideTitle, studentSideProgramme, studentSideLevel, studentSideDept;
+
+    List<FilesS> listItems;
+    List<FilesS> listKeys;
 
     private static final String TAG = "StudentsMaterial";
     private LinearLayoutManager linearLayoutManager;
@@ -78,21 +82,27 @@ public class StudentMaterials extends AppCompatActivity{
 //        //render the page to the bitmap
 //        page.render(pageBitmap , null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
 
-
-        code = getIntent().getStringExtra("StudentsCode");
-        Log.d(TAG, code);
-
-        studentShowCode.setText(code);
-        linearLayoutManager = new LinearLayoutManager(this);
-        studentMaterialsRecyclerView = findViewById(R.id.student_material_recyclerView);
-
         studentMaterialDatabaseReference = FirebaseDatabase.getInstance().getReference("students/" + code);
         studentsFilesDatabaseReference = FirebaseDatabase.getInstance().getReference("students/"+ code + "/files");
 
+        code = getIntent().getStringExtra("StudentsCode").toUpperCase();
+        Log.d(TAG, code);
 
+        studentShowCode.setText(code);
+
+        studentMaterialsRecyclerView = findViewById(R.id.student_material_recyclerView);
+        linearLayoutManager = new LinearLayoutManager(StudentMaterials.this);
+        studentMaterialsRecyclerView.setHasFixedSize(true);
+        studentMaterialsRecyclerView.setLayoutManager(linearLayoutManager);
+        studentFilesAdapter = new StudentFilesAdapter(FilesS.class, R.layout.student_materials_items, StudentFilesHolder.class, studentsFilesDatabaseReference, StudentMaterials.this);
+        studentMaterialsRecyclerView.setAdapter(studentFilesAdapter);
+
+        studentMaterialProgressBar.setVisibility(View.VISIBLE);
 
         Log.d(TAG, "fireUi : " + studentFilesAdapter);
 
+        listItems = new ArrayList<>();
+        listKeys = new ArrayList<>();
 
         //firebase database
         firebaseDatabase();
@@ -120,46 +130,32 @@ public class StudentMaterials extends AppCompatActivity{
     }
 
     private void firebaseDatabase() {
-        studentMaterialDatabaseReference = FirebaseDatabase.getInstance().getReference("students/" + code);
-        studentsFilesDatabaseReference = FirebaseDatabase.getInstance().getReference("students/"+ code + "/files");
-
-        studentMaterialProgressBar.setVisibility(View.VISIBLE);
+        studentMaterialDatabaseReference = FirebaseDatabase.getInstance().getReference("students/" + code.toUpperCase());
+        studentsFilesDatabaseReference = FirebaseDatabase.getInstance().getReference("students/"+ code.toUpperCase() + "/files");
 
         studentMaterialDatabaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Upload upload = dataSnapshot.getValue(Upload.class);
-                    if (upload != null) {
-                        studentSideTitle = upload.getCourseName();
-                        studentSideCode = upload.getCourseCodes();
-                        studentSideDept = upload.getDeptName();
-                        studentSideLevel = upload.getLevelNum();
-                        studentSideProgramme = upload.getProgramme();
+                DataSnapshot saveSnapShot = dataSnapshot;
 
-                        studentShowCode.setText(studentSideCode);
-                        studentShowDept.setText(studentSideDept);
-                        studentShowLevel.setText(String.format("Level %s",studentSideLevel));
-                        studentShowName.setText(studentSideTitle);
-                        studentShowProgramme.setText(studentSideProgramme);
-                    }
-                }
-
-                if (dataSnapshot.hasChild("files")){
+                if (saveSnapShot.hasChild("files")){
                     // Read from the database
                     studentsFilesDatabaseReference.addChildEventListener(new ChildEventListener() {
                         @Override
                         public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                            studentMaterialProgressBar.setVisibility(View.GONE);
-                            studentMaterialNoItemIV.setVisibility(View.GONE);
-                            studentMaterialNoItemTV.setVisibility(View.GONE);
+                            if (dataSnapshot.exists()) {
+                                studentMaterialProgressBar.setVisibility(View.GONE);
+                                studentMaterialNoItemIV.setVisibility(View.GONE);
+                                studentMaterialNoItemTV.setVisibility(View.GONE);
 
-                            studentMaterialsRecyclerView.setLayoutManager(linearLayoutManager);
-                            studentMaterialsRecyclerView.setHasFixedSize(true);
-                            studentFilesAdapter = new StudentFilesAdapter(FilesS.class, R.layout.student_materials_items, StudentFilesHolder.class, studentsFilesDatabaseReference, StudentMaterials.this);
-                            studentMaterialsRecyclerView.setAdapter(studentFilesAdapter);
+                                linearLayoutManager = new LinearLayoutManager(StudentMaterials.this);
+                                studentMaterialsRecyclerView.setHasFixedSize(true);
+                                studentMaterialsRecyclerView.setLayoutManager(linearLayoutManager);
+                                studentFilesAdapter = new StudentFilesAdapter(FilesS.class, R.layout.student_materials_items, StudentFilesHolder.class, studentsFilesDatabaseReference, StudentMaterials.this);
+                                studentMaterialsRecyclerView.setAdapter(studentFilesAdapter);
 
-                            Log.d(TAG, "recycler VAL : " + studentMaterialsRecyclerView);
+                                Log.d(TAG, "recycler VAL : " + studentMaterialsRecyclerView);
+                            }
 
 //                listKeys.add(dataSnapshot.getKey());
 //                adapter.add((String) dataSnapshot.child("courseCodes").getValue());
@@ -216,10 +212,27 @@ public class StudentMaterials extends AppCompatActivity{
                         }
                     });
 
-                }else if (!dataSnapshot.hasChild("files")){
+                }else if (!saveSnapShot.hasChild("files")){
                     studentMaterialProgressBar.setVisibility(View.GONE);
                     studentMaterialNoItemIV.setVisibility(View.VISIBLE);
                     studentMaterialNoItemTV.setVisibility(View.VISIBLE);
+                }
+
+                for (DataSnapshot snapshot : saveSnapShot.getChildren()) {
+                    Upload upload = dataSnapshot.getValue(Upload.class);
+                    if (upload != null) {
+                        studentSideTitle = upload.getCourseName();
+                        studentSideCode = upload.getCourseCodes();
+                        studentSideDept = upload.getDeptName();
+                        studentSideLevel = upload.getLevelNum();
+                        studentSideProgramme = upload.getProgramme();
+
+                        studentShowCode.setText(studentSideCode);
+                        studentShowDept.setText(studentSideDept);
+                        studentShowLevel.setText(String.format("Level %s",studentSideLevel));
+                        studentShowName.setText(studentSideTitle);
+                        studentShowProgramme.setText(studentSideProgramme);
+                    }
                 }
             }
 
@@ -240,6 +253,7 @@ public class StudentMaterials extends AppCompatActivity{
             @Override
             public void onClick(View view) {
                 onBackPressed();
+                finish();
             }
         });
     }
@@ -258,7 +272,7 @@ public class StudentMaterials extends AppCompatActivity{
                 }
                 if (scrollRange + i == 0){
                     if(!studentSideCode.toUpperCase().isEmpty()){
-                        studentMaterialCollapsingToolbarLayout.isTitleEnabled();
+                        studentMaterialCollapsingToolbarLayout.setTitleEnabled(true);
                         studentMaterialCollapsingToolbarLayout.setTitle(studentSideCode);
                     }else{
                         studentMaterialCollapsingToolbarLayout.setTitle(studentSideCode);
@@ -272,5 +286,16 @@ public class StudentMaterials extends AppCompatActivity{
         });
 
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        StudentMaterials.this.finish();
+        super.onBackPressed();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 }

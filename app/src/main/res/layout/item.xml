@@ -27,8 +27,7 @@
             android:visibility="gone"
             android:scaleType="fitCenter"
             android:padding="55dp"
-            android:contentDescription="Delete Class"
-            android:focusable="true" />
+            android:contentDescription="Delete Class" />
 
         <TextView
             android:id="@+id/item_code"

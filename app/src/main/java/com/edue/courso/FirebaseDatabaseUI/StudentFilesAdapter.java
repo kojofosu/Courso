@@ -68,44 +68,66 @@ public class StudentFilesAdapter extends FirebaseRecyclerAdapter<FilesS, Student
                 context.startActivity(chooser);
             }
         });
-        StorageReference reference = FirebaseStorage.getInstance().getReference("course/pechu.jpg");
-        final long ONE_MEG = 2048 * 2048;
-        reference.getBytes(ONE_MEG).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] bytes) {
-//                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
-//                viewHolder.thumbnail.setImageBitmap(bitmap);
-//                // create a new renderer
-//        PdfRenderer pdfRenderer = null;
-//        try {
-//            pdfRenderer = new PdfRenderer(ParcelFileDescriptor.open(new File(fileUrl), ParcelFileDescriptor.MODE_READ_ONLY));
-//            //Open the first page of the document
-//            PdfRenderer.Page page = pdfRenderer.openPage(0);
+//        StorageReference reference = FirebaseStorage.getInstance().getReference("course/pechu.jpg");
+//        final long ONE_MEG = 2048 * 2048;
+//        reference.getBytes(ONE_MEG).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+//            @Override
+//            public void onSuccess(byte[] bytes) {
+////                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
+////                viewHolder.thumbnail.setImageBitmap(bitmap);
+////                // create a new renderer
+////        PdfRenderer pdfRenderer = null;
+////        try {
+////            pdfRenderer = new PdfRenderer(ParcelFileDescriptor.open(new File(fileUrl), ParcelFileDescriptor.MODE_READ_ONLY));
+////            //Open the first page of the document
+////            PdfRenderer.Page page = pdfRenderer.openPage(0);
+////
+////            //Define a target width for the resulting bitmap and use it to calculate the final height
+////            int width = 2048;
+////            int height = (page.getHeight() * (width / page.getHeight()));
+////
+////            //Create the bitmap to render the page to
+////            Bitmap pageBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+////
+////            //render the page to the bitmap
+////            page.render(pageBitmap , null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
+////
+////            viewHolder.thumbnail.setImageBitmap(pageBitmap);
+////
+////        } catch (IOException e) {
+////            e.printStackTrace();
+////        }
 //
-//            //Define a target width for the resulting bitmap and use it to calculate the final height
-//            int width = 2048;
-//            int height = (page.getHeight() * (width / page.getHeight()));
 //
-//            //Create the bitmap to render the page to
-//            Bitmap pageBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-//
-//            //render the page to the bitmap
-//            page.render(pageBitmap , null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
-//
-//            viewHolder.thumbnail.setImageBitmap(pageBitmap);
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+//            }
+//        }).addOnFailureListener(new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception e) {
+//                Toast.makeText(context, "Bytes failed", Toast.LENGTH_SHORT).show();
+//            }
+//        });
 
 
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(context, "Bytes failed", Toast.LENGTH_SHORT).show();
-            }
-        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //        // create a new renderer
 //        PdfRenderer pdfRenderer = null;

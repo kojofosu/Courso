@@ -274,6 +274,8 @@ public class AddNewMaterial extends AppCompatActivity {
         fileStorageRef = mStorageRef.child("CourseMaterials/" + deptText +"/"+ programmeText +"/"+ levelText +"/"+ courseCodeText.toUpperCase() +"/"+displayName);
 
         if (filePath != null) {
+
+
             final ProgressDialog progressDialog = new ProgressDialog(this);
             progressDialog.setTitle("Uploading...");
             progressDialog.setCancelable(false);
@@ -288,9 +290,8 @@ public class AddNewMaterial extends AppCompatActivity {
                         public void onSuccess(final UploadTask.TaskSnapshot taskSnapshot) {
                             // Get a URL to the uploaded content
                             //Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                            progressDialog.dismiss();
-                            Snackbar.make(findViewById(R.id.Id_AddNewMateial), "Uploaded Successfully", Snackbar.LENGTH_SHORT).show();
-
+                            //progressDialog.dismiss();
+                            //Snackbar.make(findViewById(R.id.Id_AddNewMateial), "Uploaded Successfully", Snackbar.LENGTH_SHORT).show();
 
                             //adding to database to upload
                             Upload upload = new Upload();
@@ -303,7 +304,20 @@ public class AddNewMaterial extends AppCompatActivity {
 
                             if (uploadKey != null) {
                                 upload.setUploadKey(uploadKey);
-                                uploadsDatabaseReference.child(uploadKey).setValue(upload);
+                                uploadsDatabaseReference.child(uploadKey).setValue(upload).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        progressDialog.dismiss();
+                                        Snackbar.make(findViewById(R.id.Id_AddNewMateial), "Created Course Successfully", Snackbar.LENGTH_SHORT).show();
+
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        progressDialog.dismiss();
+                                        Snackbar.make(findViewById(R.id.Id_AddNewMateial), "Failed Creating Course", Snackbar.LENGTH_SHORT).show();
+                                    }
+                                });
                                 forStudentsDatabaseReference.child(courseCodeText.toUpperCase()).setValue(upload);
 
 
@@ -312,6 +326,7 @@ public class AddNewMaterial extends AppCompatActivity {
                                 filesDatabaseReference = uploadsDatabaseReference.child(uploadKey).child("files");
                                 filesForStudentsDatabaseReference = forStudentsDatabaseReference.child(courseCodeText.toUpperCase()).child("files");
                             }
+
 
 
                             //getting download url of file
@@ -365,8 +380,47 @@ public class AddNewMaterial extends AppCompatActivity {
                 }
             });
 
-        }else {
-            Toast.makeText(this, "Empty file path", Toast.LENGTH_SHORT).show();
+        }else if (filePath == null){
+
+            final ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setMessage("Creating...");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+
+            //adding to database to upload
+            Upload upload = new Upload();
+            upload.setDeptName(deptText);
+            upload.setLevelNum(levelText);
+            upload.setProgramme(programmeText);
+            upload.setCourseCodes(courseCodeText.toUpperCase());
+            upload.setCourseName(courseTitleText);
+            final String uploadKey = uploadsDatabaseReference.push().getKey();
+
+            if (uploadKey != null) {
+                upload.setUploadKey(uploadKey);
+                uploadsDatabaseReference.child(uploadKey).setValue(upload).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        progressDialog.dismiss();
+                        Snackbar.make(findViewById(R.id.Id_AddNewMateial), "Created Course Successfully", Snackbar.LENGTH_SHORT).show();
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        progressDialog.dismiss();
+                        Snackbar.make(findViewById(R.id.Id_AddNewMateial), "Failed Creating Course", Snackbar.LENGTH_SHORT).show();
+                    }
+                });
+                forStudentsDatabaseReference.child(courseCodeText.toUpperCase()).setValue(upload);
+
+
+                getUploadKey = uploadKey;
+                //now after upload, we get its key and create child inside it for FilesS
+                filesDatabaseReference = uploadsDatabaseReference.child(uploadKey).child("files");
+                filesForStudentsDatabaseReference = forStudentsDatabaseReference.child(courseCodeText.toUpperCase()).child("files");
+            }
+
         }
     }
 
@@ -515,9 +569,25 @@ public class AddNewMaterial extends AppCompatActivity {
         uploadBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-            if (filePath == null){
-                Toast.makeText(AddNewMaterial.this, "Select at least one material to create course", Toast.LENGTH_SHORT).show();
-            }
+                deptText = addNewDeptSpinner.getSelectedItem().toString();
+                programmeText = addNewProgrammeSpinner.getSelectedItem().toString();
+                levelText = addNewLevelSpinner.getSelectedItem().toString();
+
+                if (deptArray != null && programmeText != null && levelText != null && courseCodeText.length() >= 6 && courseTitleText.length() >= 1) {
+                    firebaseStorage();
+                }else if (courseCodeText.isEmpty()){
+                    addCourseCode_TIL.setError("Course code cannot be empty");
+                    Toast.makeText(AddNewMaterial.this, "Course code cannot be empty", Toast.LENGTH_LONG).show();
+                }else if (courseCodeHint.length() < 6){
+                    addCourseCode_TIL.setError("Should be 6 or more characters");
+                    Toast.makeText(AddNewMaterial.this, "Course code should be 6 or more characters", Toast.LENGTH_LONG).show();
+                }else if (courseTitleText.length() < 1){
+                    addCourseTitle_TIL.setError("Course title cannot be empty");
+                    Toast.makeText(AddNewMaterial.this, "Course title cannot be empty", Toast.LENGTH_LONG).show();
+                }
+//            if (filePath == null){
+//                Toast.makeText(AddNewMaterial.this, "Select at least one material to create course", Toast.LENGTH_SHORT).show();
+//            }
             }
         });
 
@@ -596,7 +666,7 @@ public class AddNewMaterial extends AppCompatActivity {
 
                                             fileStorageRef = mStorageRef.child("CourseMaterials/" + deptText +"/"+ programmeText +"/"+ levelText +"/"+ courseCodeText.toUpperCase() +"/"+ filePath);
 
-                                            if (filePath != null) {
+                                            //if (filePath != null) {
                                                 final ProgressDialog progressDialog = new ProgressDialog(AddNewMaterial.this);
                                                 progressDialog.setTitle("Uploading..." + displayName);
                                                 progressDialog.setCancelable(false);
@@ -689,10 +759,11 @@ public class AddNewMaterial extends AppCompatActivity {
                                                     }
                                                 });
 
-                                            }else {
-                                                Toast.makeText(getApplicationContext(), "Empty file path", Toast.LENGTH_SHORT).show();
-                                                Log.d("EmptyFilePath ", "Empty file path for multiple files");
-                                            }
+//                                            }
+//                                            else {
+//                                                Toast.makeText(getApplicationContext(), "Empty file path", Toast.LENGTH_SHORT).show();
+//                                                Log.d("EmptyFilePath ", "Empty file path for multiple files");
+//                                            }
 
 //                                        firebaseStorage();
                                         }

@@ -147,7 +147,7 @@ public class SignIn extends AppCompatActivity {
         studentLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Dialog dialog = new Dialog(SignIn.this);
+                final Dialog dialog = new Dialog(SignIn.this);
                 dialog.setContentView(R.layout.student_login_dialog);
                 studentLoginTextInputLayout = dialog.findViewById(R.id.student_login_text_input_layout);
                 studentLoginInputEditText = dialog.findViewById(R.id.student_login_text_input_edittext);
@@ -155,7 +155,7 @@ public class SignIn extends AppCompatActivity {
                 studentLoginInputEditText.addTextChangedListener(new TextWatcher() {
                     @Override
                     public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+                        findCode = charSequence.toString().toUpperCase();
                     }
 
                     @Override
@@ -165,7 +165,7 @@ public class SignIn extends AppCompatActivity {
 
                     @Override
                     public void afterTextChanged(Editable editable) {
-
+                        findCode = editable.toString().toUpperCase();
                     }
                 });
                 buttonFindCourse.setOnClickListener(new View.OnClickListener() {
