@@ -55,6 +55,8 @@ public class CoursecodeAdapter extends FirebaseRecyclerAdapter<Upload, CourseCod
         //SharedPreferences
         final SharedPreferences sharedPreferences = context.getSharedPreferences("login" , MODE_PRIVATE);
 
+        final String getUDBKey = sharedPreferences.getString("userID", "");
+
         viewHolder.title.setText(TITLE);
         viewHolder.code.setText(CODE);
 
@@ -77,6 +79,41 @@ public class CoursecodeAdapter extends FirebaseRecyclerAdapter<Upload, CourseCod
 
                     @Override
                     public void onAnimationEnd(Animation animation) {
+                        viewHolder.deleteClass.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                //final String getCode = getItem(position).getCourseCodes().toUpperCase();
+                                Toast.makeText(context, " delete " + CODE, Toast.LENGTH_SHORT).show();
+                                final DatabaseReference uploadsDatabaseReference = FirebaseDatabase.getInstance().getReference("users/"+ getUDBKey + "/uploads");
+                                final DatabaseReference forStudentsDatabaseReference = FirebaseDatabase.getInstance().getReference("students");
+                                uploadsDatabaseReference.child(UPLOADKEY).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            Toast.makeText(context, "Deleted" + CODE, Toast.LENGTH_SHORT).show();
+                                            Log.d("code ", "code is : " + CODE);
+                                            notifyDataSetChanged();
+
+                                            forStudentsDatabaseReference.child(CODE).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    if (task.isSuccessful()){
+                                                        // Toast.makeText(context, "student side for "+ getCode + "is deleted successfully", Toast.LENGTH_SHORT).show();
+                                                        Log.d("StudentSideDel" , "student side for "+ CODE + "is deleted successfully");
+                                                    }else if (!task.isSuccessful()){
+                                                        //Toast.makeText(context, "student side for "+ getCode + "UNSUCCESSFUL", Toast.LENGTH_SHORT).show();
+                                                        Log.d("StudentSideDel" , "student side for "+ CODE + "UNSUCCESSFUL");
+                                                    }
+                                                }
+                                            });
+                                        }else if (!task.isSuccessful()){
+                                            Toast.makeText(context, "Deletion Failed", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
+                            }
+                        });
+
                         viewHolder.deleteClass.setOnLongClickListener(new View.OnLongClickListener() {
                             @Override
                             public boolean onLongClick(View view) {
@@ -104,39 +141,7 @@ public class CoursecodeAdapter extends FirebaseRecyclerAdapter<Upload, CourseCod
                                 return true;
                             }
                         });
-                        viewHolder.deleteClass.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                //final String getCode = getItem(position).getCourseCodes().toUpperCase();
-                                Toast.makeText(context, " delete " + CODE, Toast.LENGTH_SHORT).show();
-                                final DatabaseReference forStudentsDatabaseReference = FirebaseDatabase.getInstance().getReference("students");
-                                getRef(position).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        if (task.isSuccessful()) {
-                                            Toast.makeText(context, "Deleted" + CODE, Toast.LENGTH_SHORT).show();
-                                            Log.d("code ", "code is : " + CODE);
-                                            notifyDataSetChanged();
 
-                                            forStudentsDatabaseReference.child(CODE).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<Void> task) {
-                                                    if (task.isSuccessful()){
-                                                       // Toast.makeText(context, "student side for "+ getCode + "is deleted successfully", Toast.LENGTH_SHORT).show();
-                                                        Log.d("StudentSideDel" , "student side for "+ CODE + "is deleted successfully");
-                                                    }else if (!task.isSuccessful()){
-                                                        //Toast.makeText(context, "student side for "+ getCode + "UNSUCCESSFUL", Toast.LENGTH_SHORT).show();
-                                                        Log.d("StudentSideDel" , "student side for "+ CODE + "UNSUCCESSFUL");
-                                                    }
-                                                }
-                                            });
-                                        }else if (!task.isSuccessful()){
-                                            Toast.makeText(context, "Deletion Failed", Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-                                });
-                            }
-                        });
                     }
 
                     @Override
