@@ -1,5 +1,6 @@
 package com.edue.courso.FirebaseDatabaseUI;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -39,9 +40,17 @@ public class FilesAdapter extends FirebaseRecyclerAdapter<FilesS, FilesHolder> {
     protected void populateViewHolder(final FilesHolder viewHolder, FilesS model, final int position) {
         String fileName = model.getFileName();
         final String fileUrl = model.getFileUrl();
+        String fileKey = model.getFileKey();
 
         //SharedPreferences
         final SharedPreferences sharedPreferences = context.getSharedPreferences("login" , MODE_PRIVATE);
+        final String getUDBKey = sharedPreferences.getString("userID", "");
+        final String uploadkey = sharedPreferences.getString("upKeyForStudentSide", "");
+        Log.d("magic", "magic uploadkey " + uploadkey);
+
+//        Intent intent = ((Activity) context.getApplicationContext()).getIntent();
+//        final String uploadkey = intent.getStringExtra("UploadKey");
+//        Log.d("magic", "magic uploadkey " + uploadkey);
 
         viewHolder.name.setText(fileName);
 
@@ -94,8 +103,9 @@ public class FilesAdapter extends FirebaseRecyclerAdapter<FilesS, FilesHolder> {
                                 String someCode = sharedPreferences.getString("codeForStudentSide", "");
 
                                 final String fileKey = getItem(position).getFileKey();
+                                final DatabaseReference filesDatabaseReference = FirebaseDatabase.getInstance().getReference("users/"+ getUDBKey + "/uploads/" + uploadkey + "/files");
                                 final DatabaseReference forStudentsDatabaseReference = FirebaseDatabase.getInstance().getReference("students/" + someCode + "/files" );
-                                getRef(position).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                filesDatabaseReference.child(fileKey).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()) {

@@ -159,17 +159,22 @@ public class CoursecodeAdapter extends FirebaseRecyclerAdapter<Upload, CourseCod
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, AddMaterials.class);
+//                Intent newIntent = new Intent(context.getApplicationContext(), FilesAdapter.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra("Title", TITLE);
                 intent.putExtra("Code", CODE);
                 intent.putExtra("Dept", DEPT);
                 intent.putExtra("UploadKey", UPLOADKEY);
+//                newIntent.putExtra("UploadKey", UPLOADKEY);
                 intent.putExtra("Programme", PROGRAMME);
                 intent.putExtra("Level", LEVEL);
                 //put in sharedPrefs for files of student side
                 sharedPreferences.edit().putString("codeForStudentSide", CODE).apply();
+                sharedPreferences.edit().putString("upKeyForStudentSide", UPLOADKEY).apply();
                 context.startActivity(intent);
 //                notifyDataSetChanged();
+
+
             }
         });
     }
