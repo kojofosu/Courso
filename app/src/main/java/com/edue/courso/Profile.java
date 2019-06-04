@@ -207,12 +207,13 @@ public class Profile extends AppCompatActivity {
                 fullName = addNewLecturerNameET.getText().toString();
                 phone = addNewLecturerContactET.getText().toString();
 
-                final ProgressDialog progressDialog = new ProgressDialog(Profile.this);
-                progressDialog.setCancelable(false);
-                progressDialog.setMessage("Updating profile...");
-                progressDialog.show();
+
 
                 if (fullName.length() >= 1 && isEmailValid(email) && phone.length() == 10){
+                    final ProgressDialog progressDialog = new ProgressDialog(Profile.this);
+                    progressDialog.setCancelable(false);
+                    progressDialog.setMessage("Updating profile...");
+                    progressDialog.show();
                     //changing user email in firebase auth side but before that user must be re-authenticated
 
                     // Get auth credentials from the user for re-authentication. The example below shows
@@ -236,14 +237,27 @@ public class Profile extends AppCompatActivity {
                                         firebaseUser.updateEmail(email).addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
                                             public void onSuccess(Void aVoid) {
-                                                mDatabaseReference.child(getUDBKey).child("email").setValue(email);
-                                                mDatabaseReference.child(getUDBKey).child("fullName").setValue(fullName);
+                                                mDatabaseReference.child(getUDBKey).child("email").setValue(email).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+                                                        sharedPreferences.edit().putString("lecturerEmail", email).apply();
+                                                    }
+                                                });
+                                                mDatabaseReference.child(getUDBKey).child("fullName").setValue(fullName).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+                                                        sharedPreferences.edit().putString("lecturerName", fullName ).apply();
+                                                    }
+                                                });
                                                 mDatabaseReference.child(getUDBKey).child("phone").setValue(phone)
                                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                             @Override
                                                             public void onSuccess(Void aVoid) {
                                                                 progressDialog.dismiss();
                                                                 Snackbar.make(findViewById(R.id.Id_Profile), "Profile Updated Successfully", Snackbar.LENGTH_SHORT).show();
+                                                                //setting details to string variables
+                                                                 sharedPreferences.edit().putString("lecturerPhone", phone).apply();
+
                                                             }
                                                         });
                                                 Log.d("Profile Activity", "User email address updated.");

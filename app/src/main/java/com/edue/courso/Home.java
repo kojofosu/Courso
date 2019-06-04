@@ -116,6 +116,26 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         uploadsDatabaseReference = FirebaseDatabase.getInstance().getReference("users/"+ getUDBKey + "/uploads");
         //startProgressBar
         homeProgressBar.setVisibility(View.VISIBLE);
+
+        //setting details to string variables
+        fullName = sharedPreferences.getString("lecturerName", "");
+        email = sharedPreferences.getString("lecturerEmail", "");
+        phone = sharedPreferences.getString("lecturerPhone", "");
+
+
+        if (fullName.isEmpty() || email.isEmpty() || phone.isEmpty()){
+            //fireBase database
+            firebaseDB();
+        }else {
+            //set values to the various editTexts
+            navName.setText(fullName);
+            navEmail.setText(email);
+            navPhone.setText(phone);
+            //toolbar title
+//            toolbar.setTitle(fullName);
+        }
+
+
 //
 //        if (firebaseDatabase == null) {
 //            firebaseDatabase=FirebaseDatabase.getInstance();
@@ -209,27 +229,13 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             @Override
             public void onClick(View view) {
                 drawerLayout.openDrawer(GravityCompat.START);
+
+
             }
         });
 
 
 
-        //setting details to string variables
-        fullName = sharedPreferences.getString("lecturerName", "");
-        email = sharedPreferences.getString("lecturerEmail", "");
-        phone = sharedPreferences.getString("lecturerPhone", "");
-
-        if (fullName.isEmpty() || email.isEmpty() || phone.isEmpty()){
-            //fireBase database
-            firebaseDB();
-        }else {
-            //set values to the various editTexts
-            navName.setText(fullName);
-            navEmail.setText(email);
-            navPhone.setText(phone);
-            //toolbar title
-//            toolbar.setTitle(fullName);
-        }
 
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -237,6 +243,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
     private void firebaseDB() {
         //Initializing the databaseReference
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference("users");
         uploadsDatabaseReference = FirebaseDatabase.getInstance().getReference("users/"+ getUDBKey + "/uploads");
 
 
