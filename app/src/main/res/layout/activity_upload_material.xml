@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:paddingBottom="60dp">
+        android:paddingBottom="10dp">
 
         <android.support.design.widget.AppBarLayout
             android:id="@+id/upload_material_AppBar"
@@ -34,7 +34,13 @@
 
         </android.support.design.widget.AppBarLayout>
 
-
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
         <!--MATERIAL-->
     <TextView
         android:layout_width="match_parent"
@@ -85,7 +91,8 @@
         android:text="Add Materials"
         android:textColor="#FFFFFF"
         android:isScrollContainer="false"/>
+    </LinearLayout>
+</ScrollView>
 </LinearLayout>
-
 
     </android.support.constraint.ConstraintLayout>
